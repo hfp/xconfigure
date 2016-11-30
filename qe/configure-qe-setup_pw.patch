@@ -1,0 +1,4 @@
+666c666
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)

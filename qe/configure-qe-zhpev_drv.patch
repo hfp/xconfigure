@@ -1,0 +1,31 @@
+1467c1467
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+1492c1492
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+1493a1494,1496
+> # if defined(__ELPA2) || defined(__ELPA3)
+>      INTEGER     :: elpa_err
+> # endif
+1506c1509
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+1507a1511,1522
+> # if defined(__ELPA2) || defined(__ELPA3)
+>      elpa_err = get_elpa_row_col_comms(ortho_comm, my_prow,   &
+>                                        my_pcol,mpi_comm_rows, &
+>                                        mpi_comm_cols)
+> #   if defined(__ELPA3)
+>      elpa_err = solve_evp_complex(n, n, h, size(h,1), w, v, size(h,1), nb, npcol, &
+>                                   mpi_comm_rows, mpi_comm_cols)
+> #   else
+>      elpa_err = solve_evp_complex(n, n, h, size(h,1), w, v, size(h,1), nb, &
+>                                   mpi_comm_rows, mpi_comm_cols)
+> #   endif
+> # else
+1510a1526
+> # endif

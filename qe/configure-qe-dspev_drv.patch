@@ -1,0 +1,33 @@
+656c656
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+680c680
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+681a682,684
+> # if defined(__ELPA2) || defined(__ELPA3)
+>      INTEGER     :: elpa_err
+> # endif
+703c706
+< #if defined(__ELPA)
+---
+> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+704a708,719
+> # if defined(__ELPA2) || defined(__ELPA3)
+>      elpa_err = get_elpa_row_col_comms(ortho_comm, my_prow,   &
+>                                        my_pcol,mpi_comm_rows, &
+>                                        mpi_comm_cols)
+> #   if defined(__ELPA3)
+>      elpa_err = solve_evp_real(n, n, s, lds, w, vv, lds, nb, npcol, &
+>                                mpi_comm_rows, mpi_comm_cols)
+> #   else
+>      elpa_err = solve_evp_real(n, n, s, lds, w, vv, lds, nb, &
+>                                mpi_comm_rows, mpi_comm_cols)
+> #   endif
+> # else
+707c722
+<      
+---
+> # endif
