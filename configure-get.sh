@@ -33,53 +33,65 @@
 CHMOD=$(which chmod)
 WGET=$(which wget)
 CAT=$(which cat)
+LS=$(which ls)
 RM=$(which rm)
 
-if [ "" != "${CHMOD}" ] && [ "" != "${WGET}" ] && [ "" != "${CAT}" ] && [ "" != "${RM}" ]; then
-  if [ "" != "$1" ]; then
-    ARCHS=$2
-    KINDS=$3
+APPLICATION=$1
+ARCHS=$2
+KINDS=$3
 
-    if [ "" = "${ARCHS}" ]; then
-      ARCHS="snb hsw knl skx"
-    fi
-    if [ "" = "${KINDS}" ]; then
-      KINDS="omp"
-      for KIND in ${KINDS} ; do
-        ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/configure-$1-${KIND}.sh
-      done
-      for ARCH in ${ARCHS} ; do
-        ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/configure-$1-${ARCH}.sh
-        for KIND in ${KINDS} ; do
-          ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/configure-$1-${ARCH}-${KIND}.sh
-        done
-      done
-    else
-      for ARCH in ${ARCHS} ; do
-        for KIND in ${KINDS} ; do
-          ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/configure-$1-${ARCH}-${KIND}.sh
-        done
-      done
-    fi
-
-    # attempt to get a list of non-default file names, and then download each file
-    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/.filelist
-    if [ -e .filelist ]; then
-      for FILE in $(${CAT} .filelist); do
-        ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/${FILE}
-      done
-      # cleanup list of file names
-      ${RM} .filelist
-    fi
-
-    # make scripts executable
-    ${CHMOD} +x *.sh
-  else
-    echo "Please use: $0 <application-name>"
-    exit 1
-  fi
-else
+if [ "" = "${CHMOD}" ] || [ "" = "${WGET}" ] || [ "" = "${CAT}" ] || [ "" = "${RM}" ]; then
   echo "Error: prerequisites not found!"
   exit 1
+fi
+if [ "" = "${APPLICATION}" ]; then
+  echo "Please use: $0 <application-name>"
+  exit 1
+fi
+if [ "0" != $(wget -S --spider https://github.com/hfp/xconfigure/blob/master/${APPLICATION}/README.md 2> /dev/null; echo $?) ]; then
+  echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
+  exit 1
+fi
+
+if [ "" = "${ARCHS}" ]; then
+  ARCHS="snb hsw knl skx"
+fi
+if [ "" = "${KINDS}" ]; then
+  KINDS="omp"
+  for KIND in ${KINDS} ; do
+    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh
+  done
+  for ARCH in ${ARCHS} ; do
+    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh
+    for KIND in ${KINDS} ; do
+      ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
+    done
+  done
+else
+  for ARCH in ${ARCHS} ; do
+    for KIND in ${KINDS} ; do
+      ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
+    done
+  done
+fi
+
+# attempt to get a list of non-default file names, and then download each file
+${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/.filelist
+if [ -e .filelist ]; then
+  for FILE in $(${CAT} .filelist); do
+    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/${FILE}
+  done
+  # cleanup list of file names
+  ${RM} .filelist
+fi
+
+if [ "" != "$(${LS} -1 configure-${APPLICATION}* 2> /dev/null)" ]; then
+  # make scripts executable
+  ${CHMOD} +x *.sh 2> /dev/null
+else
+  # display reminder about build recipe
+  echo
+  echo "There is no configuration needed! Please read:"
+  echo "https://github.com/hfp/xconfigure/tree/master/${APPLICATION}"
 fi
 
