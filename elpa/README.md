@@ -1,10 +1,13 @@
 ## Eigenvalue SoLvers for Petaflop-Applications (ELPA)
-Download and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder.
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder.
 
 ```
 wget http://elpa.mpcdf.mpg.de/html/Releases/2016.05.004/elpa-2016.05.004.tar.gz
 tar xvf elpa-2016.05.004.tar.gz
 cd elpa-2016.05.004
+wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh elpa
 ```
 
 Please make the Intel Compiler available on the command line. This actually depends on the environment. For instance, many HPC centers rely on `module load`.

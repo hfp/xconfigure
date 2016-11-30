@@ -5,6 +5,9 @@
 wget http://www.qe-forge.org/gf/download/frsrelease/224/1044/qe-6.0.tar.gz
 tar xvf qe-6.0.tar.gz
 cd qe-6.0
+wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh qe
 ```
 
 Please make the Intel Compiler available on the command line. This actually depends on the environment. For instance, many HPC centers rely on `module load`.
