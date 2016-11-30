@@ -20,4 +20,4 @@ For example, to configure and make for an Intel Xeon E5v4 processor (formerly co
 make -j ; make install
 ```
 
-For a further reference, one may have a look at the following [article](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)
+For a further reference, one may have a look at the following [article](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor).
