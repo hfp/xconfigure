@@ -13,6 +13,7 @@ Alternatively, one can rely on a single script which then downloads a specific w
 
 ```
 wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
 ./configure-get.sh qe hsw
 ```
 
