@@ -31,8 +31,10 @@
 #############################################################################
 
 WGET=$(which wget)
+CAT=$(which cat)
+RM=$(which rm)
 
-if [ "" != "${WGET}" ]; then
+if [ "" != "${WGET}" ] && [ "" != "${CAT}" ] && [ "" != "${RM}" ]; then
   if [ "" != "$1" ]; then
     ARCHS=$2
     KINDS=$3
@@ -57,6 +59,16 @@ if [ "" != "${WGET}" ]; then
           ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/configure-$1-${ARCH}-${KIND}.sh
         done
       done
+    fi
+
+    # attempt to get a list of non-default file names, and then download each file
+    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/.filelist
+    if [ -e .filelist ]; then
+      for FILE in $(${CAT} .filelist); do
+        ${WGET} -N https://github.com/hfp/xconfigure/raw/master/$1/${FILE}
+      done
+      # cleanup list of file names
+      ${RM} .filelist
     fi
   else
     echo "Please use: $0 <application-name>"
