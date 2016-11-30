@@ -1,4 +1,6 @@
 ## Quantum Espresso (QE)
+
+### Build Instructions
 [Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. However, before one needs to complete the [ELPA build recipe](../elpa#eigenvalue-solvers-for-petaflop-applications-elpa)!
 
 ```
@@ -23,5 +25,8 @@ For example, configure for an Intel Xeon E5v4 processor (formerly codenamed "Bro
 make pw -j
 ```
 
-For a further reference, one may have a look at  
-https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor.
+### Run Instructions
+TBD
+
+### References
+https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor

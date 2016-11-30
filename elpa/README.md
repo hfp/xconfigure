@@ -1,4 +1,6 @@
 ## Eigenvalue SoLvers for Petaflop-Applications (ELPA)
+
+### Build Instructions
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder.
 
 ```
@@ -23,5 +25,5 @@ For example, to configure and make for an Intel Xeon E5v4 processor (formerly co
 make -j ; make install
 ```
 
-For a further reference, one may have a look at  
-https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor.
+### References
+https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor
