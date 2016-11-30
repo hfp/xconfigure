@@ -15,3 +15,5 @@ Alternatively, one can rely on a single script which then downloads a specific w
 wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 ./configure-get.sh qe hsw
 ```
+
+To configure an actual application, one may the aforementioned subfolder and read the specific recipe e.g., [qe](qe) in order to configure and build Quantum Espresso.
