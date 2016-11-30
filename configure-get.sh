@@ -30,11 +30,12 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
+CHMOD=$(which chmod)
 WGET=$(which wget)
 CAT=$(which cat)
 RM=$(which rm)
 
-if [ "" != "${WGET}" ] && [ "" != "${CAT}" ] && [ "" != "${RM}" ]; then
+if [ "" != "${CHMOD}" ] && [ "" != "${WGET}" ] && [ "" != "${CAT}" ] && [ "" != "${RM}" ]; then
   if [ "" != "$1" ]; then
     ARCHS=$2
     KINDS=$3
@@ -70,6 +71,9 @@ if [ "" != "${WGET}" ] && [ "" != "${CAT}" ] && [ "" != "${RM}" ]; then
       # cleanup list of file names
       ${RM} .filelist
     fi
+
+    # make scripts executable
+    ${CHMOD} +x *.sh
   else
     echo "Please use: $0 <application-name>"
     exit 1
