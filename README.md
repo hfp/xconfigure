@@ -16,4 +16,4 @@ wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 ./configure-get.sh qe hsw
 ```
 
-To configure an actual application, one may the aforementioned subfolder and read the specific recipe e.g., [qe](qe) in order to configure and build Quantum Espresso.
+To configure an actual application, one may follow into one of the aforementioned subfolder and read build recipe for the specific application e.g., [qe](qe#quantum-espresso-qe) in order to configure and build Quantum Espresso.
