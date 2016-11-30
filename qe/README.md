@@ -16,7 +16,7 @@ Please make the Intel Compiler available on the command line. This actually depe
 source /opt/intel/compilers_and_libraries_2017.0.098/linux/bin/compilervars.sh intel64
 ```
 
-For example, configure for an Intel Xeon E5v4 processor (formerly codenamed Haswell), and build the desired application(s) e.g., "pw", "cp", or "all".
+For example, configure for an Intel Xeon E5v4 processor (formerly codenamed "Broadwell"), and build the desired application(s) e.g., "pw", "cp", or "all".
 
 ```
 ./configure-qe-hsw-omp.sh
