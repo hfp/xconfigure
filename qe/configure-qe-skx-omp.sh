@@ -1,6 +1,6 @@
 #!/bin/sh
 #############################################################################
-# Copyright (c) 2014-2016, Intel Corporation                                #
+# Copyright (c) 2016, Intel Corporation                                     #
 # All rights reserved.                                                      #
 #                                                                           #
 # Redistribution and use in source and binary forms, with or without        #
@@ -30,7 +30,7 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-TARGET="-xHost"
+TARGET="-xCORE-AVX512"
 OMPFLAG="-qopenmp -qoverride_limits"
 #IPO="-ipo-separate"
 OPTC=-O3
@@ -42,7 +42,7 @@ FPFLAGS="-fp-model fast=2 -complex-limited-range"
 EXX_ACE="-D__EXX_ACE"
 
 HERE=$(cd $(dirname $0); pwd -P)
-export ELPAROOT="${HERE}/../elpa/${PRFX}omp"
+export ELPAROOT="${HERE}/../elpa/${PRFX}skx-omp"
 #export MKLRTL="sequential"
 export MKLRTL="intel_thread"
 export OPENMP="--enable-openmp"
@@ -61,7 +61,7 @@ export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
   -Wl,--end-group"
 export LAPACK_LIBS="${BLAS_LIBS}"
 export SCALAPACK_LIBS="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.a"
-#export SCALAPACK_LIBS="${HOME}/scalapack/${PRFX}omp/libscalapack.a"
+#export SCALAPACK_LIBS="${HOME}/scalapack/${PRFX}skx/libscalapack.a"
 export FFT_LIBS="${BLAS_LIBS}"
 
 ./configure ${OPENMP} --with-scalapack=intel --with-elpa=${ELPAROOT} \

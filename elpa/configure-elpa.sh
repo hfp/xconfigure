@@ -32,7 +32,7 @@
 
 if [ "" = "$1" ]; then PRFX=2017-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
-DEST=${HERE}/../elpa/${PRFX}host
+DEST=${HERE}/../elpa/${PRFX}omp
 
 if [ "${HERE}" = "${DEST}" ]; then
   echo "Warning: ELPA source directory equals installation folder!"
@@ -43,7 +43,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
-#CONFOPTS="--enable-openmp"
+CONFOPTS="--enable-openmp"
 MKLRTL="intel_thread"
 TARGET="-xHost"
 
