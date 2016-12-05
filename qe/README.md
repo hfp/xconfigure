@@ -25,6 +25,14 @@ For example, configure for an Intel Xeon E5v4 processor (formerly codenamed "Bro
 make pw -j
 ```
 
+For different targets (instruction set extensions) or different versions of the Intel Compiler, the configure scripts support an additional argument ("2017" is the default tagname):
+
+```
+./configure-qe-hsw-omp.sh tagname
+```
+
+As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of QE. Please note: this tagname also selects the corresponding ELPA library (or should match the tagname used to build ELPA). Make sure to save your current QE build before building an additional variant!
+
 ### Run Instructions
 TBD
 
