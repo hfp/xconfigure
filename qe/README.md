@@ -25,7 +25,7 @@ For example, configure for an Intel Xeon E5v4 processor (formerly codenamed "Bro
 make pw -j
 ```
 
-In case of starting over, one might run `make distclean`, reconfigure the application, and build it again. For different targets (instruction set extensions) or different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
+Building "all" may requires to repeat `make all` until no compilation error occurs. This is because of some incorrect build dependencies (build order issue), which might have been introduced by the configure wrapper scripts. In case of starting over, one can run `make distclean`, reconfigure the application, and build it again. For different targets (instruction set extensions) or different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
 
 ```
 ./configure-qe-hsw-omp.sh tagname
