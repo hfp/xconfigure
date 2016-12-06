@@ -82,7 +82,7 @@ sed -i \
   -e "s/-D__FFTW3/-D__DFTI/" \
   ${INCFILE}
 sed -i \
-  -e "s/-D__ELPA /-D__ELPA3 -D__ELPA_2016 /" \
+  -e "s/-D__ELPA/-D__ELPA3 -D__ELPA_2016/" \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
   -e "s/IFLAGS         = -I\.\.\/include/IFLAGS         = -I\.\.\/include -I\$(MKLROOT)\/include\/fftw/" \
   -e "s/-O3/${OPTC} ${IPO} ${TARGET} ${FPFLAGS} -fno-alias -ansi-alias/" \
@@ -112,7 +112,7 @@ echo -e "realus.o: realus.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O1 -c \$<\n
 sed -i -e "s/\$(MOD_FLAG)\.\.\/ELPA\/src//" ${HERE}/Modules/Makefile
 
 # patch source code files for modern ELPA
-if [ -e ${HERE}/install/config.log ] && [ "" = "$(grep 'unrecognized options: --with-elpa' ${HERE}/install/config.log)" ]; then
+if [ -e ${HERE}/install/config.log ] && [ "" = "$(grep 'unrecognized options: --with-elpa$' ${HERE}/install/config.log)" ]; then
   if [ -e ${HERE}/LAXlib/dspev_drv.f90 ]; then
     patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv.patch
   else
