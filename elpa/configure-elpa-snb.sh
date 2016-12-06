@@ -30,7 +30,7 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-if [ "" = "$1" ]; then PRFX=2017-; else PRFX=$1-; shift; fi
+if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
 DEST=${HERE}/../elpa/${PRFX}snb
 

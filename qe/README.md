@@ -25,7 +25,7 @@ For example, configure for an Intel Xeon E5v4 processor (formerly codenamed "Bro
 make pw -j
 ```
 
-For different targets (instruction set extensions) or different versions of the Intel Compiler, the configure scripts support an additional argument ("2017" is the default tagname):
+For different targets (instruction set extensions) or different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
 
 ```
 ./configure-qe-hsw-omp.sh tagname

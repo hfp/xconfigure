@@ -35,7 +35,7 @@ OMPFLAG="-qopenmp -qoverride_limits"
 #IPO="-ipo-separate"
 OPTC=-O3
 OPTF=-O2
-if [ "" = "$1" ]; then PRFX=2017-; else PRFX=$1-; shift; fi
+if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 
 # consider more accurate -fp-model (C/C++: precise, Fortran: source)
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
