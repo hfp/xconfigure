@@ -102,6 +102,7 @@ cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/PP/src 2> /dev/null
 # Uncomment below block in case of compiler issue (ICE)
 echo >> ${INCFILE}
 cat configure-qe-tbbmalloc.mak >> ${INCFILE}
+echo -e "default: all\n" >> ${INCFILE}
 echo -e "init_us_1.o: init_us_1.f90\n\t\$(MPIF90) \$(F90FLAGS) -O1 -c \$<\n" >> ${INCFILE}
 echo -e "new_ns.o: new_ns.f90\n\t\$(MPIF90) \$(F90FLAGS) -O1 -c \$<\n" >> ${INCFILE}
 echo -e "us_exx.o: us_exx.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -c \$<\n" >> ${INCFILE}
