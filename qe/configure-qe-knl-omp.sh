@@ -95,8 +95,8 @@ sed -i \
 sed -i -e "s/-D__DFTI/-D__DFTI -D__NON_BLOCKING_SCATTER/" ${INCFILE}
 
 # create some dummy sources needed for attached Makefile rule
-cat /dev/null > ${HERE}/NEB/src/init_us_1.f90
-cat /dev/null > ${HERE}/PP/src/init_us_1.f90
+cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/NEB/src 2> /dev/null
+cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/PP/src 2> /dev/null
 
 # Uncomment below block in case of compiler issue (ICE)
 echo >> ${INCFILE}
