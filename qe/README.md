@@ -1,7 +1,7 @@
 ## Quantum Espresso (QE)
 
 ### Build Instructions
-[Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. However, before one needs to complete the [ELPA build recipe](../elpa#eigenvalue-solvers-for-petaflop-applications-elpa)!
+[Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;5.3 and QE&#160;5.4 as well as QE&#160;6.0. Before building QE, one needs to complete the [ELPA build recipe](../elpa#eigenvalue-solvers-for-petaflop-applications-elpa)!
 
 ```
 wget http://www.qe-forge.org/gf/download/frsrelease/224/1044/qe-6.0.tar.gz
