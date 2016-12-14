@@ -4,10 +4,10 @@
 The build and run instructions for CP2K using Intel Tools are exercised at  
 https://github.com/hfp/libxsmm/tree/master/documentation/cp2k.md ([pdf](https://raw.githubusercontent.com/hfp/libxsmm/master/documentation/cp2k.pdf)).
 
-Please note, in terms of functionality it is beneficial to rely on [LIBINT](../libint#libint) and [LIBXC](../libxc#libxc), whereas [ELPA](../elpa#eigenvalue-solvers-for-petaflop-applications-elpa) is not only beneficial for performance but might be also more reliable depending on the ScaLAPACK implementation.
+Please note, in terms of functionality it is beneficial to rely on [LIBINT](../libint#libint) and [LIBXC](../libxc#libxc), whereas [ELPA](../elpa#eigenvalue-solvers-for-petaflop-applications-elpa) eventually provides an improved performance.
 
 ### Sanity Check
-There is nothing that can replace the full regression test suite to be clear. However, in order to quickly check whether a build is sane or not: run `tests/QS/benchmark/H2O-64.inp`, and check if the SCF iteration prints like the following:
+There is nothing that can replace the full regression test suite to be clear. However in order to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
 
 ```
   Step     Update method      Time    Convergence         Total energy    Change
