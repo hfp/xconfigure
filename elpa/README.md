@@ -1,12 +1,12 @@
 ## Eigenvalue SoLvers for Petaflop-Applications (ELPA)
 
 ### Build Instructions
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder.
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or simliar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory still remains unclean enough to make subsequent builds unsuccessful).
 
 ```
-wget http://elpa.mpcdf.mpg.de/html/Releases/2016.05.004/elpa-2016.05.004.tar.gz
-tar xvf elpa-2016.05.004.tar.gz
-cd elpa-2016.05.004
+wget http://elpa.mpcdf.mpg.de/html/Releases/2016.11.001.pre/elpa-2016.11.001.pre.tar.gz
+tar xvf elpa-2016.11.001.pre.tar.gz
+cd elpa-2016.11.001.pre
 wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
