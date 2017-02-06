@@ -60,7 +60,7 @@ export FC="mpiifort"
 export CC="mpiicc"
 export CXX="mpiicpc"
 
-./configure --prefix=${DEST} ${CONFOPTS} $*
+./configure --enable-shared=no --prefix=${DEST} ${CONFOPTS} $*
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \
