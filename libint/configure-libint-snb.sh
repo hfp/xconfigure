@@ -58,6 +58,11 @@ export FC="ifort"
 export CC="icc"
 export CXX="icpc"
 
+aclocal
+autoheader
+#automake -a
+autoconf
+
 ./configure --prefix=${DEST} ${CONFOPTS} \
   --with-cc-optflags="-O2 -xCORE-AVX2" \
   --with-cxx-optflags="-O2 -xCORE-AVX2" \
