@@ -67,12 +67,14 @@ if [ "" = "${KINDS}" ]; then
       ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
     done
   done
+  ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}.sh
 else
   for ARCH in ${ARCHS} ; do
     for KIND in ${KINDS} ; do
       ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
     done
   done
+  ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}.sh
 fi
 
 # attempt to get a list of non-default file names, and then download each file
