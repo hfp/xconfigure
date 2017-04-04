@@ -18,3 +18,8 @@ chmod +x configure-get.sh
 ```
 
 To configure an application, please follow into one of the aforementioned subfolders and read the build recipe of this application e.g., **[qe](qe#quantum-espresso-qe)** in case of Quantum Espresso.
+
+## Similar Prjoects
+
+* Spack Package Manager: http://computation.llnl.gov/projects/spack-hpc-package-manager
+* EasyBuild / EasyConfig (University of Gent): https://github.com/hpcugent
