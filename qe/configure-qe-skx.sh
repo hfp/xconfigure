@@ -43,9 +43,9 @@ EXX_ACE="-D__EXX_ACE"
 
 HERE=$(cd $(dirname $0); pwd -P)
 export ELPAROOT="${HERE}/../elpa/${PRFX}skx"
-#export MKLRTL="sequential"
-export MKLRTL="intel_thread"
-export OPENMP="--enable-openmp"
+export MKLRTL="sequential"
+#export MKLRTL="intel_thread"
+#export OPENMP="--enable-openmp"
 export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 export MPIF90=mpiifort
 export CC=mpiicc
