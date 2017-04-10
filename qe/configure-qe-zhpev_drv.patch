@@ -1,50 +1,20 @@
-1463d1462
-< 
-1467c1466
-< #if defined(__ELPA)
+1482c1482
+< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
 ---
 > #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1471c1470
-<      
----
-> 
-1490c1489
-<      INTEGER     :: desch( 10 ), info
----
->      INTEGER     :: desch( 10 ), info, ierr
-1492c1491
-< #if defined(__ELPA)
+1507c1507
+< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
 ---
 > #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1493a1493
->      LOGICAL     :: success
-1506,1507c1506,1520
-< #if defined(__ELPA)
-<      CALL BLACS_Gridinfo( ortho_cntx, nprow, npcol, my_prow, my_pcol )
+1522c1522
+< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
 ---
 > #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
->      CALL BLACS_Gridinfo(ortho_cntx,nprow, npcol, my_prow,my_pcol)
+1524c1524,1528
+< #if defined(__ELPA_2016)
+---
 > #if defined(__ELPA_2017)
 >      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
 >      success = elpa_solve_evp_complex_1stage_double(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
 >                            mpi_comm_rows, mpi_comm_cols, ortho_cntx)
 > #elif defined(__ELPA_2016)
->      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
->      success = solve_evp_complex(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
->                            mpi_comm_rows, mpi_comm_cols)
-> #elif defined(__ELPA_2015)
->      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
->      ierr = solve_evp_complex(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
->                            mpi_comm_rows, mpi_comm_cols)
-> #elif defined(__ELPA)
-1510a1524,1525
-> #endif
-> 
-1513,1514c1528,1531
-<      CALL mp_comm_free( mpi_comm_rows )
-<      CALL mp_comm_free( mpi_comm_cols )
----
-> #if defined __MPI
->      CALL mpi_comm_free( mpi_comm_rows, ierr )
->      CALL mpi_comm_free( mpi_comm_cols, ierr )
-> #endif
