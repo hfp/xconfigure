@@ -60,6 +60,11 @@ export FC="mpiifort"
 export CC="mpiicc"
 export CXX="mpiicpc"
 
+# Development versions may require autotools mechanics
+if [ -e autogen.sh ]; then
+  ./autogen.sh
+fi
+
 ./configure --enable-shared=no --prefix=${DEST} ${CONFOPTS} $*
 
 sed -i \
