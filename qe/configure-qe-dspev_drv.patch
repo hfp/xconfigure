@@ -1,52 +1,39 @@
-651,657c666,669
-<   SUBROUTINE pdsyevd_drv( tv, n, nb, s, lds, w, ortho_cntx )
-<      USE kinds,     ONLY : DP
-<      USE mp_bands,  ONLY: nproc_bgrp, me_bgrp, intra_bgrp_comm, root_bgrp
-<      USE mp_diag,   ONLY: ortho_comm
-<      USE mp,        ONLY: mp_comm_free
+656,657c656,657
 < #if defined(__ELPA)
 <      USE elpa1
 ---
->   SUBROUTINE pdsyevd_drv( tv, n, nb, s, lds, w, ortho_cntx, ortho_comm )
->      !
-> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
 >      use elpa1
-663,664c675,677
-<      INTEGER, INTENT(IN)  :: nb, n, ortho_cntx 
-<        ! nb = block size, n = matrix size, ortho_cntx = BLACS context
----
->      INTEGER, INTENT(IN)  :: nb, n, ortho_cntx, ortho_comm 
->        ! nb = block size, n = matrix size, ortho_cntx = BLACS context,
->        ! ortho_comm = MPI communicator
-679,680c692,693
+679,680c680,681
 <      INTEGER     :: i
 < #if defined(__ELPA)
 ---
 >      INTEGER     :: i, ierr
-> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)     
-681a695,697
-> #if defined(__ELPA_2016)
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)     
+681a683
 >      LOGICAL     :: success
-> #endif
-703c719
+703c705
 < #if defined(__ELPA)
 ---
-> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
-704a721,728
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
+704a707,717
 > 
-> #if defined(__ELPA_2016)
+> #if defined(__ELPA_2017)
+>      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
+>      success = elpa_solve_evp_real_1stage_double(n, n, s, lds, w, vv, lds, SIZE(s,2), nb, mpi_comm_rows, mpi_comm_cols, ortho_comm)
+> #elif defined(__ELPA_2016)
 >      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
 >      success = solve_evp_real_1stage(n,  n,   s, lds,    w,  vv, lds,SIZE(s,2),nb  ,mpi_comm_rows, mpi_comm_cols)
 > #elif defined(__ELPA_2015)
 >      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
 >      ierr = solve_evp_real(n,  n,   s, lds,    w,  vv, lds,SIZE(s,2),nb  ,mpi_comm_rows, mpi_comm_cols)
 > #elif defined(__ELPA)
-707c731,732
+707c720,721
 <      
 ---
 > #endif
 > 
-711,712c736,740
+711,712c725,729
 <      CALL mp_comm_free ( mpi_comm_rows )
 <      CALL mp_comm_free ( mpi_comm_cols )
 ---

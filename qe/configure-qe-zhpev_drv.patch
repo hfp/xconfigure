@@ -1,39 +1,34 @@
-1462c1480
-<   SUBROUTINE pzheevd_drv( tv, n, nb, h, w, ortho_cntx )
----
->   SUBROUTINE pzheevd_drv( tv, n, nb, h, w, ortho_cntx, ortho_comm )
-1464,1467c1482
-<      USE kinds,     ONLY : DP
-<      USE mp_diag,   ONLY : ortho_comm
-<      USE mp,        ONLY : mp_comm_free
+1463d1462
+< 
+1467c1466
 < #if defined(__ELPA)
 ---
-> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1471c1486
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
+1471c1470
 <      
 ---
 > 
-1474c1489
-<      INTEGER, INTENT(IN)  :: nb, n, ortho_cntx
----
->      INTEGER, INTENT(IN)  :: nb, n, ortho_cntx, ortho_comm
-1490c1505
+1490c1489
 <      INTEGER     :: desch( 10 ), info
 ---
 >      INTEGER     :: desch( 10 ), info, ierr
-1492c1507
+1492c1491
 < #if defined(__ELPA)
 ---
-> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1493a1509
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
+1493a1493
 >      LOGICAL     :: success
-1506,1507c1522,1532
+1506,1507c1506,1520
 < #if defined(__ELPA)
 <      CALL BLACS_Gridinfo( ortho_cntx, nprow, npcol, my_prow, my_pcol )
 ---
-> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
 >      CALL BLACS_Gridinfo(ortho_cntx,nprow, npcol, my_prow,my_pcol)
-> #if defined(__ELPA_2016)
+> #if defined(__ELPA_2017)
+>      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
+>      success = elpa_solve_evp_complex_1stage_double(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
+>                            mpi_comm_rows, mpi_comm_cols, ortho_cntx)
+> #elif defined(__ELPA_2016)
 >      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
 >      success = solve_evp_complex(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
 >                            mpi_comm_rows, mpi_comm_cols)
@@ -42,10 +37,10 @@
 >      ierr = solve_evp_complex(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
 >                            mpi_comm_rows, mpi_comm_cols)
 > #elif defined(__ELPA)
-1510a1536,1537
+1510a1524,1525
 > #endif
 > 
-1513,1514c1540,1543
+1513,1514c1528,1531
 <      CALL mp_comm_free( mpi_comm_rows )
 <      CALL mp_comm_free( mpi_comm_cols )
 ---
