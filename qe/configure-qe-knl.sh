@@ -76,6 +76,7 @@ else
 fi
 
 # adjust generated configuration
+SED_ELPAROOT=$(echo ${ELPAROOT} | sed -e "s/\//\\\\\//g")
 sed -i \
   -e "s/-nomodule -openmp/-nomodule/" \
   -e "s/-par-report0 -vec-report0//" \
@@ -84,7 +85,7 @@ sed -i \
 sed -i \
   -e "s/-D__ELPA/-D__ELPA3 -D__ELPA_2016/" \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
-  -e "s/IFLAGS         = -I\.\.\/include/IFLAGS         = -I\.\.\/include -I\$(MKLROOT)\/include\/fftw/" \
+  -e "s/^IFLAGS\s\s*=\s..*/IFLAGS         = -I\.\.\/include -I\$(MKLROOT)\/include\/fftw -I${SED_ELPAROOT}\/include\/elpa\/modules/" \
   -e "s/-O3/${OPTC} ${IPO} ${TARGET} ${FPFLAGS} -fno-alias -ansi-alias/" \
   -e "s/-O2 -assume byterecl -g -traceback/${OPTF} -align array64byte -threads -heap-arrays 4096 ${IPO} ${TARGET} ${FPFLAGS} -assume byterecl/" \
   -e "s/LDFLAGS        =/LDFLAGS        = -static-intel -static-libgcc -static-libstdc++/" \
