@@ -83,7 +83,7 @@ sed -i \
   -e "s/-D__FFTW3/-D__DFTI/" \
   ${INCFILE}
 sed -i \
-  -e "s/-D__ELPA/-D__ELPA3 -D__ELPA_2017/" \
+  -e "s/-D__ELPA /-D__ELPA3 -D__ELPA_2016 /" -e "s/-D__ELPA_2016/-D__ELPA_2017/" \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
   -e "s/^IFLAGS\s\s*=\s..*/IFLAGS         = -I\.\.\/include -I\$(MKLROOT)\/include\/fftw -I${SED_ELPAROOT}\/include\/elpa\/modules/" \
   -e "s/-O3/${OPTC} ${IPO} ${TARGET} ${FPFLAGS} -fno-alias -ansi-alias/" \
