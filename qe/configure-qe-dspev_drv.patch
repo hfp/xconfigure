@@ -1,33 +1,57 @@
-656c656
+651,657c666,669
+<   SUBROUTINE pdsyevd_drv( tv, n, nb, s, lds, w, ortho_cntx )
+<      USE kinds,     ONLY : DP
+<      USE mp_bands,  ONLY: nproc_bgrp, me_bgrp, intra_bgrp_comm, root_bgrp
+<      USE mp_diag,   ONLY: ortho_comm
+<      USE mp,        ONLY: mp_comm_free
+< #if defined(__ELPA)
+<      USE elpa1
+---
+>   SUBROUTINE pdsyevd_drv( tv, n, nb, s, lds, w, ortho_cntx, ortho_comm )
+>      !
+> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
+>      use elpa1
+663,664c675,677
+<      INTEGER, INTENT(IN)  :: nb, n, ortho_cntx 
+<        ! nb = block size, n = matrix size, ortho_cntx = BLACS context
+---
+>      INTEGER, INTENT(IN)  :: nb, n, ortho_cntx, ortho_comm 
+>        ! nb = block size, n = matrix size, ortho_cntx = BLACS context,
+>        ! ortho_comm = MPI communicator
+679,680c692,693
+<      INTEGER     :: i
 < #if defined(__ELPA)
 ---
-> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
-680c680
+>      INTEGER     :: i, ierr
+> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)     
+681a695,697
+> #if defined(__ELPA_2016)
+>      LOGICAL     :: success
+> #endif
+703c719
 < #if defined(__ELPA)
 ---
-> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
-681a682,684
-> # if defined(__ELPA2) || defined(__ELPA3)
->      INTEGER     :: elpa_err
-> # endif
-703c706
-< #if defined(__ELPA)
----
-> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
-704a708,719
-> # if defined(__ELPA2) || defined(__ELPA3)
->      elpa_err = get_elpa_row_col_comms(ortho_comm, my_prow,   &
->                                        my_pcol,mpi_comm_rows, &
->                                        mpi_comm_cols)
-> #   if defined(__ELPA3)
->      elpa_err = solve_evp_real(n, n, s, lds, w, vv, lds, nb, npcol, &
->                                mpi_comm_rows, mpi_comm_cols)
-> #   else
->      elpa_err = solve_evp_real(n, n, s, lds, w, vv, lds, nb, &
->                                mpi_comm_rows, mpi_comm_cols)
-> #   endif
-> # else
-707c722
+> #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
+704a721,728
+> 
+> #if defined(__ELPA_2016)
+>      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
+>      success = solve_evp_real_1stage(n,  n,   s, lds,    w,  vv, lds,SIZE(s,2),nb  ,mpi_comm_rows, mpi_comm_cols)
+> #elif defined(__ELPA_2015)
+>      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
+>      ierr = solve_evp_real(n,  n,   s, lds,    w,  vv, lds,SIZE(s,2),nb  ,mpi_comm_rows, mpi_comm_cols)
+> #elif defined(__ELPA)
+707c731,732
 <      
 ---
-> # endif
+> #endif
+> 
+711,712c736,740
+<      CALL mp_comm_free ( mpi_comm_rows )
+<      CALL mp_comm_free ( mpi_comm_cols )
+---
+> #if defined __MPI
+>      CALL mpi_comm_free( mpi_comm_rows, ierr )
+>      CALL mpi_comm_free( mpi_comm_cols, ierr )
+> #endif
+> 

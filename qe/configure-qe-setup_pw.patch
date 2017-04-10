@@ -1,4 +1,4 @@
-666c666
+666c720
 < #if defined(__ELPA)
 ---
-> #if defined(__ELPA) || defined(__ELPA2) || defined(__ELPA3)
+> #if defined(__ELPA) || defined(__ELPA_2015) || defined(__ELPA_2016)
