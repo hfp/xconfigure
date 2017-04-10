@@ -1,0 +1,11 @@
+719c719
+< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
+---
+> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
+722c722,725
+< #if defined(__ELPA_2016)
+---
+> #if defined(__ELPA_2017)
+>      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
+>      success = elpa_solve_evp_real_1stage_double(n,  n,   s, lds,    w,  vv, lds,SIZE(s,2),nb  ,mpi_comm_rows, mpi_comm_cols)
+> #elif defined(__ELPA_2016)
