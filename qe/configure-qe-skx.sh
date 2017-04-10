@@ -115,24 +115,23 @@ echo -e "realus.o: realus.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O1 -c \$<\n
 sed -i -e "s/\$(MOD_FLAG)\.\.\/ELPA\/src//" ${HERE}/Modules/Makefile
 
 # patch source code files for modern ELPA
-#if [ -e ${HERE}/install/config.log ] && [ "" = "$(grep 'unrecognized options: --with-elpa$' ${HERE}/install/config.log)" ]; then
+if [ -e ${HERE}/install/config.log ] && [ "" = "$(grep 'unrecognized options: --with-elpa$' ${HERE}/install/config.log)" ]; then
   if [ -e ${HERE}/LAXlib/dspev_drv.f90 ]; then
     patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv.patch
-    patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv-2017.patch
   else
     patch -N ${HERE}/Modules/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv.patch
-    patch -N ${HERE}/Modules/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv-2017.patch
   fi
   if [ -e ${HERE}/LAXlib/zhpev_drv.f90 ]; then
     patch -N ${HERE}/LAXlib/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv.patch
-    patch -N ${HERE}/LAXlib/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv-2017.patch
   else
     patch -N ${HERE}/Modules/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv.patch
-    patch -N ${HERE}/Modules/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv-2017.patch
   fi
   patch -N ${HERE}/PW/src/setup.f90 ${HERE}/configure-qe-setup_pw.patch
+else
+  patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv-2017.patch
+  patch -N ${HERE}/LAXlib/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv-2017.patch
   patch -N ${HERE}/PW/src/setup.f90 ${HERE}/configure-qe-setup_pw-2017.patch
-#fi
+fi
 
 # patch other source code files
 #patch -N ${HERE}/Modules/wavefunctions.f90 ${HERE}/configure-qe-wavefunctions.patch
