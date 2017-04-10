@@ -127,11 +127,18 @@ if [ -e ${HERE}/install/config.log ] && [ "" = "$(grep 'unrecognized options: --
     patch -N ${HERE}/Modules/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv.patch
   fi
   patch -N ${HERE}/PW/src/setup.f90 ${HERE}/configure-qe-setup_pw.patch
-else
-  patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv-2017.patch
-  patch -N ${HERE}/LAXlib/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv-2017.patch
-  patch -N ${HERE}/PW/src/setup.f90 ${HERE}/configure-qe-setup_pw-2017.patch
 fi
+if [ -e ${HERE}/LAXlib/dspev_drv.f90 ]; then
+  patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv-2017.patch
+else
+  patch -N ${HERE}/Modules/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv-2017.patch
+fi
+if [ -e ${HERE}/LAXlib/zhpev_drv.f90 ]; then
+  patch -N ${HERE}/LAXlib/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv-2017.patch
+else
+  patch -N ${HERE}/Modules/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv-2017.patch
+fi
+patch -N ${HERE}/PW/src/setup.f90 ${HERE}/configure-qe-setup_pw-2017.patch
 
 # patch other source code files
 #patch -N ${HERE}/Modules/wavefunctions.f90 ${HERE}/configure-qe-wavefunctions.patch
