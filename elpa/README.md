@@ -12,6 +12,12 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
+To rely on experimental Intel AVX-512 kernels, one may git-clone the KNL-branch of the ELPA repository instead of downloading the version mentioned above. It appears that these kernels settle with foundational instructions (MIC/KNL and Core/SKX are fine).
+
+```
+git clone --branch ELPA_KNL https://gitlab.mpcdf.mpg.de/elpa/elpa.git
+```
+
 Please make the Intel Compiler available on the command line. This actually depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```
