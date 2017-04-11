@@ -16,5 +16,5 @@
 > #if defined(__ELPA_2017)
 >      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
 >      success = elpa_solve_evp_complex_1stage_double(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
->                            mpi_comm_rows, mpi_comm_cols, ortho_cntx)
+>                            mpi_comm_rows, mpi_comm_cols, ortho_comm)
 > #elif defined(__ELPA_2016)
