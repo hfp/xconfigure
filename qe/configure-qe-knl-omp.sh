@@ -111,18 +111,11 @@ echo -e "wypos.o: wypos.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O0 -c \$<\n" 
 echo -e "lr_apply_liouvillian.o: lr_apply_liouvillian.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O1 -c \$<\n" >> ${INCFILE}
 echo -e "realus.o: realus.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O1 -c \$<\n" >> ${INCFILE}
 
-#sed -i -e "s/\$(MOD_FLAG)\.\.\/ELPA\/src/\$(MOD_FLAG)${ELPAROOT}\/src/" ${HERE}/Modules/Makefile
-sed -i -e "s/\$(MOD_FLAG)\.\.\/ELPA\/src//" ${HERE}/Modules/Makefile
-
 # patch source code files for modern ELPA
+sed -i -e "s/\$(MOD_FLAG)\.\.\/ELPA\/src//" ${HERE}/Modules/Makefile
 patch -N ${HERE}/LAXlib/dspev_drv.f90 ${HERE}/configure-qe-dspev_drv.patch
 patch -N ${HERE}/LAXlib/zhpev_drv.f90 ${HERE}/configure-qe-zhpev_drv.patch
 patch -N ${HERE}/PW/src/setup.f90 ${HERE}/configure-qe-setup_pw.patch
-
-# patch other source code files
-#patch -N ${HERE}/Modules/wavefunctions.f90 ${HERE}/configure-qe-wavefunctions.patch
-#patch -N ${HERE}/FFTXlib/fft_parallel.f90 ${HERE}/configure-qe-fft_parallel.patch
-patch -N ${HERE}/FFTXlib/fftw.c ${HERE}/configure-qe-fftw.patch
 
 # reminder
 echo "Ready to \"make all\"!"

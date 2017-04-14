@@ -1,4 +1,0 @@
-31c31
-< !dir$ attributes align: 4096 :: c0_bgrp, cm_bgrp, phi_bgrp
----
-> !dir$ attributes align: 64 :: c0_bgrp, cm_bgrp, phi_bgrp

@@ -1,7 +1,4 @@
 configure-qe-dspev_drv.patch
-configure-qe-fft_parallel.patch
-configure-qe-fftw.patch
 configure-qe-setup_pw.patch
 configure-qe-tbbmalloc.mak
-configure-qe-wavefunctions.patch
 configure-qe-zhpev_drv.patch
