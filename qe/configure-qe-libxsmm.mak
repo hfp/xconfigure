@@ -32,62 +32,23 @@
 # LIBXSMM (https://github.com/hfp/libxsmm)
 #
 #LIBXSMMROOT = /path/to/libxsmm
-ifneq (0,$(LIBXSMM))
-  ifeq (,$(strip $(LIBXSMMROOT)))
-    ifneq (,$(wildcard ../libxsmm/Makefile))
-      LIBXSMMROOT = ../libxsmm
-    else ifneq (,$(wildcard $(HOME)/libxsmm/Makefile))
-      LIBXSMMROOT = $(HOME)/libxsmm
-    endif
-  endif
-endif
 
 ifneq (,$(LIBXSMMROOT))
-  LIBXSMM ?= 1
-  ifneq (,$(OPENMP))
-    OMP ?= 1
+  WRAP ?= 1
+  ifeq (2,$(WRAP))
+    LDFLAGS += -Wl,--wrap=dgemm_
+  else
+    LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
   endif
-  OMP ?= 0
-  ifneq (0,$(LIBXSMM))
-    LIBXSMM_LIB = libxsmm/lib/libxsmm.a
-    # enable additional use cases for LIBXSMM
-    ifeq (1,$(shell echo $$((1 < $(LIBXSMM)))))
-      DFLAGS += -D__LIBXSMM_TRANS
-      # substitute "big" xGEMM calls with LIBXSMM
-      ifeq (1,$(shell echo $$((2 < $(LIBXSMM)))))
-        LIBS += libxsmm/lib/libxsmmext.a
-        WRAP ?= 1
-        ifeq (2,$(WRAP))
-          LDFLAGS += -Wl,--wrap=dgemm_
-        else
-          LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
-        endif
-      else
-        WRAP ?= 0
-      endif
-      # account for OpenMP-enabled wrapper routines
-      ifeq (0,$(OMP))
-        ifeq (1,$(MKL))
-          LIBS += -liomp5
-        else ifeq (0,$(MKL))
-          LIBS += -liomp5
-        endif
-      endif
-    else
-      WRAP ?= 0
+  EXT ?= 1
+  ifneq (0,$(EXT))
+    ifeq (,$(OPENMP))
+    ifeq (sequential,$(MKLRTL))
+      LIBS += -liomp5
     endif
-$(LIBXSMM_LIB): .state
-	$(info ================================================================================)
-	$(info Automatically enabled LIBXSMM $(shell $(LIBXSMMROOT)/scripts/libxsmm_utilities.py 2> /dev/null))
-	$(info LIBXSMMROOT=$(LIBXSMMROOT))
-	$(info ================================================================================)
-	@$(MAKE) --no-print-directory -f $(LIBXSMMROOT)/Makefile \
-		INCDIR=libxsmm/include \
-		BLDDIR=libxsmm/build \
-		BINDIR=libxsmm/bin \
-		OUTDIR=libxsmm/lib \
-touch-dummy: $(LIBXSMM_LIB)
-    LIBS += $(LIBXSMM_LIB)
+    endif
+    LIBS += $(LIBXSMMROOT)/lib/libxsmmext.a
   endif
+  LIBS += $(LIBXSMMROOT)/lib/libxsmm.a
 endif
 
