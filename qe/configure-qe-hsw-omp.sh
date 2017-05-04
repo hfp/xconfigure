@@ -69,7 +69,7 @@ export FFT_LIBS="${BLAS_LIBS}"
   --with-elpa-lib=${ELPAROOT}/lib/libelpa.a \
   $*
 
-if [ -e make.inc ]; then
+if [ -e ${HERE}/make.inc ]; then
   INCFILE=${HERE}/make.inc
 else
   INCFILE=${HERE}/make.sys
@@ -100,9 +100,14 @@ mkdir -p ${HERE}/NEB/src
 cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/NEB/src 2> /dev/null
 cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/PP/src 2> /dev/null
 
-# Uncomment below block in case of compiler issue (ICE)
+# extended capabilities
 echo >> ${INCFILE}
 cat configure-qe-tbbmalloc.mak >> ${INCFILE}
+echo >> ${INCFILE}
+cat configure-qe-libxsmm.mak >> ${INCFILE}
+echo >> ${INCFILE}
+
+# Uncomment below line in case of compiler issue (ICE)
 echo -e "default: all\n" >> ${INCFILE}
 echo -e "init_us_1.o: init_us_1.f90\n\t\$(MPIF90) \$(F90FLAGS) -O1 -c \$<\n" >> ${INCFILE}
 echo -e "new_ns.o: new_ns.f90\n\t\$(MPIF90) \$(F90FLAGS) -O1 -c \$<\n" >> ${INCFILE}
