@@ -40,15 +40,15 @@ ifneq (,$(LIBXSMMROOT))
   else
     LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
   endif
+  LIBS := $(LIBXSMMROOT)/lib/libxsmm.a $(LIBS)
   EXT ?= 1
   ifneq (0,$(EXT))
+    LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBS)
     ifeq (,$(OPENMP))
     ifeq (sequential,$(MKLRTL))
       LIBS += -liomp5
     endif
     endif
-    LIBS += $(LIBXSMMROOT)/lib/libxsmmext.a
   endif
-  LIBS += $(LIBXSMMROOT)/lib/libxsmm.a
 endif
 
