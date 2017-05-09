@@ -7,7 +7,7 @@
 wget http://www.qe-forge.org/gf/download/frsrelease/240/1075/qe-6.1.tar.gz
 tar xvf qe-6.1.tar.gz
 cd qe-6.1
-wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe
 ```

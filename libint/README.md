@@ -4,10 +4,10 @@
 [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
 
 ```
-wget https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
+wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
 tar xvf release-1-1-6.tar.gz
 cd libint-release-1-1-6
-wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```

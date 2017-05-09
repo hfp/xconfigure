@@ -12,7 +12,7 @@ git clone https://github.com/hfp/xconfigure.git
 Alternatively, one can rely on a single script which then downloads a specific wrapper into the current working directory (of the desired application).
 
 ```
-wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe hsw
 ```

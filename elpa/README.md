@@ -7,7 +7,7 @@
 wget http://elpa.mpcdf.mpg.de/html/Releases/2016.11.001.pre/elpa-2016.11.001.pre.tar.gz
 tar xvf elpa-2016.11.001.pre.tar.gz
 cd elpa-2016.11.001.pre
-wget https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
