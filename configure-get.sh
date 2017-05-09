@@ -44,11 +44,13 @@ if [ "" = "${CHMOD}" ] || [ "" = "${WGET}" ] || [ "" = "${CAT}" ] || [ "" = "${R
   echo "Error: prerequisites not found!"
   exit 1
 fi
+WGET+=" --no-check-certificate"
+
 if [ "" = "${APPLICATION}" ]; then
   echo "Please use: $0 <application-name>"
   exit 1
 fi
-if [ "0" != $(wget -S --spider https://github.com/hfp/xconfigure/blob/master/${APPLICATION}/README.md 2> /dev/null; echo $?) ]; then
+if [ "0" != $(${WGET} -S --spider https://github.com/hfp/xconfigure/blob/master/${APPLICATION}/README.md 2> /dev/null; echo $?) ]; then
   echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
