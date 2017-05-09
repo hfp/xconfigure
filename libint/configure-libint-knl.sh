@@ -32,7 +32,7 @@
 
 if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
-DEST=${HERE}/../libint/${PRFX}
+DEST=${HERE}/../libint/${PRFX}knl
 
 if [ "${HERE}" = "${DEST}" ]; then
   echo "Warning: LIBINT source directory equals installation folder!"

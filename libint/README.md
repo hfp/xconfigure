@@ -21,8 +21,9 @@ source /opt/intel/compilers_and_libraries_2017.0.098/linux/bin/compilervars.sh i
 For example, to configure and make for an Intel Xeon E5v4 processor (formerly codenamed "Broadwell"):
 
 ```
+make distclean
 ./configure-libint-hsw.sh
-make -j ; make install
+make -j; make install
 ```
 
 The version 1.x line of LIBINT does not support to cross-compile for an architecture (a future version of the wrapper scripts may patch this ability into LIBINT 1.x). Therefore, one might rely on the [Intel Software Development Emulator](https://software.intel.com/en-us/articles/intel-software-development-emulator) (Intel SDE) to compile LIBINT for targets, which cannot execute on the compile-host.
