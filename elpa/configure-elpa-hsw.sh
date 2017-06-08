@@ -80,7 +80,12 @@ if [ -e config.h ]; then
       ELPA=elpa
     fi
     mkdir -p ${DEST}/include/${ELPA}-${VERSION}
-    cd ${DEST}/include ; ln -fs ${ELPA}-${VERSION} elpa
+    if [ ! -e ${DEST}/include/elpa ]; then
+      CWD=$(pwd)
+      cd ${DEST}/include
+      ln -s ${ELPA}-${VERSION} elpa
+      cd ${CWD}
+    fi
     mkdir -p ${DEST}/lib
     cd ${DEST}/lib
     ln -fs libelpa_openmp.a libelpa.a
