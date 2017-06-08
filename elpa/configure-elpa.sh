@@ -43,7 +43,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
-CONFOPTS="--enable-openmp"
+CONFOPTS="--enable-avx512 --enable-openmp"
 MKLRTL="intel_thread"
 TARGET="-xHost"
 
