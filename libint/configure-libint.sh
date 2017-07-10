@@ -42,21 +42,26 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-FPFLAGS=""
 CONFOPTS=""
 TARGET="-xHost"
 
+# consider more accurate FP-model
+#FPCMODEL = -fp-model precise
+#FPFMODEL = -fp-model source
+
 export FLAGS="-O2 ${TARGET} -ipo-separate"
 export LDFLAGS=""
-export CFLAGS="${FLAGS} ${FPFLAGS}"
+export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${CFLAGS}"
-export FCFLAGS="${FLAGS} -align array64byte"
+export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 export LIBS=""
 
 export AR="xiar"
 export FC="ifort"
 export CC="icc"
 export CXX="icpc"
+export F77=${FC}
+export F90=${FC}
 
 #aclocal
 #autoheader
@@ -64,8 +69,8 @@ export CXX="icpc"
 autoconf
 
 ./configure --prefix=${DEST} ${CONFOPTS} \
-  --with-cc-optflags="-O2 ${TARGET}" \
-  --with-cxx-optflags="-O2 ${TARGET}" \
+  --with-cc-optflags="${CFLAGS}" \
+  --with-cxx-optflags="${CXXFLAGS}" \
   --with-libderiv-max-am1=4 \
   --with-libint-max-am=5 \
   --disable-libtool \
