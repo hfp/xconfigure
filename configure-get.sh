@@ -44,7 +44,7 @@ if [ "" = "${CHMOD}" ] || [ "" = "${WGET}" ] || [ "" = "${CAT}" ] || [ "" = "${R
   echo "Error: prerequisites not found!"
   exit 1
 fi
-WGET+=" --no-check-certificate"
+WGET="${WGET} --no-check-certificate"
 
 if [ "" = "${APPLICATION}" ]; then
   echo "Please use: $0 <application-name>"
