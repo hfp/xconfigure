@@ -1,7 +1,7 @@
 ## LIBINT
 
 ### Build Instructions
-[Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
+[Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder. Please note that "automake" and "libtool" are prerequisites.
 
 ```
 wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
