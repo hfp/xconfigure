@@ -68,5 +68,6 @@ autoconf
   --with-cxx-optflags="-O2 ${TARGET}" \
   --with-libderiv-max-am1=4 \
   --with-libint-max-am=5 \
+  --disable-libtool \
   $*
 
