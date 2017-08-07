@@ -6,9 +6,9 @@
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```
-wget https://elpa.mpcdf.mpg.de/html/Releases/2017.05.001.rc2/elpa-2017.05.001.rc2.tar.gz
-tar xvf elpa-2017.05.001.rc2.tar.gz
-cd elpa-2017.05.001.rc2
+wget http://elpa.mpcdf.mpg.de/html/Releases/2017.05.001/elpa-2017.05.001.tar.gz
+tar xvf elpa-2017.05.001.tar.gz
+cd elpa-2017.05.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -35,7 +35,7 @@ make -j ; make install
 After building and installing the desired configuration(s), one my have a look at the installation:
 
 ```
-[user@system elpa-2017.05.001.rc2]$ ls ../elpa
+[user@system elpa-2017.05.001]$ ls ../elpa
  default-hsw
  default-hsw-omp
 ```
