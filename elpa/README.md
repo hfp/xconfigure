@@ -14,7 +14,7 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
-Please make the Intel Compiler available on the command line. This actually depends on the environment. For instance, many HPC centers rely on `module load`.
+Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```
 source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
@@ -32,7 +32,7 @@ make clean
 make -j ; make install
 ```
 
-After building and installing the desired configuration(s), one my have a look at the installation:
+After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```
 [user@system elpa-2017.05.001]$ ls ../elpa
@@ -49,7 +49,7 @@ For different targets (instruction set extensions) or for different versions of 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
 
 #### ELPA 2016.11.001
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or simliar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory still remains unclean enough to make subsequent builds unsuccessful).
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or similar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory remains unclean such that subsequent builds may fail).
 
 ```
 wget http://elpa.mpcdf.mpg.de/html/Releases/2016.11.001.pre/elpa-2016.11.001.pre.tar.gz
@@ -60,7 +60,7 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
-Please make the Intel Compiler available on the command line. This actually depends on the environment. For instance, many HPC centers rely on `module load`.
+Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```
 source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64

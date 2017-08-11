@@ -1,7 +1,7 @@
 ## LIBINT
 
-### Build Instructions
-[Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
+### Version&#160;1.x
+For CP2K, LIBINT&#160;1.x is required. [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
 
 ```
 wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
@@ -12,7 +12,7 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-Please make the Intel Compiler available on the command line. This actually depends on the environment. For instance, many HPC centers rely on `module load`.
+Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```
 source /opt/intel/compilers_and_libraries_2017.0.098/linux/bin/compilervars.sh intel64
@@ -26,7 +26,7 @@ make distclean
 make -j; make install
 ```
 
-The version 1.x line of LIBINT does not support to cross-compile for an architecture (a future version of the wrapper scripts may patch this ability into LIBINT 1.x). Therefore, one might rely on the [Intel Software Development Emulator](https://software.intel.com/en-us/articles/intel-software-development-emulator) (Intel SDE) to compile LIBINT for targets, which cannot execute on the compile-host.
+The version 1.x line of LIBINT does not support to cross-compile for an architecture (a future version of the wrapper scripts may patch this ability into LIBINT 1.x). Therefore, one can rely on the [Intel Software Development Emulator](https://software.intel.com/en-us/articles/intel-software-development-emulator) (Intel SDE) to compile LIBINT for targets, which cannot execute on the compile-host.
 
 ```
 /software/intel/sde/sde -knl -- make
@@ -42,5 +42,3 @@ Further, for different targets (instruction set extensions) or different version
 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the LIBINT library.
 
-### References
-TBD
