@@ -21,6 +21,6 @@ For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
 
 ```
 make distclean
-./configure-libint-skx.sh
+./configure-libxc-skx.sh
 make -j; make install
 ```

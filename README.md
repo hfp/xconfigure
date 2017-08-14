@@ -1,5 +1,5 @@
 # [XCONFIGURE](https://github.com/hfp/xconfigure/raw/master/xconfigure.pdf)
-[![License](https://img.shields.io/badge/license-BSD3-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-BSD3-blue.svg)](LICENSE) [![ReadtheDocs](http://readthedocs.org/projects/xconfigure/badge/?version=latest "Read the Docs")](http://xconfigure.readthedocs.io/en/latest/)
 
 XCONFIGURE is a collection of configure wrapper scripts for various HPC applications. The purpose of the scripts is to configure the application in question to make use of Intel's software development tools (Intel Compiler, Intel MPI, Intel MKL). This may sound cumbersome, but it helps to rely on a "build recipe", which is known to expose the highest performance or to reliably complete the build process.
 
