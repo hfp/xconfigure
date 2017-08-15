@@ -20,7 +20,7 @@ Please make the Intel Compiler available on the command line. This depends on th
 source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
 ```
 
-For example, to configure and make for an Intel Xeon E5v4 processor (formerly codenamed "Broadwell"):
+For example, to configure and make for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"):
 
 ```
 make clean
@@ -83,3 +83,4 @@ git clone --branch ELPA_KNL https://gitlab.mpcdf.mpg.de/elpa/elpa.git
 
 ### References
 https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor
+

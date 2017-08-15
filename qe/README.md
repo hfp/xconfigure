@@ -18,7 +18,7 @@ Please make the Intel Compiler available on the command line, which may vary wit
 source /opt/intel/compilers_and_libraries_2017.0.098/linux/bin/compilervars.sh intel64
 ```
 
-For example, configure for an Intel Xeon E5v4 processor (formerly codenamed "Broadwell"), and build the desired application(s) e.g., "pw", "cp", or "all".
+For example, configure for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"), and build the desired application(s) e.g., "pw", "cp", or "all".
 
 ```
 ./configure-qe-hsw-omp.sh
@@ -41,7 +41,7 @@ To run Quantum Espresso in an optimal fashion depends on the workload and on the
 * **`-ndiag`**: this number determines the number of ranks per pool used for dense linear algebra operations (DGEMM and ZGEMM). For example, if *64* ranks are used in total per node and *npool=2*, then put *ndiag=32* (QE selects the next square number which is less-equal than the given number e.g., *ndiag=25* in the previous example).
 * **`-ntg`**: specifies the number of tasks groups per pool being used for e.g., FFTs. One can start with `NTG=$((NUMNODES*NRANKS/(NPOOL*2)))`. If `NTG` becomes zero, `NTG=${NRANKS}` should be used (number of ranks per node). Please note the given formula is only a rule of thumb, and the number of task groups also depends on the number of ranks as the workload is scaled out.
 
-To run QE, below command line can be a starting point ("numbers" are presented as Shell variables to better understand the inner mechanics). Important for hybrid builds (MPI and OpenMP together) are the given environment variables. The `KMP_AFFINITY` assumes Hyperthreaded is enabled (granularity=fine), and the "scatter" policy allows to easily run less than the maximum number of Hyperthreads per core. As a rule of thumb, OpenMP adds only little overhead (often not worth a pure MPI application) but allows to scale further out when compared to pure MPI builds.
+To run QE, below command line can be a starting point ("numbers" are presented as Shell variables to better understand the inner mechanics). Important for hybrid builds (MPI and OpenMP together) are the given environment variables. The `KMP_AFFINITY` assumes Hyperthreading (SMT) is enabled (granularity=fine), and the "scatter" policy allows to easily run less than the maximum number of Hyperthreads per core. As a rule of thumb, OpenMP adds only little overhead (often not worth a pure MPI application) but allows to scale further out when compared to pure MPI builds.
 
 ```
 mpirun -bootstrap ssh -genvall \
@@ -55,3 +55,4 @@ mpirun -bootstrap ssh -genvall \
 ### References
 https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor
 http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html
+
