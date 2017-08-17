@@ -1,0 +1,8 @@
+.gitattributes export-ignore
+.gitignore export-ignore
+README.sh export-ignore
+xconfigure.pptx export-ignore
+_config.yml
+mkdocs.yml
+index.md
+
