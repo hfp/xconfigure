@@ -14,7 +14,7 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
-Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
+Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```
 source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
@@ -60,7 +60,7 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
-Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
+Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```
 source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
@@ -75,12 +75,13 @@ make -j ; make install
 
 #### ELPA Development Version
 
-To rely on experimental functionality, one may git-clone the KNL-branch of the ELPA repository instead of downloading a regular version.
+To rely on experimental functionality, one may git-clone the master branch of the ELPA repository instead of downloading a regular version.
 
 ```
 git clone --branch ELPA_KNL https://gitlab.mpcdf.mpg.de/elpa/elpa.git
 ```
 
 ### References
-https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor
+[https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)
+[http://libxsmm.readthedocs.io/en/latest/cp2k/](http://libxsmm.readthedocs.io/en/latest/cp2k/)
 
