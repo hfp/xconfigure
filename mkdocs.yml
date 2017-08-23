@@ -10,6 +10,6 @@ pages:
   - LIBXSMM: libxsmm/README.md
   - QE: qe/README.md
 - About:
-  - Contribute: CONTRIBUTING.md
+  - Contributing: CONTRIBUTING.md
   - License: LICENSE.md
 
