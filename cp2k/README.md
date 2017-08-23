@@ -1,15 +1,17 @@
 ## CP2K
 
 ### Build and Run Instructions
+
 The build and run instructions for CP2K using Intel Software Development Tools are exercised at 
 [http://libxsmm.readthedocs.io/en/latest/cp2k/](http://libxsmm.readthedocs.io/en/latest/cp2k/) ([pdf](https://raw.githubusercontent.com/hfp/libxsmm/master/documentation/cp2k.pdf)).
 
 Please note, in terms of functionality it is beneficial to rely on [LIBINT](../libint#libint) and [LIBXC](../libxc#libxc), whereas [ELPA](../elpa#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, it is strongly recommended to make use of [LIBXSMM](../libxsmm#libxsmm).
 
 ### Sanity Check
+
 There is nothing that can replace the full regression test suite to be clear. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
 
-```
+```bash
   Step     Update method      Time    Convergence         Total energy    Change
   ------------------------------------------------------------------------------
      1 OT DIIS     0.15E+00    0.5     0.01337191     -1059.6804814927 -1.06E+03
@@ -28,5 +30,6 @@ There is nothing that can replace the full regression test suite to be clear. Ho
 The column called "Convergence" has to monotonically converge towards zero.
 
 ### References
+
 [http://libxsmm.readthedocs.io/en/latest/cp2k/](http://libxsmm.readthedocs.io/en/latest/cp2k/)
 
