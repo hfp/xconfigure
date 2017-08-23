@@ -1,7 +1,7 @@
 site_name: XCONFIGURE
 docs_dir: .
 pages:
-- Home: index.md
+- index.md
 - Applications:
   - CP2K: cp2k/README.md
   - ELPA: elpa/README.md
@@ -9,4 +9,7 @@ pages:
   - LIBXC: libxc/README.md
   - LIBXSMM: libxsmm/README.md
   - QE: qe/README.md
+- About:
+  - Contribute: CONTRIBUTING.md
+  - License: LICENSE.md
 
