@@ -6,3 +6,4 @@ _config.yml
 mkdocs.yml
 index.md
 .theme
+.docs
