@@ -36,6 +36,7 @@ CAT=$(which cat)
 LS=$(which ls)
 RM=$(which rm)
 
+BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 APPLICATION=$1
 ARCHS=$2
 KINDS=$3
@@ -50,7 +51,7 @@ if [ "" = "${APPLICATION}" ]; then
   echo "Please use: $0 <application-name>"
   exit 1
 fi
-if [ "0" != $(${WGET} -S --spider https://github.com/hfp/xconfigure/blob/master/${APPLICATION}/README.md 2> /dev/null; echo $?) ]; then
+if [ "0" != $(${WGET} -S --spider ${BASEURL}/${APPLICATION}/README.md 2> /dev/null; echo $?) ]; then
   echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
@@ -61,29 +62,29 @@ fi
 if [ "" = "${KINDS}" ]; then
   KINDS="omp"
   for KIND in ${KINDS} ; do
-    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh
+    ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh
   done
   for ARCH in ${ARCHS} ; do
-    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh
+    ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh
     for KIND in ${KINDS} ; do
-      ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
+      ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
     done
   done
-  ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}.sh
+  ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh
 else
   for ARCH in ${ARCHS} ; do
     for KIND in ${KINDS} ; do
-      ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
+      ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
     done
   done
-  ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/configure-${APPLICATION}.sh
+  ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh
 fi
 
 # attempt to get a list of non-default file names, and then download each file
-${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/.filelist
+${WGET} -N ${BASEURL}/${APPLICATION}/.filelist
 if [ -e .filelist ]; then
   for FILE in $(${CAT} .filelist); do
-    ${WGET} -N https://github.com/hfp/xconfigure/raw/master/${APPLICATION}/${FILE}
+    ${WGET} -N ${BASEURL}/${APPLICATION}/${FILE}
   done
   # cleanup list of file names
   ${RM} .filelist
@@ -96,6 +97,6 @@ else
   # display reminder about build recipe
   echo
   echo "There is no configuration needed! Please read:"
-  echo "https://github.com/hfp/xconfigure/tree/master/${APPLICATION}"
+  echo "https://github.com/hfp/xconfigure/tree/master/config/${APPLICATION}"
 fi
 
