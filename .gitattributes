@@ -2,8 +2,6 @@
 .gitignore export-ignore
 README.sh export-ignore
 xconfigure.pptx export-ignore
-_config.yml
-index.md
-.theme
-.docs
-site
+config/*.md export-ignore
+_config.yml export-ignore
+.theme export-ignore
