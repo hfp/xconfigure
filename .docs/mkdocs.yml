@@ -1,15 +1,15 @@
-docs_dir: .docs
 theme: readthedocs
-theme_dir: .theme
-markdown_extensions:
-- toc:
-    permalink: True
-
+theme_dir: .
+docs_dir: ..
+site_dir: /tmp/xconfigure
 site_name: XCONFIGURE
 site_author: Hans Pabst
 copyright: Copyright (c) 2013-2017, XCONFIGURE <a href="http://xconfigure.readthedocs.io/LICENSE/">Contributors</a>.
 site_description: High-Performance configuration patterns and recipes.
 repo_url: https://github.com/hfp/xconfigure.git
+markdown_extensions:
+- toc:
+    permalink: True
 
 pages:
 - index.md
