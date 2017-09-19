@@ -9,6 +9,10 @@ repo_url: https://github.com/hfp/xconfigure.git
 markdown_extensions:
 - toc:
     permalink: True
+extra_javascript:
+- search.js
+extra_css:
+- style.css
 
 pages:
 - index.md
