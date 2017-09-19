@@ -85,6 +85,6 @@ git clone --branch ELPA_KNL https://gitlab.mpcdf.mpg.de/elpa/elpa.git
 
 ### References
 
-[https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)
+[https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)  
 [http://libxsmm.readthedocs.io/cp2k/](http://libxsmm.readthedocs.io/cp2k/)
 

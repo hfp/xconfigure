@@ -55,6 +55,6 @@ mpirun -bootstrap ssh -genvall \
 
 ### References
 
-[https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)
+[https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)  
 [http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html](http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html)
 
