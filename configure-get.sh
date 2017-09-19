@@ -30,11 +30,11 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-CHMOD=$(which chmod)
-WGET=$(which wget)
-CAT=$(which cat)
-LS=$(which ls)
-RM=$(which rm)
+CHMOD=$(which chmod 2> /dev/null)
+WGET=$(which wget 2> /dev/null)
+CAT=$(which cat 2> /dev/null)
+LS=$(which ls 2> /dev/null)
+RM=$(which rm 2> /dev/null)
 
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 APPLICATION=$1
