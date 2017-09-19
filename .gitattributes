@@ -5,4 +5,4 @@ xconfigure.pptx export-ignore
 _config.yml
 mkdocs.yml
 index.md
-
+.theme
