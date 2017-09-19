@@ -1,7 +1,6 @@
 theme: readthedocs
-theme_dir: .
-docs_dir: ..
-site_dir: /tmp/xconfigure
+theme_dir: .theme
+docs_dir: config
 site_name: XCONFIGURE
 site_author: Hans Pabst
 copyright: Copyright (c) 2013-2017, XCONFIGURE <a href="http://xconfigure.readthedocs.io/LICENSE/">Contributors</a>.

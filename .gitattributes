@@ -4,4 +4,6 @@ README.sh export-ignore
 xconfigure.pptx export-ignore
 _config.yml
 index.md
+.theme
 .docs
+site

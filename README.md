@@ -6,7 +6,7 @@ XCONFIGURE is a collection of configure wrapper scripts for various HPC applicat
 
 > [Contributions](CONTRIBUTING.md#contributing) are very welcome!
 
-Each application (or library) is hosted in a separate subdirectory. To configure (and ultimately build) an application, one can rely on a single script which then downloads a specific wrapper into the current working directory (of the desired application).
+Each application (or library) is hosted in a separate directory. To configure (and ultimately build) an application, one can rely on a single script which then downloads a specific wrapper into the current working directory (of the desired application).
 
 ```bash
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -14,7 +14,12 @@ chmod +x configure-get.sh
 ./configure-get.sh qe hsw
 ```
 
-On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please follow the build recipe of the desired application e.g., open the **[qe](qe/README.md#quantum-espresso-qe)** folder in case of Quantum Espresso.
+On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the "config" folder and follow the build recipe of the desired application.
+
+## Documentation
+
+* [**ReadtheDocs**](http://xconfigure.readthedocs.io/): online documentation with full text search.
+* [**PDF**](https://github.com/hfp/xconfigure/raw/master/xconfigure.pdf): a single documentation file.
 
 ## Related Projects
 

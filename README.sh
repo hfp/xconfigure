@@ -52,7 +52,7 @@ pandoc -D latex \
   ${TMPFILE}.tex
 
 # cleanup markup and pipe into pandoc using the template
-iconv -t utf-8 README.md */README.md \
+iconv -t utf-8 README.md config/*/README.md \
 | sed \
   -e 's/\[\[..*\](..*)\]//g' \
   -e 's/\[!\[..*\](..*)\](..*)//g' \
