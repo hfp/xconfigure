@@ -1,7 +1,6 @@
-.gitattributes export-ignore
-.gitignore export-ignore
+.git* export-ignore
+*.pptx export-ignore
 README.sh export-ignore
-xconfigure.pptx export-ignore
 config/*.md export-ignore
-_config.yml export-ignore
 .theme export-ignore
+*.yml export-ignore
