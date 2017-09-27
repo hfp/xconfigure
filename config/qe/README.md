@@ -1,6 +1,6 @@
-## Quantum Espresso (QE)
+# QE<a name="#quantum-espresso-qe"></a><a name="#quantum-espresso"></a>
 
-### Build Instructions
+## Build Instructions
 
 [Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.0 and QE&#160;6.1 (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA-2016.11.001](../elpa/README.md#elpa-201611001). Please note that ELPA-2017.05.001 is **not** supported!
 
@@ -34,7 +34,7 @@ Building "all" (or `make` without target argument) requires to repeat `make all`
 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of QE. Please note: this tagname also selects the corresponding ELPA library (or should match the tagname used to build ELPA). Make sure to save your current QE build before building an additional variant!
 
-### Run Instructions
+## Run Instructions
 
 To run Quantum Espresso in an optimal fashion depends on the workload and on the "parallelization levels", which can be exploited by the workload in question. These parallelization levels apply to execution phases (or major algorithms) rather than staying in a hierarchical relationship (levels). It is recommended to read some of the [primary references](http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html) explaining these parallelization levels (a number of them can be found in the Internet including some presentation slides). Time to solution may *vary by factors* depending on whether these levels are orchestrated or not. To specify these levels, one uses command line arguments along with the QE executable(s):
 
@@ -53,7 +53,7 @@ mpirun -bootstrap ssh -genvall \
   /path/to/pw.x \<command-line-arguments\>
 ```
 
-### References
+## References
 
 [https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)  
 [http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html](http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html)

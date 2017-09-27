@@ -1,4 +1,4 @@
-## LIBXC
+# LIBXC
 
 To configure, build, and install [LIBXC](http://www.tddft.org/programs/octopus/wiki/index.php/Libxc:download), one may proceed as shown below.
 

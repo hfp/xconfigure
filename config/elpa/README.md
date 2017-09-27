@@ -1,8 +1,8 @@
-## Eigenvalue SoLvers for Petaflop-Applications (ELPA)
+# ELPA<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>
 
-### Build Instructions
+## Build Instructions
 
-#### ELPA 2017.05.001
+### ELPA 2017.05.001
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
@@ -49,7 +49,7 @@ For different targets (instruction set extensions) or for different versions of 
 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
 
-#### ELPA 2016.11.001
+### ELPA 2016.11.001
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or similar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory remains unclean such that subsequent builds may fail).
 
@@ -75,7 +75,7 @@ For example, to configure and make for an Intel Xeon E5v4 processor (formerly co
 make -j ; make install
 ```
 
-#### ELPA Development Version
+### ELPA Development Version
 
 To rely on experimental functionality, one may git-clone the master branch of the ELPA repository instead of downloading a regular version.
 
@@ -83,7 +83,7 @@ To rely on experimental functionality, one may git-clone the master branch of th
 git clone --branch ELPA_KNL https://gitlab.mpcdf.mpg.de/elpa/elpa.git
 ```
 
-### References
+## References
 
 [https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)  
 [http://libxsmm.readthedocs.io/cp2k/](http://libxsmm.readthedocs.io/cp2k/)

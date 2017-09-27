@@ -52,12 +52,18 @@ pandoc -D latex \
   ${TMPFILE}.tex
 
 # cleanup markup and pipe into pandoc using the template
-iconv -t utf-8 README.md config/*/README.md \
-| sed \
-  -e 's/\[\[..*\](..*)\]//g' \
-  -e 's/\[!\[..*\](..*)\](..*)//g' \
+( iconv -t utf-8 README.md \
+  ; \
+  echo -e "## Applications\n\n/" \
+  ; \
+  iconv -t utf-8 config/*/README.md \
+  | sed \
+    -e 's/^#/###/' \
+) | sed \
   -e 's/<sub>/~/g' -e 's/<\/sub>/~/g' \
   -e 's/<sup>/^/g' -e 's/<\/sup>/^/g' \
+  -e 's/\[\[..*\](..*)\]//g' \
+  -e 's/\[!\[..*\](..*)\](..*)//g' \
   -e 's/----*//g' \
 | tee >( pandoc \
   --latex-engine=xelatex --template=${TMPFILE}.tex --listings \
