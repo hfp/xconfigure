@@ -2,14 +2,14 @@
 
 ## Build Instructions
 
-### ELPA 2017.05.001
+### ELPA 2017.05.002
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```bash
-wget http://elpa.mpcdf.mpg.de/html/Releases/2017.05.001/elpa-2017.05.001.tar.gz
-tar xvf elpa-2017.05.001.tar.gz
-cd elpa-2017.05.001
+wget https://elpa.mpcdf.mpg.de/html/Releases/2017.05.002/elpa-2017.05.002.tar.gz
+tar xvf elpa-2017.05.002.tar.gz
+cd elpa-2017.05.002
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -36,7 +36,7 @@ make -j ; make install
 After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
-[user@system elpa-2017.05.001]$ ls ../elpa
+[user@system elpa-2017.05.002]$ ls ../elpa
  default-hsw
  default-hsw-omp
 ```
@@ -75,7 +75,7 @@ For example, to configure and make for an Intel Xeon E5v4 processor (formerly co
 make -j ; make install
 ```
 
-### ELPA Development Version
+### ELPA Development
 
 To rely on experimental functionality, one may git-clone the master branch of the ELPA repository instead of downloading a regular version.
 
