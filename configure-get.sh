@@ -30,6 +30,7 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
+BASENAME=$(which basename 2> /dev/null)
 CHMOD=$(which chmod 2> /dev/null)
 WGET=$(which wget 2> /dev/null)
 CAT=$(which cat 2> /dev/null)
@@ -37,6 +38,7 @@ LS=$(which ls 2> /dev/null)
 RM=$(which rm 2> /dev/null)
 
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
+ERROR_NOTFOUND=8
 APPLICATION=$1
 ARCHS=$2
 KINDS=$3
@@ -56,32 +58,47 @@ if [ "0" != $(${WGET} -S --spider ${BASEURL}/${APPLICATION}/README.md 2> /dev/nu
   exit 1
 fi
 
+MSGBUFFER=$(mktemp .configure-XXXXXX.buf)
 if [ "" = "${ARCHS}" ]; then
   ARCHS="snb hsw knl skx"
 fi
 if [ "" = "${KINDS}" ]; then
   KINDS="omp"
   for KIND in ${KINDS} ; do
-    ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh
+    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
+      ${CAT} ${MSGBUFFER}
+    fi
   done
   for ARCH in ${ARCHS} ; do
-    ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh
+    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh 2>${MSGBUFFER}; echo $?)" ]; then
+      ${CAT} ${MSGBUFFER}
+    fi
     for KIND in ${KINDS} ; do
-      ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
+      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
+        ${CAT} ${MSGBUFFER}
+      fi
     done
   done
-  ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh
+  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; echo $?)" ]; then
+    ${CAT} ${MSGBUFFER}
+  fi
 else
   for ARCH in ${ARCHS} ; do
     for KIND in ${KINDS} ; do
-      ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh
+      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
+        ${CAT} ${MSGBUFFER}
+      fi
     done
   done
-  ${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh
+  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; echo $?)" ]; then
+    ${CAT} ${MSGBUFFER}
+  fi
 fi
 
 # attempt to get a list of non-default file names, and then download each file
-${WGET} -N ${BASEURL}/${APPLICATION}/.filelist
+if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/.filelist 2>${MSGBUFFER}; echo $?)" ]; then
+  ${CAT} ${MSGBUFFER}
+fi
 if [ -e .filelist ]; then
   for FILE in $(${CAT} .filelist); do
     ${WGET} -N ${BASEURL}/${APPLICATION}/${FILE}
@@ -89,6 +106,9 @@ if [ -e .filelist ]; then
   # cleanup list of file names
   ${RM} .filelist
 fi
+
+# cleanup message buffer
+${RM} ${MSGBUFFER}
 
 if [ "" != "$(${LS} -1 configure-${APPLICATION}* 2> /dev/null)" ]; then
   # make scripts executable
