@@ -1,6 +1,6 @@
 # LIBXC
 
-To configure, build, and install [LIBXC](http://www.tddft.org/programs/octopus/wiki/index.php/Libxc:download), one may proceed as shown below.
+To configure, build, and install [LIBXC](http://www.tddft.org/programs/octopus/wiki/index.php/Libxc:download) 2.x, 3.x, and 4.x, one may proceed as shown below. Please note that CP2K&#160;5.0 (and 4.x) are only compatible with LIBXC&#160;3.0 (or earlier, see also [How to compile the CP2K code](https://www.cp2k.org/howto:compile#k_libxc_optional_wider_choice_of_xc_functionals)). The CP2K development version (after 5.x and later) as well as the Intel branch (shortly prior to 5.x and later) support LIBXC&#160;4.x.
 
 ```bash
 wget --content-disposition http://www.tddft.org/programs/octopus/down.php?file=libxc/4.0.1/libxc-4.0.1.tar.gz
