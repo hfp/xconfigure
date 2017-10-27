@@ -45,7 +45,7 @@ fi
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 CONFOPTS="--enable-avx512"
 MKLRTL="intel_thread"
-TARGET="-xCORE-AVX512"
+TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
 
 export FLAGS="-O2 ${TARGET} -I${MKLROOT}/include -ipo-separate"
 export LDFLAGS="-L${MKLROOT}/lib/intel64"

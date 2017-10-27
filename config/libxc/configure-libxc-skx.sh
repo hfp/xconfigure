@@ -43,7 +43,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS=""
-TARGET="-xCORE-AVX512"
+TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
 
 # consider more accurate FP-model
 #FPCMODEL = -fp-model precise
