@@ -60,6 +60,25 @@ export FC="mpiifort"
 export CC="mpiicc"
 export CXX="mpiicpc"
 
+CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
+CC_VERSION_MINOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f2)
+CC_VERSION_PATCH=$(echo "${CC_VERSION_STRING}" | cut -d"." -f3)
+CC_VERSION_COMPONENTS=$(echo "${CC_VERSION_MAJOR} ${CC_VERSION_MINOR} ${CC_VERSION_PATCH}" | wc -w)
+if [ "3" = "${CC_VERSION_COMPONENTS}" ]; then
+  CC_VERSION=$((CC_VERSION_MAJOR * 10000 + CC_VERSION_MINOR * 100 + CC_VERSION_PATCH))
+elif [ "2" = "${CC_VERSION_COMPONENTS}" ]; then
+  CC_VERSION=$((CC_VERSION_MAJOR * 10000 + CC_VERSION_MINOR * 100))
+  CC_VERSION_PATCH=0
+else
+  CC_VERSION_STRING=$(NULL)
+  CC_VERSION=0
+fi
+
+if [ "0" != "$((180001 > $(CC_VERSION) && 0 != $(CC_VERSION)))" ]; then
+  export CFLAGS="${CFLAGS} -D_Float128=__float128"
+fi
+
 # Development versions may require autotools mechanics
 if [ -e autogen.sh ]; then
   ./autogen.sh
