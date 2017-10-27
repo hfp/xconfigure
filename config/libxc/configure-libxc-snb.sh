@@ -76,7 +76,7 @@ else
   CC_VERSION=0
 fi
 
-if [ "0" != "$((180001 > $(CC_VERSION) && 0 != $(CC_VERSION)))" ]; then
+if [ "0" != "$((180001 > CC_VERSION && 0 != CC_VERSION))" ]; then
   export CFLAGS="${CFLAGS} -D_Float128=__float128"
 fi
 
