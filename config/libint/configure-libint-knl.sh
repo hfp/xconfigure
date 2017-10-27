@@ -79,7 +79,7 @@ else
 fi
 
 if [ "0" != "$((180001 > CC_VERSION && 0 != CC_VERSION))" ]; then
-  export CFLAGS="${CFLAGS} -D_Float128=__float128"
+  export CC="${CC} -D_Float128=__float128"
 fi
 
 #aclocal
