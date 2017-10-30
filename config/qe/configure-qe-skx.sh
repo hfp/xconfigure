@@ -49,6 +49,7 @@ export MKLRTL=sequential
 export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 export MPIF90=mpiifort
 export F90=ifort
+export FC=ifort
 export CC=mpiicc
 export AR=xiar
 export dir=none
