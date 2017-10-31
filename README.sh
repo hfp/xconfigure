@@ -66,7 +66,7 @@ pandoc -D latex \
   -e 's/\[!\[..*\](..*)\](..*)//g' \
   -e 's/----*//g' \
 | tee >( pandoc \
-  --latex-engine=xelatex --template=${TMPFILE}.tex --listings \
+  --template=${TMPFILE}.tex --listings \
   -f markdown_github+implicit_figures+all_symbols_escapable+subscript+superscript \
   -V documentclass=scrartcl \
   -V title-meta="XCONFIGURE Documentation" \
