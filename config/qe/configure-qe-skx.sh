@@ -103,10 +103,11 @@ sed -i \
   -e "s/-par-report0 -vec-report0//" \
   -e "s/-D__ELPA_2016/-D__ELPA_2017/" \
   -e "s/-D__FFTW3/-D__DFTI/" \
+  -e "s/-I-I/-I/" \
   ${INCFILE}
 sed -i \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
-  -e "s/^IFLAGS\s\s*=\s..*/IFLAGS         = -I\.\.\/include -I\$(MKLROOT)\/include\/fftw -I${SED_ELPAROOT}\/include\/elpa\/modules -I${HERE}\/FoX\/finclude/" \
+  -e "/^IFLAGS\s\s*=\s/ s/$/ -I\$(MKLROOT)\/include\/fftw -I${SED_ELPAROOT}\/include\/elpa\/modules/" \
   -e "s/-O3/${OPTC} ${IPO} ${TARGET} ${FPFLAGS} -fno-alias -ansi-alias/" \
   -e "s/-O2 -assume byterecl -g -traceback/${OPTF} -align array64byte -threads -heap-arrays 4096 ${IPO} ${TARGET} ${FPFLAGS} -assume byterecl/" \
   -e "s/LDFLAGS        =/LDFLAGS        = -static-intel -static-libgcc -static-libstdc++/" \
