@@ -2,12 +2,12 @@
 
 ## Build Instructions
 
-[Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.0 and QE&#160;6.1 (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA-2016.11.001](../elpa/README.md#elpa-201611001). Please note that ELPA-2017.05.001 is **not** supported!
+[Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
 
 ```bash
-wget http://www.qe-forge.org/gf/download/frsrelease/240/1075/qe-6.1.tar.gz
-tar xvf qe-6.1.tar.gz
-cd qe-6.1
+wget http://www.qe-forge.org/gf/download/frsrelease/244/1114/qe-6.2.tar.gz
+tar xvf qe-6.2.tar.gz
+cd qe-6.2
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe
@@ -47,8 +47,8 @@ To run QE, below command line can be a starting point ("numbers" are presented a
 ```bash
 mpirun -bootstrap ssh -genvall \
   -np $((NRANKS_PER_NODE*NUMNODES)) -perhost ${NRANKS} \
-  -genv I_MPI_PIN_DOMAIN=auto \
-  -genv KMP_AFFINITY=scatter,granularity=fine,1 \
+  -genv I_MPI_PIN_DOMAIN=auto -genv I_MPI_PIN_ORDER=bunch \
+  -genv KMP_AFFINITY=compact,granularity=fine,1 \
   -genv OMP_NUM_THREADS=${NTHREADS_PER_RANK} \
   /path/to/pw.x \<command-line-arguments\>
 ```
