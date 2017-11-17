@@ -2,14 +2,14 @@
 
 ## Build Instructions
 
-### ELPA 2017.05.002
+### ELPA 2017.05.003
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```bash
-wget https://elpa.mpcdf.mpg.de/html/Releases/2017.05.002/elpa-2017.05.002.tar.gz
-tar xvf elpa-2017.05.002.tar.gz
-cd elpa-2017.05.002
+wget https://elpa.mpcdf.mpg.de/html/Releases/2017.05.003/.r/elpa-2017.05.003.tar.gz
+tar xvf elpa-2017.05.003.tar.gz
+cd elpa-2017.05.003
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
