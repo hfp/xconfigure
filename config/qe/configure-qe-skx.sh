@@ -107,10 +107,10 @@ sed -i \
   ${INCFILE}
 sed -i \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
-  -e "/^IFLAGS\s\s*=\s/ s/$/ -I\$(MKLROOT)\/include\/fftw -I${SED_ELPAROOT}\/include\/elpa\/modules/" \
+  -e "s/^IFLAGS\s\s*=\s\(..*\)/IFLAGS = -I\$(MKLROOT)\/include\/fftw -I${SED_ELPAROOT}\/include\/elpa\/modules \1/" \
   -e "s/-O3/${OPTC} ${IPO} ${TARGET} ${FPFLAGS} -fno-alias -ansi-alias/" \
   -e "s/-O2 -assume byterecl -g -traceback/${OPTF} -align array64byte -threads -heap-arrays 4096 ${IPO} ${TARGET} ${FPFLAGS} -assume byterecl/" \
-  -e "s/LDFLAGS        =/LDFLAGS        = -static-intel -static-libgcc -static-libstdc++/" \
+  -e "s/LDFLAGS\s\s*=/LDFLAGS = -static-intel -static-libgcc -static-libstdc++/" \
   -e "s/-openmp/${OMPFLAG}/" \
   ${INCFILE}
 # The __USE_3D_FFT definition may cause to block QE during startup
