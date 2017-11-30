@@ -12,11 +12,11 @@ Please note, in terms of functionality it is beneficial to rely on [LIBINT](../l
 There are the following Intel compiler releases, which are known to reproduce correct results:
 
 * Intel Compiler 2017 (**any**), and the **initial** release of MKL&#160;2017 ("update 0")
-  * source /opt/intel/compilers_and_libraries_2017.[*whatever*]/linux/bin/compilervars.sh intel64
-  * source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
+  - source /opt/intel/compilers_and_libraries_2017.[*whatever*]/linux/bin/compilervars.sh intel64
+  -- source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
 * Intel Compiler 2017 Update 4, and any later update of the 2017 suite
-  * source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
-  * source /opt/intel/compilers_and_libraries_2017.5.239/linux/bin/compilervars.sh intel64
+  - source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
+  - source /opt/intel/compilers_and_libraries_2017.5.239/linux/bin/compilervars.sh intel64
 
 At this time, Intel Compiler&#160;2018 suite is not validated. There is nothing that can replace the full regression test suite - just to be clear. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
 
