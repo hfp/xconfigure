@@ -54,7 +54,7 @@ pandoc -D latex \
 # cleanup markup and pipe into pandoc using the template
 ( iconv -t utf-8 README.md \
   ; \
-  echo -e "## Applications\n\n/" \
+  echo -e "## Applications\n\n" \
   ; \
   iconv -t utf-8 config/*/README.md \
   | sed \
