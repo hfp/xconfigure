@@ -2,12 +2,60 @@
 
 ## Build Instructions
 
+### ELPA 2017.11.001
+
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+
+```bash
+wget http://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+tar xvf elpa-2017.11.001.tar.gz
+cd elpa-2017.11.001
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh elpa
+```
+
+Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
+
+```bash
+source /opt/intel/compilers_and_libraries_2017.5.239/linux/bin/compilervars.sh intel64
+```
+
+For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+
+```bash
+make clean
+./configure-elpa-skx-omp.sh
+make -j ; make install
+
+make clean
+./configure-elpa-skx.sh
+make -j ; make install
+```
+
+After building and installing the desired configuration(s), one may have a look at the installation:
+
+```bash
+[user@system elpa-2017.11.001]$ ls ../elpa
+ default-skx
+ default-skx-omp
+```
+
+For different targets (instruction set extensions) or for different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
+
+```bash
+./configure-elpa-hsw-omp.sh tagname
+```
+
+As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
+
+
 ### ELPA 2017.05.003
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```bash
-wget https://elpa.mpcdf.mpg.de/html/Releases/2017.05.003/.r/elpa-2017.05.003.tar.gz
+wget http://elpa.mpcdf.mpg.de/html/Releases/2017.05.003/elpa-2017.05.003.tar.gz
 tar xvf elpa-2017.05.003.tar.gz
 cd elpa-2017.05.003
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -32,22 +80,6 @@ make clean
 ./configure-elpa-hsw.sh
 make -j ; make install
 ```
-
-After building and installing the desired configuration(s), one may have a look at the installation:
-
-```bash
-[user@system elpa-2017.05.002]$ ls ../elpa
- default-hsw
- default-hsw-omp
-```
-
-For different targets (instruction set extensions) or for different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
-
-```bash
-./configure-elpa-hsw-omp.sh tagname
-```
-
-As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
 
 ### ELPA 2016.11.001
 
