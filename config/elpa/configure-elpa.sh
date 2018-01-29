@@ -86,7 +86,7 @@ if [ -e autogen.sh ]; then
 fi
 
 ./configure --disable-option-checking \
-  --disable-dependency-tracking --enable-shared=no \
+  --disable-dependency-tracking \
   --prefix=${DEST} ${CONFOPTS} $*
 
 sed -i \
