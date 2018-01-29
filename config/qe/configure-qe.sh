@@ -70,7 +70,7 @@ else
 fi
 
 if [ "0" != "$((180000<=CC_VERSION && 180001>CC_VERSION))" ] || \
-   [ "0" != "$((170006>CC_VERSION) && 0!=CC_VERSION))" ]; \
+   [ "0" != "$((170006>CC_VERSION && 0!=CC_VERSION))" ]; \
 then
   export CC="${CC} -D_Float128=__float128"
 fi
