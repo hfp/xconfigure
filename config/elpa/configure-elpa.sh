@@ -85,7 +85,9 @@ if [ -e autogen.sh ]; then
   ./autogen.sh
 fi
 
-./configure --enable-shared=no --prefix=${DEST} ${CONFOPTS} $*
+./configure --disable-option-checking \
+  --disable-dependency-tracking --enable-shared=no \
+  --prefix=${DEST} ${CONFOPTS} $*
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \
