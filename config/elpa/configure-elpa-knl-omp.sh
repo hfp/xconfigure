@@ -92,6 +92,7 @@ fi
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \
+  -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
   Makefile
 
 if [ -e config.h ]; then
