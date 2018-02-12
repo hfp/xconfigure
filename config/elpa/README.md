@@ -6,6 +6,8 @@
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
+**NOTE**: this version is not suitable for Quantum Espresso (QE) since it removed some bits from the ELPA1 legacy interface (get_elpa_row_col_comms, etc.). At the moment, [ELPA&#160;2017.05.003](#elpa-201705003) is the latest supported version for QE!
+
 ```bash
 wget http://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
