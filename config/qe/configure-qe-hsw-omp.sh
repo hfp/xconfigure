@@ -87,6 +87,7 @@ export SCALAPACK_LIBS="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.a"
 #export SCALAPACK_LIBS="${HOME}/scalapack/${PRFX}hsw/libscalapack.a"
 export FFT_LIBS="${BLAS_LIBS}"
 
+rm -f make.sys make.inc
 ./configure ${OPENMP} --with-scalapack=intel --with-elpa=${ELPAROOT} \
   --with-elpa-include="-I${ELPAROOT}/include/elpa/modules" \
   --with-elpa-lib=${ELPAROOT}/lib/libelpa.a \
