@@ -3,9 +3,22 @@
 ## Build and Run Instructions
 
 The build and run instructions for CP2K using Intel Software Development Tools are exercised at 
-[http://libxsmm.readthedocs.io/cp2k/](http://libxsmm.readthedocs.io/cp2k/) ([pdf](https://github.com/hfp/libxsmm/raw/master/documentation/cp2k.pdf)).
+[http://libxsmm.readthedocs.io/cp2k/](http://libxsmm.readthedocs.io/cp2k/) ([PDF](https://github.com/hfp/libxsmm/raw/master/documentation/cp2k.pdf)). In terms of functionality (and performance) it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, it is strongly recommended to use [LIBXSMM](../libxsmm/README.md#libxsmm).
 
-Please note, in terms of functionality it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, it is strongly recommended to make use of [LIBXSMM](../libxsmm/README.md#libxsmm).
+There are no configuration wrapper scripts provided for CP2K, please rely on the afore mentioned recipe (URLs). However, attempting to run below command yields an [info-script](#performance):
+
+```bash
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh cp2k
+```
+
+Of course, the above can be simplified:
+
+```bash
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/info.sh
+chmod +x info.sh
+```
 
 ## Sanity Check
 
