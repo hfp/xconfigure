@@ -18,7 +18,7 @@ There are the following Intel compiler releases, which are known to reproduce co
     * source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
     * source /opt/intel/compilers_and_libraries_2017.5.239/linux/bin/compilervars.sh intel64
 
-At this time, Intel Compiler&#160;2018 suite is not validated. There is nothing that can replace the full regression test suite - just to be clear. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
+Intel Compiler&#160;2018 suite is not validated. There is nothing that can replace the full regression test suite - just to be clear. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
 
 ```bash
   Step     Update method      Time    Convergence         Total energy    Change
@@ -36,7 +36,7 @@ At this time, Intel Compiler&#160;2018 suite is not validated. There is nothing 
     [...]
 ```
 
-The column called "Convergence" has to monotonically converge towards zero.
+The column called "Convergence" must monotonically converge towards zero.
 
 ## References
 

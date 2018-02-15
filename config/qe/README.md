@@ -4,7 +4,7 @@
 
 [Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
 
-**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp"). The version ELPA&#160;2017.11.001 (and later) removed some bits from the ELPA1 legacy interface needed by QE (get_elpa_row_col_comms, etc.), hence ELPA&#160;2017.05.003 is the latest supported version!
+<a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp"). The version ELPA&#160;2017.11.001 (and later) removed some bits from the ELPA1 legacy interface needed by QE (get_elpa_row_col_comms, etc.), hence ELPA&#160;2017.05.003 is the latest supported version!
 
 ```bash
 http://www.qe-forge.org/gf/download/frsrelease/247/1132/qe-6.2.1.tar.gz
@@ -54,6 +54,24 @@ mpirun -bootstrap ssh -genvall \
   -genv OMP_NUM_THREADS=${NTHREADS_PER_RANK} \
   /path/to/pw.x \<command-line-arguments\>
 ```
+
+## Performance
+
+An info-script is available attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
+
+```bash
+./run-qe.sh | tee qe-asrf112-2x16x2.txt
+ls -1 *.txt
+qe-asrf112-2x16x2.txt
+qe-asrf112-4x16x2.txt
+
+./info.sh
+AUSURF112         Nodes R/N T/R Cases/d Seconds NPOOL NDIAG NTG
+qe-asrf112-2x16x2 2      32   2     533  162.35     2    25  32
+qe-asrf112-4x16x2 4      16   4     714  121.82     2    25  32
+```
+
+Please note that the number of cases per day (Cases/d) are currently calculated with integer arithmetic and eventually lower than just rounding down (based on 86400 seconds per day). The number of seconds taken are end-to-end (wall time), i.e. total time to solution including any (sequential) phase in QE (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
 
 ## References
 

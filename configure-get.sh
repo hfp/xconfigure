@@ -110,8 +110,8 @@ fi
 # cleanup message buffer
 ${RM} ${MSGBUFFER}
 
-if [ "" != "$(${LS} -1 configure-${APPLICATION}* 2> /dev/null)" ]; then
-  # make scripts executable
+if [ "" != "$(${LS} -1 configure-${APPLICATION}*.sh 2> /dev/null)" ]; then
+  # make all scripts executable (beyond application)
   ${CHMOD} +x *.sh 2> /dev/null
 else
   # display reminder about build recipe
