@@ -38,6 +38,24 @@ Intel Compiler&#160;2018 suite is not validated. There is nothing that can repla
 
 The column called "Convergence" must monotonically converge towards zero.
 
+## Performance
+
+An info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
+
+```bash
+./run-cp2k.sh | tee cp2k-h2o64-2x32x2.txt
+ls -1 *.txt
+cp2k-h2o64-2x32x2.txt
+cp2k-h2o64-4x16x2.txt
+
+./info.sh [-best] /path/to/logs-or-cwd
+H2O-64            Nodes R/N T/R Cases/d Seconds
+cp2k-h2o64-2x32x2 2      32   4     807 107.237
+cp2k-h2o64-4x16x2 4      16   8     872  99.962
+```
+
+Please note that the number of cases per day (Cases/d) are currently calculated with integer arithmetic and eventually lower than just rounding down (based on 86400 seconds per day). The number of seconds taken are end-to-end (wall time), i.e. total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
+
 ## References
 
 [http://libxsmm.readthedocs.io/cp2k/](http://libxsmm.readthedocs.io/cp2k/)

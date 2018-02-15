@@ -57,21 +57,21 @@ mpirun -bootstrap ssh -genvall \
 
 ## Performance
 
-An info-script is available attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
+An info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
 
 ```bash
-./run-qe.sh | tee qe-asrf112-2x16x2.txt
+./run-qe.sh | tee qe-asrf112-4x16x1.txt
 ls -1 *.txt
-qe-asrf112-2x16x2.txt
-qe-asrf112-4x16x2.txt
+qe-asrf112-2x32x1.txt
+qe-asrf112-4x16x1.txt
 
-./info.sh
+./info.sh [-best] /path/to/logs-or-cwd
 AUSURF112         Nodes R/N T/R Cases/d Seconds NPOOL NDIAG NTG
-qe-asrf112-2x16x2 2      32   2     533  162.35     2    25  32
-qe-asrf112-4x16x2 4      16   4     714  121.82     2    25  32
+qe-asrf112-2x32x1 2      32   2     533  162.35     2    25  32
+qe-asrf112-4x16x1 4      16   4     714  121.82     2    25  32
 ```
 
-Please note that the number of cases per day (Cases/d) are currently calculated with integer arithmetic and eventually lower than just rounding down (based on 86400 seconds per day). The number of seconds taken are end-to-end (wall time), i.e. total time to solution including any (sequential) phase in QE (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
+Please note that the number of cases per day (Cases/d) are currently calculated with integer arithmetic and eventually lower than just rounding down (based on 86400 seconds per day). The number of seconds taken are end-to-end (wall time), i.e. total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
 
 ## References
 
