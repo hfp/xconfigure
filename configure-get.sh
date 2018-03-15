@@ -117,6 +117,6 @@ else
   # display reminder about build recipe
   echo
   echo "There is no configuration needed! Please read:"
-  echo "http://xconfigure.readthedocs.io/${APPLICATION}/README/"
+  echo "https://xconfigure.readthedocs.io/${APPLICATION}/README/"
 fi
 
