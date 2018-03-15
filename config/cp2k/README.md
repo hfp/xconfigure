@@ -21,7 +21,7 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-Of course, the above can be simplified:
+<a name="info-script"></a>Of course, the above can be simplified:
 
 ```bash
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/info.sh
@@ -173,7 +173,7 @@ The column called "Convergence" must monotonically converge towards zero.
 
 ## Performance
 
-An info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
+An info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
 
 ```bash
 ./run-cp2k.sh | tee cp2k-h2o64-2x32x2.txt
