@@ -66,7 +66,7 @@ To further improve performance and versatility, one may supply LIBINTROOT, LIBXC
 
 ### Build an Official Release
 
-Since [CP2K&#160;3.0](https://www.cp2k.org/version_history), the mainline version (non-Intel branch) also supports LIBXSMM. CP2K&#160;6.1 includes `Linux-x86-64-intelx.*` (`arch` directory) as a starting point for an own ARCH-file. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple, to build the master revision:
+Since [CP2K&#160;3.0](https://www.cp2k.org/version_history), the mainline version (non-Intel branch) also supports LIBXSMM. CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. However, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests). Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple, to build the master revision:
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
