@@ -66,7 +66,7 @@ To further improve performance and versatility, one may supply LIBINTROOT, LIBXC
 
 ### Build an Official Release
 
-Since [CP2K&#160;3.0](https://www.cp2k.org/version_history), the mainline version (non-Intel branch) also supports LIBXSMM. CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. However, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests). Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple, to build the master revision:
+Since [CP2K&#160;3.0](https://www.cp2k.org/version_history), the mainline version (non-Intel branch) also supports LIBXSMM. CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. However, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -81,7 +81,7 @@ tar xvf 1.9.tar.gz
 cd libxsmm-1.9 ; make
 ```
 
-To [download](https://www.cp2k.org/download) and [build](https://www.cp2k.org/howto:compile) an official [CP2K release](https://sourceforge.net/projects/cp2k/files/), one can still use the ARCH files that are part of the CP2K/Intel branch. In this case, LIBXSMM is also built implicitly.
+To [download](https://www.cp2k.org/download) and [build](https://www.cp2k.org/howto:compile) an official [CP2K release](https://sourceforge.net/projects/cp2k/files/), one can still use the ARCH files that are part of the CP2K/Intel branch. In this case, LIBXSMM is also built implicitly. Please note, that LIBXSMMROOT (which can be supplied on make's command line) is discovered automatically if it is located in the user's home directory, or when it is located in parallel to the CP2K sources (as shown below).
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -98,13 +98,13 @@ source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh i
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=2
 ```
 
-To further improve performance and versatility, one may supply LIBINTROOT, LIBXCROOT, and ELPAROOT when relying on CP2K/Intel's ARCH files (see the following sections about these libraries).
+To further improve performance and versatility, one may supply LIBINTROOT, LIBXCROOT, and ELPAROOT when relying on CP2K/Intel's ARCH files (see the following section about these libraries).
 
 ### LIBINT, LIBXC<a name="libint-and-libxc-dependencies"></a>, and ELPA<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>
 
 To configure, build, and install LIBINT (version&#160;1.1.5 and 1.1.6 have been tested), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../libint/README.md#libint). Also note there is no straightforward way to cross-compile LIBINT&#160;1.1.x for an instruction set extension that is not supported by the compiler host. To incorporate LIBINT into CP2K, the key `LIBINTROOT=/path/to/libint` needs to be supplied when using CP2K/Intel's ARCH files (make).
 
-To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/README/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make).
+To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/README/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make). After CP2K&#160;5.1, only the latest major release of LIBXC (by the time of the CP2K-release) will be supported (e.g., LIBXC&#160;4.x by the time of CP2K&#160;6.1).
 
 To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../elpa/README/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-branch defaults to ELPA-2017.05 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
 
