@@ -92,8 +92,8 @@ autoconf
 ./configure --prefix=${DEST} ${CONFOPTS} \
   --with-cc-optflags="${CFLAGS}" \
   --with-cxx-optflags="${CXXFLAGS}" \
-  --with-libderiv-max-am1=4 \
-  --with-libint-max-am=5 \
+  --with-libderiv-max-am1=5 \
+  --with-libint-max-am=6 \
   --disable-libtool \
   $*
 
