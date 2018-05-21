@@ -84,7 +84,7 @@ for FILE in ${FILES}; do
   NODERANKS=$(grep "^mpirun" ${FILE} | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1)
   RANKS=$(grep "^mpirun" ${FILE} | grep "\-perhost" | sed -n "s/..*-perhost\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1 | tr -d -c [:digit:])
   if [ "" = "${RANKS}" ]; then
-    RANKS=$(grep "GLOBAL| Total number of message passing processes" ${FILE} | sed -n "s/..*\s\s*\([0-9][0-9]*\)/\1/p")
+    RANKS=$(grep "GLOBAL| Total number of message passing processes" ${FILE} | grep -m1 -o "[0-9][0-9]*")
     if [ "" = "${RANKS}" ]; then RANKS=1; fi
   fi
   if [ "" = "${NODERANKS}" ]; then
@@ -101,7 +101,7 @@ for FILE in ${FILES}; do
     NODES=$((NODERANKS/RANKS))
     TPERR=$(grep OMP_NUM_THREADS ${FILE} | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")
     if [ "" = "${TPERR}" ]; then
-      TPERR=$(grep "GLOBAL| Number of threads for this process" ${FILE} | sed -n "s/..*\s\s*\([0-9][0-9]*\)/\1/p")
+      TPERR=$(grep "GLOBAL| Number of threads for this process" ${FILE} | grep -m1 -o "[0-9][0-9]*")
       if [ "" = "${TPERR}" ]; then TPERR=1; fi
     fi
     DURATION=$(grep "CP2K                                 1" ${FILE} | tr -s " " | cut -d" " -f7)
