@@ -190,3 +190,8 @@ cp2k-h2o64-4x16x2 4      16   8     872  99.962
 
 Please note that the number of cases per day (Cases/d) are currently calculated with integer arithmetic and eventually lower than just rounding down (based on 86400 seconds per day). The number of seconds taken are end-to-end (wall time), i.e. total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
 
+## References
+
+[https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/](https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/)  
+[https://www.cp2k.org/howto:compile](https://www.cp2k.org/howto:compile)
+
