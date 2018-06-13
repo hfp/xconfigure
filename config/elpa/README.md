@@ -2,16 +2,14 @@
 
 ## Build Instructions
 
-### ELPA 2017.11.001
+### ELPA 2018.05.001
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
-**NOTE**: this version is not suitable for Quantum Espresso (QE) since it removed some bits from the ELPA1 legacy interface (get_elpa_row_col_comms, etc.). At the moment, [ELPA&#160;2017.05.003](#elpa-201705003) is the latest supported version for QE!
-
 ```bash
-wget http://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
-tar xvf elpa-2017.11.001.tar.gz
-cd elpa-2017.11.001
+wget https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001.rc1/elpa-2018.05.001.rc1.tar.gz
+tar xvf elpa-2018.05.001.rc1.tar.gz
+cd elpa-2018.05.001.rc1
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -20,7 +18,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.5.239/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -51,6 +49,38 @@ For different targets (instruction set extensions) or for different versions of 
 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
 
+### ELPA 2017.11.001
+
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+
+**NOTE**: this version is not suitable for Quantum Espresso (QE) since it removed some bits from the ELPA1 legacy interface (get_elpa_row_col_comms, etc.). At the moment, [ELPA&#160;2017.05.003](#elpa-201705003) is the latest supported version for QE!
+
+```bash
+wget http://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+tar xvf elpa-2017.11.001.tar.gz
+cd elpa-2017.11.001
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh elpa
+```
+
+Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
+
+```bash
+source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+```
+
+For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+
+```bash
+make clean
+./configure-elpa-skx-omp.sh
+make -j ; make install
+
+make clean
+./configure-elpa-skx.sh
+make -j ; make install
+```
 
 ### ELPA 2017.05.003
 
@@ -68,7 +98,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"):
@@ -99,7 +129,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon E5v4 processor (formerly codenamed "Broadwell"):
