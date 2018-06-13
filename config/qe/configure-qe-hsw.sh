@@ -105,6 +105,7 @@ sed -i \
   -e "s/-nomodule -openmp/-nomodule/" \
   -e "s/-par-report0 -vec-report0//" \
   -e "s/-D__ELPA_2016/-D__ELPA_2017/" \
+  -e "s/-D__ELPA_2017/-D__ELPA_2018/" \
   -e "s/-D__FFTW3/-D__DFTI/" \
   -e "s/-I-I/-I/" \
   ${INCFILE}

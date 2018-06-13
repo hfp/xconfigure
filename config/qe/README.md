@@ -4,10 +4,10 @@
 
 [Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
 
-<a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp"). The version ELPA&#160;2017.11.001 (and later) removed some bits from the ELPA1 legacy interface needed by QE (get_elpa_row_col_comms, etc.), hence ELPA&#160;2017.05.003 is the latest supported version!
+<a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp"). This recipe contains all necessary patches for QE to work with ELPA&#160;2018.05.001. No earlier version of ELPA can be used, and any version of QE prior to 6.2.1 may not work!
 
 ```bash
-http://www.qe-forge.org/gf/download/frsrelease/247/1132/qe-6.2.1.tar.gz
+wget http://www.qe-forge.org/gf/download/frsrelease/247/1132/qe-6.2.1.tar.gz
 tar xvf qe-6.2.1.tar.gz
 cd qe-6.2.1
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -18,7 +18,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler available on the command line, which may vary with the computing environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.4.196/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
 ```
 
 For example, configure for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"), and build the desired application(s) e.g., "pw", "cp", or "all".

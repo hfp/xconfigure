@@ -1,20 +1,8 @@
-1482c1482
-< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
+1520c1520,1524
+< #if defined(__ELPA_2017)
 ---
-> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1507c1507
-< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
----
-> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1522c1522
-< #if defined(__ELPA) || defined(__ELPA_2016) || defined(__ELPA_2015)
----
-> #if defined(__ELPA) || defined(__ELPA_2017) || defined(__ELPA_2016) || defined(__ELPA_2015)
-1524c1524,1528
-< #if defined(__ELPA_2016)
----
-> #if defined(__ELPA_2017)
->      ierr = get_elpa_row_col_comms(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
+> #if defined(__ELPA_2018)
+>      ierr = elpa_get_communicators(ortho_comm, my_prow, my_pcol,mpi_comm_rows, mpi_comm_cols)
 >      success = elpa_solve_evp_complex_1stage_double(n, n, h, size(h,1), w,  v, size(h,1), size(h,2), nb, &
 >                            mpi_comm_rows, mpi_comm_cols, ortho_comm)
-> #elif defined(__ELPA_2016)
+> #elif defined(__ELPA_2017)
