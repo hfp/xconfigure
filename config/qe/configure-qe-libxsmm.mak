@@ -40,6 +40,7 @@ ifneq (,$(LIBXSMMROOT))
   else
     LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
   endif
+  LDFLAGS += -Wl,--export-dynamic
   LIBS := $(LIBXSMMROOT)/lib/libxsmm.a $(LIBS)
   EXT ?= 1
   ifneq (0,$(EXT))
