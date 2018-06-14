@@ -1,21 +1,23 @@
-theme: readthedocs
-theme_dir: .theme
-docs_dir: config
 site_name: XCONFIGURE
 site_author: Hans Pabst
 copyright: Copyright (c) 2013-2018, XCONFIGURE <a href="https://xconfigure.readthedocs.io/LICENSE/">Contributors</a>.
 site_description: High-Performance configuration patterns and recipes.
 repo_url: https://github.com/hfp/xconfigure
 edit_uri: edit/master/config
+docs_dir: config
 
 markdown_extensions:
 - toc:
     permalink: True
     title: None
-extra_javascript:
-- search.js
+#extra_javascript:
+#- search.js
 extra_css:
 - style.css
+
+theme:
+    name: readthedocs
+    custom_dir: .theme
 
 pages:
 - index.md
@@ -29,4 +31,3 @@ pages:
 - About:
   - Contributing: CONTRIBUTING.md
   - License: LICENSE.md
-
