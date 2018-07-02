@@ -7,9 +7,9 @@
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```bash
-wget https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001.rc1/elpa-2018.05.001.rc1.tar.gz
-tar xvf elpa-2018.05.001.rc1.tar.gz
-cd elpa-2018.05.001.rc1
+wget https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001/elpa-2018.05.001.tar.gz
+tar xvf elpa-2018.05.001.tar.gz
+cd elpa-2018.05.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
