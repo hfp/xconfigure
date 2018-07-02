@@ -6,6 +6,8 @@
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
+**NOTE**: this version fails the ELPA regression tests in CP2K, and hence it should be avoided for use in production with CP2K or Quantum Espresso (QE).
+
 ```bash
 wget https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001/elpa-2018.05.001.tar.gz
 tar xvf elpa-2018.05.001.tar.gz
@@ -53,7 +55,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
-**NOTE**: this version is not suitable for Quantum Espresso (QE) since it removed some bits from the ELPA1 legacy interface (get_elpa_row_col_comms, etc.). At the moment, [ELPA&#160;2017.05.003](#elpa-201705003) is the latest supported version for QE!
+**NOTE**: this version of ELPA must be used with Quantum Espresso's __ELPA_2018 interface (`-D__ELPA_2018`), which is patched into QE by default when using XCONFIGURE's up-to-date build wrapper scripts. The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed after [ELPA&#160;2017.05.003](#elpa-201705003).
 
 ```bash
 wget http://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz

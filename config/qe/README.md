@@ -4,7 +4,7 @@
 
 [Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/), and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
 
-<a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp"). This recipe contains all necessary patches for QE to work with ELPA&#160;2018.05.001. No earlier version of ELPA can be used, and any version of QE prior to 6.2.1 may not work!
+<a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp").
 
 ```bash
 wget http://www.qe-forge.org/gf/download/frsrelease/247/1132/qe-6.2.1.tar.gz
