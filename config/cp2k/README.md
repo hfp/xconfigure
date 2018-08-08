@@ -9,7 +9,7 @@ This document focuses on building and running the [Intel branch of CP2K](https:/
     * source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
 * Intel Compiler&#160;2017 Update&#160;4, and any later update of the 2017 suite (u4, u5, u6, u7)
     * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2018 Update&#160;3, earlier updates and initial version are not working
+* Intel Compiler&#160;2018 Update&#160;3, CP2K/devel. (compiler does not work with CP2K&#160;36.1 or earlier)
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2019 (beta) is not validated (and fails at runtime)
 * Intel MPI; usually any version is fine
