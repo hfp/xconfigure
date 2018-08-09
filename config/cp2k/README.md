@@ -9,7 +9,7 @@ This document focuses on building and running the [Intel branch of CP2K](https:/
     * source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
 * Intel Compiler&#160;2017 Update&#160;4, and any later update of the 2017 suite (u4, u5, u6, u7)
     * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2018 Update&#160;3, CP2K/devel. (compiler does not work with CP2K&#160;36.1 or earlier)
+* Intel Compiler&#160;2018 Update&#160;3, CP2K/devel. (compiler does not work with CP2K&#160;6.1 or earlier)
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2019 (beta) is not validated (and fails at runtime)
 * Intel MPI; usually any version is fine
@@ -33,41 +33,37 @@ chmod +x info.sh
 
 ### Build the CP2K/Intel Branch
 
-To build [CP2K/Intel](https://github.com/cp2k/cp2k/tree/intel) from source, one may rely on Intel Compiler 16 or 17 series (the 2018 version may be supported at a later point in time). For the Intel Compiler&#160;2017 prior to Update&#160;4, one should source the compiler followed by sourcing a specific version of Intel&#160;MKL (to avoid an issue in Intel&#160;MKL):
-
-```bash
-source /opt/intel/compilers_and_libraries_2017.3.191/linux/bin/compilervars.sh intel64
-source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
-```
-
-Since Update&#160;4 of the 2017-suite, the compiler and libraries can be used right away (see [recommended](#recommended-intel-compiler) compiler):
+To build [CP2K/Intel](https://github.com/cp2k/cp2k/tree/intel) from source, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
 
 ```bash
 source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
 ```
 
-LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel branch. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). A recipe targeting "Haswell" (HSW) may look like:
+LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel branch. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
 git clone --branch intel https://github.com/cp2k/cp2k.git cp2k.git
 ln -s cp2k.git/cp2k cp2k
 cd cp2k/makefiles
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=2
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 ```
 
-To target "Knights Landing" (KNL), use "AVX=3 MIC=1" instead of "AVX=2". Similarly, the Intel&#160;Xeon Scalable processor "Skylake Server" (SKX) goes with "AVX=3 MIC=0".
-
-To further adjust CP2K at build time of the application, additional key-value pairs can be passed at make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
+To further adjust CP2K at build time, additional key-value pairs can be passed at make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
 
 * **SYM**: set `SYM=1` to include debug symbols into the executable e.g., helpful with performance profiling.
 * **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.
 
-To further improve performance and versatility, one may supply LIBINTROOT, LIBXCROOT, and ELPAROOT when relying on CP2K/Intel's ARCH files (see later sections about these libraries).
+To further improve performance and versatility, one should supply LIBINTROOT, LIBXCROOT, and ELPAROOT. These keys are valid when relying on CP2K/Intel's ARCH files (see later sections about these libraries).
 
 ### Build an Official Release
 
-Since [CP2K&#160;3.0](https://www.cp2k.org/version_history), the mainline version (non-Intel branch) also supports LIBXSMM. CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. However, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
+Here are two ways to build an official release of CP2K using an Intel tool chain:
+
+* Use the ARCH files from CP2K/intel branch.
+* Write an own ARCH file.
+
+LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. However, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -82,7 +78,7 @@ tar xvf 1.9.tar.gz
 cd libxsmm-1.9 ; make
 ```
 
-To [download](https://www.cp2k.org/download) and [build](https://www.cp2k.org/howto:compile) an official [CP2K release](https://sourceforge.net/projects/cp2k/files/), one can still use the ARCH files that are part of the CP2K/Intel branch. In this case, LIBXSMM is also built implicitly. Please note, that LIBXSMMROOT (which can be supplied on make's command line) is discovered automatically if it is located in the user's home directory, or when it is located in parallel to the CP2K sources (as shown below).
+Taking the ARCH files that are part of the CP2K/Intel branch automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -146,7 +142,7 @@ The CP2K/Intel branch carries several "reconfigurations" and environment variabl
 
 * **CP2K_RECONFIGURE**: environment variable for reconfiguring CP2K (default depends on whether the ACCeleration layer is enabled or not). With the ACCeleration layer enabled, CP2K is reconfigured (as if CP2K_RECONFIGURE=1 is set) e.g. an increased number of entries per matrix stack is populated, and otherwise CP2K is not reconfigured. Further, setting CP2K_RECONFIGURE=0 is disabling the code specific to the [Intel branch of CP2K](https://github.com/cp2k/cp2k/tree/intel), and relies on the (optional) LIBXSMM integration into [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and later).
 * **CP2K_STACKSIZE**: environment variable which denotes the number of matrix multiplications which is collected into a single stack. Usually the internal default performs best across a variety of workloads, however depending on the workload a different value can be better. This variable is relatively impactful since the work distribution and balance is affected.
-* **CP2K_HUGEPAGES**: environment variable for disabling (0) huge page based memory allocation, which is enabled by default (if TBBROOT was present at build-time of the application).
+* **CP2K_HUGEPAGES**: environment variable for disabling (0) memory allocation based on huge pages, which is enabled by default (if TBBROOT was present at build-time of the application).
 * **CP2K_RMA**: enables (1) an experimental Remote Memory Access (RMA) based multiplication algorithm (requires MPI3).
 * **CP2K_SORT**: enables (1) an indirect sorting of each multiplication stack according to the C-index (experimental).
 

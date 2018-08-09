@@ -4,7 +4,7 @@
 
 ### ELPA 2018.05.001
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 **NOTE**: this version fails the ELPA regression tests in CP2K, and hence it should be avoided for use in production with CP2K or Quantum Espresso (QE).
 
@@ -53,7 +53,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 
 ### ELPA 2017.11.001
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 **NOTE**: this version of ELPA must be used with Quantum Espresso's __ELPA_2018 interface (`-D__ELPA_2018`), which is patched into QE by default when using XCONFIGURE's up-to-date build wrapper scripts. The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed after [ELPA&#160;2017.05.003](#elpa-201705003).
 
@@ -86,7 +86,7 @@ make -j ; make install
 
 ### ELPA 2017.05.003
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```bash
 wget http://elpa.mpcdf.mpg.de/html/Releases/2017.05.003/elpa-2017.05.003.tar.gz
@@ -117,7 +117,7 @@ make -j ; make install
 
 ### ELPA 2016.11.001
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA, and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or similar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory remains unclean such that subsequent builds may fail).
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or similar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory remains unclean such that subsequent builds may fail).
 
 ```bash
 wget http://elpa.mpcdf.mpg.de/html/Releases/2016.11.001.pre/elpa-2016.11.001.pre.tar.gz
