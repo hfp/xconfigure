@@ -2,14 +2,14 @@
 
 ## Build Instructions
 
-[Download](http://www.qe-forge.org/gf/project/q-e/frs/) and unpack [Quantum Espresso](http://www.quantum-espresso.org/) and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
+[Download](https://gitlab.com/QEF/q-e/tags), unpack [Quantum Espresso](http://www.quantum-espresso.org/) and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
 
 <a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp").
 
 ```bash
-wget http://www.qe-forge.org/gf/download/frsrelease/247/1132/qe-6.2.1.tar.gz
-tar xvf qe-6.2.1.tar.gz
-cd qe-6.2.1
+wget https://gitlab.com/QEF/q-e/-/archive/qe-6.3/q-e-qe-6.3.tar.gz
+tar xvf q-e-qe-6.3.tar.gz
+cd q-e-qe-6.3
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe
