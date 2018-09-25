@@ -79,8 +79,7 @@ if [ "" != "${FILE0}" ]; then
 fi
 
 for FILE in ${FILES}; do
-  BASENAME=$(basename ${FILE})
-  NAME=$(echo ${BASENAME} | cut -d. -f1)
+  BASENAME=$(basename ${FILE} | rev | cut -d. -f2- | rev)
   NODERANKS=$(grep "^mpirun" ${FILE} | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1)
   RANKS=$(grep "^mpirun" ${FILE} | grep "\-perhost" | sed -n "s/..*-perhost\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1 | tr -d -c [:digit:])
   if [ "" = "${RANKS}" ]; then
@@ -88,10 +87,12 @@ for FILE in ${FILES}; do
     if [ "" = "${RANKS}" ]; then RANKS=1; fi
   fi
   if [ "" = "${NODERANKS}" ]; then
-    NODES=$(echo ${BASENAME} | tr -s -c [:digit:] "-" | cut -d- -f1 | sed -e "s/0*\([1-9][0-9]*\).*/\1/")
-    if [ "" = "${NODES}" ]; then
-      NODES=$(echo ${BASENAME} | tr -s -c [:digit:] "-" | cut -d- -f2 | sed -e "s/0*\([1-9][0-9]*\).*/\1/")
-    fi
+    for TOKEN in $(echo "${BASENAME}" | tr -s [=_=][=-=] " "); do
+      NODES=$(echo "${TOKEN}" | sed -n "s/^\([0-9][0-9]*\)\(x[0-9][0-9]*\)*$/\1/p;s/^\([0-9][0-9]*\)n$/\1/p;s/^n\([0-9][0-9]*\)$/\1/p")
+      if [ "" != "${NODES}" ]; then
+        break
+      fi
+    done
     NODERANKS=${RANKS}
     if [ "" != "${NODES}" ] && [ "0" != "$((NODES<=NODERANKS))" ]; then
       RANKS=$((NODERANKS/NODES))
@@ -105,9 +106,9 @@ for FILE in ${FILES}; do
       if [ "" = "${TPERR}" ]; then TPERR=1; fi
     fi
     DURATION=$(grep "CP2K                                 1" ${FILE} | tr -s " " | cut -d" " -f7)
-    TWALL=$(echo ${DURATION} | cut -d. -f1 | sed -n "s/\([0-9][0-9]*\)/\1/p")
+    TWALL=$(echo "${DURATION}" | cut -d. -f1 | sed -n "s/\([0-9][0-9]*\)/\1/p")
     if [ "" != "${TWALL}" ] && [ "0" != "${TWALL}" ]; then
-      echo -e -n "$(printf %-23.23s ${NAME})\t${NODES}\t${RANKS}\t${TPERR}"
+      echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t${DURATION}"
       if [ "0" != "${PRINTFLOPS}" ]; then
         FLOPS=$(sed -n "s/ marketing flops\s\s*\(..*\)$/\1/p" ${FILE} | sed -e "s/[eE]+*/\*10\^/")
@@ -119,7 +120,7 @@ for FILE in ${FILES}; do
       fi
       echo
     elif [ "0" != "${NUMFILES}" ] && [ "0" = "${BEST}" ]; then
-      echo -e -n "$(printf %-23.23s ${NAME})\t${NODES}\t${RANKS}\t${TPERR}"
+      echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t0\t-"
       echo
     fi
