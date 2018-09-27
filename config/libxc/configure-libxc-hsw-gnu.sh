@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################################################
-# Copyright (c) 2017-2018, Intel Corporation                                #
+# Copyright (c) 2018, Intel Corporation                                     #
 # All rights reserved.                                                      #
 #                                                                           #
 # Redistribution and use in source and binary forms, with or without        #
@@ -45,15 +45,11 @@ fi
 CONFOPTS=""
 TARGET="-march=core-avx2"
 
-# consider more accurate FP-model
-#FPCMODEL = -fp-model precise
-#FPFMODEL = -fp-model source
-
 export FLAGS="-O3 ${TARGET}"
 export LDFLAGS=""
-export CFLAGS="${FLAGS} ${FPCMODEL}"
-export CXXFLAGS="${FLAGS} ${FPCMODEL}"
-export FCFLAGS="${FLAGS} ${FPFMODEL}"
+export CFLAGS="${FLAGS}"
+export CXXFLAGS="${FLAGS}"
+export FCFLAGS="${FLAGS}"
 export LIBS=""
 
 export AR="gcc-ar"

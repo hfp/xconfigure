@@ -32,10 +32,10 @@
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
-DEST=${HERE}/../libxc/${PRFX}skx
+DEST=${HERE}/../libint/${PRFX}skx
 
 if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: LIBXC source directory equals installation folder!"
+  echo "Warning: LIBINT source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
   if [ ! $REPLY =~ ^[Yy]$ ]; then
     exit 1
@@ -56,14 +56,19 @@ export AR="gcc-ar"
 export FC="gfortran"
 export CC="gcc"
 export CXX="g++"
+export F77=${FC}
+export F90=${FC}
 
 #aclocal
 #autoheader
 #automake -a
 autoconf
 
-./configure \
-  --prefix=${DEST} ${CONFOPTS} \
-  --host=x86_64-unknown-linux-gnu \
+./configure --prefix=${DEST} ${CONFOPTS} \
+  --with-cc-optflags="${CFLAGS}" \
+  --with-cxx-optflags="${CXXFLAGS}" \
+  --with-libderiv-max-am1=5 \
+  --with-libint-max-am=6 \
+  --disable-libtool \
   $*
 
