@@ -63,7 +63,7 @@ if [ "" = "${ARCHS}" ]; then
   ARCHS="snb hsw knl skx"
 fi
 if [ "" = "${KINDS}" ]; then
-  KINDS="omp gnu omp-gnu"
+  KINDS="omp gnu gnu-omp"
   for KIND in ${KINDS} ; do
     if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
       ${CAT} ${MSGBUFFER}
