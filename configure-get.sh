@@ -60,10 +60,10 @@ fi
 
 MSGBUFFER=$(mktemp .configure-XXXXXX.buf)
 if [ "" = "${ARCHS}" ]; then
-  ARCHS="snb hsw knl skx snb-gnu hsw-gnu knl-gnu skx-gnu"
+  ARCHS="snb hsw knl skx"
 fi
 if [ "" = "${KINDS}" ]; then
-  KINDS="omp"
+  KINDS="omp gnu omp-gnu"
   for KIND in ${KINDS} ; do
     if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
       ${CAT} ${MSGBUFFER}
