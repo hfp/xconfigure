@@ -47,7 +47,7 @@ CONFOPTS="--enable-avx512"
 MKLRTL="intel_thread"
 TARGET="-xMIC-AVX512"
 FLAGS="-O2 ${TARGET} -I${MKLROOT}/include"
-#FLAGS+=" -ipo-separate"
+#FLAGS+="" #-ipo-separate
 
 export LDFLAGS="-L${MKLROOT}/lib/intel64"
 export CFLAGS="${FLAGS} -fno-alias -ansi-alias ${FPFLAGS}"

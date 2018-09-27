@@ -49,7 +49,7 @@ TARGET="-xMIC-AVX512"
 #FPCMODEL = -fp-model precise
 #FPFMODEL = -fp-model source
 
-export FLAGS="-O2 ${TARGET} -ipo-separate"
+export FLAGS="-O2 ${TARGET}" #-ipo-separate
 export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"

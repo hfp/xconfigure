@@ -47,7 +47,7 @@ FPFLAGS="-fp-model fast=2 -complex-limited-range"
 MKLRTL="intel_thread"
 TARGET="-xCORE-AVX2"
 FLAGS="-O2 ${TARGET} -I${MKLROOT}/include"
-#FLAGS+=" -ipo-separate"
+#FLAGS+="" #-ipo-separate
 
 export LDFLAGS="-L${MKLROOT}/lib/intel64"
 export CFLAGS="${FLAGS} -fno-alias -ansi-alias ${FPFLAGS}"
