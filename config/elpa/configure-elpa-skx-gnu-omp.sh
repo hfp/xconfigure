@@ -1,5 +1,6 @@
+#!/bin/bash
 #############################################################################
-# Copyright (c) 2017-2018, Intel Corporation                                #
+# Copyright (c) 2018, Intel Corporation                                     #
 # All rights reserved.                                                      #
 #                                                                           #
 # Redistribution and use in source and binary forms, with or without        #
@@ -29,27 +30,70 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-# LIBXSMM (https://github.com/hfp/libxsmm)
-#
-#LIBXSMMROOT = /path/to/libxsmm
+if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
+HERE=$(cd $(dirname $0); pwd -P)
+DEST=${HERE}/../elpa/${PRFX}skx-omp
 
-ifneq (,$(LIBXSMMROOT))
-  WRAP ?= 1
-  ifeq (2,$(WRAP))
-    LDFLAGS += -Wl,--wrap=dgemm_
-  else
-    LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
-  endif
-  LDFLAGS += -Wl,--export-dynamic
-  LIBS := $(LIBXSMMROOT)/lib/libxsmm.a $(LIBS)
-  EXT ?= 1
-  ifneq (0,$(EXT))
-    LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBS)
-    ifeq (,$(OPENMP))
-    ifeq (sequential,$(MKL_OMPRTL))
-      LIBS += -liomp5
-    endif
-    endif
-  endif
-endif
+if [ "${HERE}" = "${DEST}" ]; then
+  echo "Warning: ELPA source directory equals installation folder!"
+  read -p "Are you sure? Y/N" -n 1 -r
+  if [ ! $REPLY =~ ^[Yy]$ ]; then
+    exit 1
+  fi
+fi
+
+CONFOPTS="--enable-openmp"
+MKL_OMPRTL="gnu_thread"
+MKL_FCRTL="gf"
+TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
+FLAGS="-O3 ${TARGET} -I${MKLROOT}/include"
+
+export LDFLAGS="-L${MKLROOT}/lib/intel64"
+export CFLAGS="${FLAGS}"
+export CXXFLAGS="${CFLAGS}"
+export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64"
+export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL}"
+export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
+
+export AR="gcc-ar"
+export FC="mpif90"
+export CC="mpigcc"
+export CXX="mpigxx"
+
+# Development versions may require autotools mechanics
+if [ -e autogen.sh ]; then
+  ./autogen.sh
+fi
+
+./configure --disable-option-checking \
+  --disable-dependency-tracking \
+  --host=x86_64-unknown-linux-gnu \
+  --prefix=${DEST} ${CONFOPTS} $*
+
+sed -i \
+  -e "s/-openmp/-qopenmp -qoverride_limits/" \
+  -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
+  Makefile
+
+if [ -e config.h ]; then
+  VERSION=$(grep ' VERSION ' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')
+  if [ "" != "${VERSION}" ]; then
+    if [ "1" = "$(grep ' WITH_OPENMP ' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')" ]; then
+      ELPA=elpa_openmp
+    else
+      ELPA=elpa
+    fi
+    mkdir -p ${DEST}/include/${ELPA}-${VERSION}
+    if [ ! -e ${DEST}/include/elpa ]; then
+      CWD=$(pwd)
+      cd ${DEST}/include
+      ln -s ${ELPA}-${VERSION} elpa
+      cd ${CWD}
+    fi
+    mkdir -p ${DEST}/lib
+    cd ${DEST}/lib
+    ln -fs libelpa_openmp.a libelpa.a
+    ln -fs libelpa.a libelpa_mt.a
+  fi
+fi
 

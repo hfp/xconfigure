@@ -38,7 +38,7 @@ make -j ; make install
 After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
-[user@system elpa-2017.11.001]$ ls ../elpa
+[user@system elpa-2018.05.001]$ ls ../elpa
  default-skx
  default-skx-omp
 ```
@@ -58,7 +58,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 **NOTE**: this version of ELPA must be used with Quantum Espresso's __ELPA_2018 interface (`-D__ELPA_2018`), which is patched into QE by default when using XCONFIGURE's up-to-date build wrapper scripts. The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed after [ELPA&#160;2017.05.003](#elpa-201705003).
 
 ```bash
-wget http://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+wget https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
 cd elpa-2017.11.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -89,7 +89,7 @@ make -j ; make install
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 ```bash
-wget http://elpa.mpcdf.mpg.de/html/Releases/2017.05.003/elpa-2017.05.003.tar.gz
+wget https://elpa.mpcdf.mpg.de/html/Releases/2017.05.003/elpa-2017.05.003.tar.gz
 tar xvf elpa-2017.05.003.tar.gz
 cd elpa-2017.05.003
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -120,7 +120,7 @@ make -j ; make install
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts. It appears that ELPA's `make clean` (or similar Makefile target) is cleaning up the entire directory including all "non-ELPA content" (the directory remains unclean such that subsequent builds may fail).
 
 ```bash
-wget http://elpa.mpcdf.mpg.de/html/Releases/2016.11.001.pre/elpa-2016.11.001.pre.tar.gz
+wget https://elpa.mpcdf.mpg.de/html/Releases/2016.11.001.pre/elpa-2016.11.001.pre.tar.gz
 tar xvf elpa-2016.11.001.pre.tar.gz
 cd elpa-2016.11.001.pre
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh

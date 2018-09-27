@@ -44,7 +44,9 @@ fi
 
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 CONFOPTS="--enable-avx512 --enable-openmp"
-MKLRTL="intel_thread"
+MKL_OMPRTL="intel_thread"
+MKL_FCRTL="intel"
+
 TARGET="-xHost"
 FLAGS="-O2 ${TARGET} -I${MKLROOT}/include"
 #FLAGS+="" #-ipo-separate
@@ -53,7 +55,7 @@ export LDFLAGS="-L${MKLROOT}/lib/intel64"
 export CFLAGS="${FLAGS} -fno-alias -ansi-alias ${FPFLAGS}"
 export CXXFLAGS="${CFLAGS}"
 export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64 -align array64byte -threads -heap-arrays 4096"
-export LIBS="-lmkl_intel_lp64 -lmkl_core -lmkl_${MKLRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
+export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
 
 export AR="xiar"

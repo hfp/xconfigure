@@ -43,8 +43,8 @@ EXX_ACE="-D__EXX_ACE"
 
 HERE=$(cd $(dirname $0); pwd -P)
 export ELPAROOT="${HERE}/../elpa/${PRFX}snb"
-export MKLRTL=sequential
-#export MKLRTL=intel_thread
+export MKL_OMPRTL=sequential
+export MKL_OMPRTL=intel_thread
 #export OPENMP="--enable-openmp"
 export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 export MPIF90=mpiifort
@@ -77,9 +77,9 @@ fi
 
 #LIBXSMM="-Wl,--wrap=sgemm_,--wrap=dgemm_ ${HOME}/libxsmm/lib/libxsmmext.a ${HOME}/libxsmm/lib/libxsmm.a"
 export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
-    ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a \
+    ${MKLROOT}/lib/intel64/libmkl_${MKL_FCRTL}_lp64.a \
     ${MKLROOT}/lib/intel64/libmkl_core.a \
-    ${MKLROOT}/lib/intel64/libmkl_${MKLRTL}.a \
+    ${MKLROOT}/lib/intel64/libmkl_${MKL_OMPRTL}.a \
     ${MKLROOT}/lib/intel64/libmkl_blacs_intelmpi_lp64.a \
   -Wl,--end-group"
 export LAPACK_LIBS="${BLAS_LIBS}"
