@@ -119,7 +119,7 @@ sed -i \
   ${INCFILE}
 # The __USE_3D_FFT definition may cause to block QE during startup
 #sed -i -e "s/-D__DFTI/-D__DFTI -D__USE_3D_FFT/" ${INCFILE}
-sed -i -e "s/-D__DFTI/-D__DFTI -D__NON_BLOCKING_SCATTER/" ${INCFILE}
+#sed -i -e "s/-D__DFTI/-D__DFTI -D__NON_BLOCKING_SCATTER/" ${INCFILE}
 
 # create some dummy sources needed for attached Makefile rule
 mkdir -p ${HERE}/NEB/src
