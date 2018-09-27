@@ -52,7 +52,7 @@ export LDFLAGS="-L${MKLROOT}/lib/intel64"
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${CFLAGS}"
 export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64"
-export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -lgomp -Wl,--no-as-needed"
+export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -lgomp -lm -Wl,--no-as-needed"
 export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
 
 export AR="gcc-ar"
