@@ -60,7 +60,7 @@ fi
 
 MSGBUFFER=$(mktemp .configure-XXXXXX.buf)
 if [ "" = "${ARCHS}" ]; then
-  ARCHS="snb hsw knl skx"
+  ARCHS="snb hsw knl skx snb-gnu hsw-gnu knl-gnu skx-gnu"
 fi
 if [ "" = "${KINDS}" ]; then
   KINDS="omp"
