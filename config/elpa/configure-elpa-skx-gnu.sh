@@ -68,6 +68,7 @@ fi
 ./configure --disable-option-checking \
   --disable-dependency-tracking \
   --host=x86_64-unknown-linux-gnu \
+  --disable-mpi-module \
   --prefix=${DEST} ${CONFOPTS} $*
 
 sed -i \
