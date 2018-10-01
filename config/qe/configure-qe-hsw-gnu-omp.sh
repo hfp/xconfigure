@@ -32,6 +32,7 @@
 
 TARGET="-march=core-avx2"
 #IPO="-flto -Wl,-flto"
+FPFLAGS="-ffast-math"
 EXX_ACE="-D__EXX_ACE"
 OPTC=-O3
 OPTF=-O3
@@ -88,7 +89,8 @@ sed -i \
 sed -i \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
   -e "s/^IFLAGS\s\s*=\s\(..*\)/IFLAGS = -I\$(MKLROOT)\/include\/fftw -I\$(MKLROOT)\/include -I${SED_ELPAROOT}\/include\/elpa\/modules \1/" \
-  -e "s/-O3/${OPTC} ${IPO} ${TARGET}/" \
+  -e "s/^CFLAGS\s\s*=\s-O3/CFLAGS = ${OPTC} ${IPO} ${TARGET} ${FPFLAGS}/" \
+  -e "s/^FFLAGS\s\s*=\s-O3/FFLAGS = ${OPTF} ${IPO} ${TARGET} ${FPFLAGS}/"
   ${INCFILE}
 
 # extended capabilities

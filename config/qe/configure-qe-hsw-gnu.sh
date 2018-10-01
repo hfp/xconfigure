@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################################################
-# Copyright (c) 2014-2018, Intel Corporation                                #
+# Copyright (c) 2018, Intel Corporation                                     #
 # All rights reserved.                                                      #
 #                                                                           #
 # Redistribution and use in source and binary forms, with or without        #
@@ -30,51 +30,29 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-TARGET="-xCORE-AVX2"
-OMPFLAG="-qopenmp -qoverride_limits"
-#IPO="-ipo-separate"
-OPTC=-O3
-OPTF=-O2
-if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
-
-# consider more accurate -fp-model (C/C++: precise, Fortran: source)
-FPFLAGS="-fp-model fast=2 -complex-limited-range"
+TARGET="-march=core-avx2"
+#IPO="-flto -Wl,-flto"
+FPFLAGS="-ffast-math"
 EXX_ACE="-D__EXX_ACE"
+OPTC=-O3
+OPTF=-O3
+if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
+
 
 HERE=$(cd $(dirname $0); pwd -P)
-export ELPAROOT="${HERE}/../elpa/${PRFX}hsw-omp"
-export MKL_OMPRTL=intel_thread
+export ELPAROOT="${HERE}/../elpa/${PRFX}hsw"
+#export OPENMP="--enable-openmp"
+#export LD_LIBS="-Wl,--as-needed -lgomp -lm -Wl,--no-as-needed"
+
 #export MKL_OMPRTL=sequential
-export MKL_FCRTL=intel
-export OPENMP="--enable-openmp"
-export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
-export MPIF90=mpiifort
-export F90=ifort
-export FC=ifort
-export CC=mpiicc
-export AR=xiar
+export MKL_OMPRTL=gnu_thread
+export MKL_FCRTL=gf
+export MPIF90=mpif90
+export F90=gfortran
+export FC=gfortran
+export CC=mpigcc
+export AR=gcc-ar
 export dir=none
-
-CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
-CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
-CC_VERSION_MINOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f2)
-CC_VERSION_PATCH=$(echo "${CC_VERSION_STRING}" | cut -d"." -f3)
-CC_VERSION_COMPONENTS=$(echo "${CC_VERSION_MAJOR} ${CC_VERSION_MINOR} ${CC_VERSION_PATCH}" | wc -w)
-if [ "3" = "${CC_VERSION_COMPONENTS}" ]; then
-  CC_VERSION=$((CC_VERSION_MAJOR * 10000 + CC_VERSION_MINOR * 100 + CC_VERSION_PATCH))
-elif [ "2" = "${CC_VERSION_COMPONENTS}" ]; then
-  CC_VERSION=$((CC_VERSION_MAJOR * 10000 + CC_VERSION_MINOR * 100))
-  CC_VERSION_PATCH=0
-else
-  CC_VERSION_STRING=""
-  CC_VERSION=0
-fi
-
-if [ "0" != "$((180000<=CC_VERSION && 180001>CC_VERSION))" ] || \
-   [ "0" != "$((170006>CC_VERSION && 0!=CC_VERSION))" ]; \
-then
-  export CC="${CC} -D_Float128=__float128"
-fi
 
 #LIBXSMM="-Wl,--wrap=sgemm_,--wrap=dgemm_ ${HOME}/libxsmm/lib/libxsmmext.a ${HOME}/libxsmm/lib/libxsmm.a"
 export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
@@ -103,8 +81,6 @@ fi
 # adjust generated configuration
 SED_ELPAROOT=$(echo ${ELPAROOT} | sed -e "s/\//\\\\\//g")
 sed -i \
-  -e "s/-nomodule -openmp/-nomodule/" \
-  -e "s/-par-report0 -vec-report0//" \
   -e "s/-D__ELPA_2016/-D__ELPA_2017/" \
   -e "s/-D__ELPA_2017/-D__ELPA_2018/" \
   -e "s/-D__FFTW3/-D__DFTI/" \
@@ -113,19 +89,9 @@ sed -i \
 sed -i \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
   -e "s/^IFLAGS\s\s*=\s\(..*\)/IFLAGS = -I\$(MKLROOT)\/include\/fftw -I\$(MKLROOT)\/include -I${SED_ELPAROOT}\/include\/elpa\/modules \1/" \
-  -e "s/-O3/${OPTC} ${IPO} ${TARGET} ${FPFLAGS} -fno-alias -ansi-alias/" \
-  -e "s/-O2 -assume byterecl -g -traceback/${OPTF} -align array64byte -threads -heap-arrays 4096 ${IPO} ${TARGET} ${FPFLAGS} -assume byterecl/" \
-  -e "s/LDFLAGS\s\s*=/LDFLAGS = -static-intel -static-libgcc -static-libstdc++/" \
-  -e "s/-openmp/${OMPFLAG}/" \
+  -e "s/^CFLAGS\s\s*=\s-O3/CFLAGS = ${OPTC} ${IPO} ${TARGET} ${FPFLAGS}/" \
+  -e "s/^FFLAGS\s\s*=\s-O3/FFLAGS = ${OPTF} ${IPO} ${TARGET} ${FPFLAGS}/"
   ${INCFILE}
-# The __USE_3D_FFT definition may cause to block QE during startup
-#sed -i -e "s/-D__DFTI/-D__DFTI -D__USE_3D_FFT/" ${INCFILE}
-#sed -i -e "s/-D__DFTI/-D__DFTI -D__NON_BLOCKING_SCATTER/" ${INCFILE}
-
-# create some dummy sources needed for attached Makefile rule
-mkdir -p ${HERE}/NEB/src
-cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/NEB/src 2> /dev/null
-cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/PP/src 2> /dev/null
 
 # extended capabilities
 echo >> ${INCFILE}
@@ -133,15 +99,6 @@ cat configure-qe-tbbmalloc.mak >> ${INCFILE}
 echo >> ${INCFILE}
 cat configure-qe-libxsmm.mak >> ${INCFILE}
 echo >> ${INCFILE}
-
-# Uncomment below line in case of compiler issue (ICE)
-echo -e "default: all\n" >> ${INCFILE}
-echo -e "init_us_1.o: init_us_1.f90\n\t\$(MPIF90) \$(F90FLAGS) -O1 -c \$<\n" >> ${INCFILE}
-echo -e "new_ns.o: new_ns.f90\n\t\$(MPIF90) \$(F90FLAGS) -O1 -c \$<\n" >> ${INCFILE}
-echo -e "us_exx.o: us_exx.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -c \$<\n" >> ${INCFILE}
-echo -e "wypos.o: wypos.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O0 -c \$<\n" >> ${INCFILE}
-echo -e "lr_apply_liouvillian.o: lr_apply_liouvillian.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O1 -c \$<\n" >> ${INCFILE}
-echo -e "realus.o: realus.f90\n\t\$(MPIF90) \$(F90FLAGS) ${OMPFLAG} -O1 -c \$<\n" >> ${INCFILE}
 
 # patch source code files for modern ELPA
 sed -i -e "s/\$(MOD_FLAG)\.\.\/ELPA\/src//" ${HERE}/Modules/Makefile
