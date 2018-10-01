@@ -89,8 +89,8 @@ sed -i \
 sed -i \
   -e "s/-D__FFTW/-D__DFTI/" -e "s/-D__DFTI/-D__DFTI ${EXX_ACE}/" \
   -e "s/^IFLAGS\s\s*=\s\(..*\)/IFLAGS = -I\$(MKLROOT)\/include\/fftw -I\$(MKLROOT)\/include -I${SED_ELPAROOT}\/include\/elpa\/modules \1/" \
+  -e "s/^FFLAGS\s\s*=\s-O3/FFLAGS = ${OPTF} ${IPO} ${TARGET} ${FPFLAGS} -ffpe-summary=none/" \
   -e "s/^CFLAGS\s\s*=\s-O3/CFLAGS = ${OPTC} ${IPO} ${TARGET} ${FPFLAGS}/" \
-  -e "s/^FFLAGS\s\s*=\s-O3/FFLAGS = ${OPTF} ${IPO} ${TARGET} ${FPFLAGS}/" \
   -e "s/-x f95-cpp-input -fopenmp/-x f95-cpp-input/" \
   ${INCFILE}
 
