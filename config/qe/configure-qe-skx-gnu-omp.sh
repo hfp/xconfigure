@@ -30,7 +30,7 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-TARGET="-march=core-avx2"
+TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
 #IPO="-flto -Wl,-flto"
 EXX_ACE="-D__EXX_ACE"
 OPTC=-O3
@@ -39,7 +39,7 @@ if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 
 
 HERE=$(cd $(dirname $0); pwd -P)
-export ELPAROOT="${HERE}/../elpa/${PRFX}hsw-omp"
+export ELPAROOT="${HERE}/../elpa/${PRFX}skx-omp"
 export OPENMP="--enable-openmp"
 export LD_LIBS="-Wl,--as-needed -lgomp -lm -Wl,--no-as-needed"
 
@@ -62,7 +62,7 @@ export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
   -Wl,--end-group"
 export LAPACK_LIBS="${BLAS_LIBS}"
 export SCALAPACK_LIBS="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.a"
-#export SCALAPACK_LIBS="${HOME}/scalapack/${PRFX}hsw/libscalapack.a"
+#export SCALAPACK_LIBS="${HOME}/scalapack/${PRFX}skx/libscalapack.a"
 export FFT_LIBS="${BLAS_LIBS}"
 
 rm -f make.sys make.inc
