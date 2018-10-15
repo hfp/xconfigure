@@ -1,8 +1,8 @@
 # CP2K<a name="cp2k-open-source-molecular-dynamics"></a>
 
-This document focuses on building and running the [Intel branch of CP2K](https://github.com/cp2k/cp2k/tree/intel). However, it applies to CP2K in general (unless emphasized). The Intel branch is hosted at GitHub and is supposed to represent the master version of CP2K in a timely fashion. <a name="getting-the-source-code"></a>CP2K's main repository is hosted at SourceForge but it is automatically mirrored at GitHub. The LIBXSMM library can be found at [https://github.com/hfp/libxsmm](https://libxsmm.readthedocs.io). In terms of functionality (and performance) it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, it is strongly recommended to use [LIBXSMM](../libxsmm/README.md#libxsmm) which has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history). LIBXSMM is intended to substitute CP2K's "libsmm" library.
+<a name="getting-the-source-code"></a>This document focuses on building and running the [Intel fork of CP2K](https://github.com/hfp/cp2k.git). The fork was formerly a branch of CP2K's Git-mirror; however CP2K is meanwhile natively hosted at GitHub. This work is supposed to track the master version of CP2K in a timely fashion. The LIBXSMM library is highly recommended and can be found at [https://github.com/hfp/libxsmm](https://libxsmm.readthedocs.io). In terms of functionality (and performance) it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, [LIBXSMM](../libxsmm/README.md#libxsmm) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and intends to substitute CP2K's "libsmm" library).
 
-<a name="recommended-intel-compiler"></a>There are below Intel compiler releases (one can combine components from different versions), which are known to reproduce correct results (regression tests):
+<a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests (it is possible to combine components from different versions):
 
 * Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
     * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64
@@ -31,21 +31,20 @@ chmod +x info.sh
 
 ## Build Instructions<a name="build-and-run-instructions"></a>
 
-### Build the CP2K/Intel Branch
+### Build the Intel-fork of CP2K<a name="build-the-cp2kintel-branch"></a>
 
-To build [CP2K/Intel](https://github.com/cp2k/cp2k/tree/intel) from source, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
+To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
 
 ```bash
 source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
 ```
 
-LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel branch. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
+LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
-git clone --branch intel https://github.com/cp2k/cp2k.git cp2k.git
-ln -s cp2k.git/cp2k cp2k
-cd cp2k/makefiles
+git clone https://github.com/hfp/cp2k.git
+cd cp2k
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 ```
 
@@ -60,7 +59,7 @@ To further improve performance and versatility, one should supply LIBINTROOT, LI
 
 Here are two ways to build an official release of CP2K using an Intel tool chain:
 
-* Use the ARCH files from CP2K/intel branch.
+* Use the ARCH files from CP2K/intel fork.
 * Write an own ARCH file.
 
 LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
@@ -78,7 +77,7 @@ tar xvf 1.9.tar.gz
 cd libxsmm-1.9 ; make
 ```
 
-Taking the ARCH files that are part of the CP2K/Intel branch automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
+Taking the ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -103,17 +102,17 @@ To configure, build, and install LIBINT (version&#160;1.1.5 and 1.1.6 have been 
 
 To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/README/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make). After CP2K&#160;5.1, only the latest major release of LIBXC (by the time of the CP2K-release) will be supported (e.g., LIBXC&#160;4.x by the time of CP2K&#160;6.1).
 
-To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../elpa/README/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-branch defaults to ELPA-2017.05 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
+To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../elpa/README/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-fork defaults to ELPA-2017.05 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
 
 ```bash
 make ARCH=Linux-x86-64-intelx VERSION=psmp ELPAROOT=/path/to/elpa/default-arch
 ```
 
-At runtime, a build of the Intel-branch supports an environment variable CP2K_ELPA:
+At runtime, a build of the Intel-fork supports an environment variable CP2K_ELPA:
 
 * **CP2K_ELPA=-1**: requests ELPA to be enabled; the actual kernel type depends on the ELPA configuration.
-* **CP2K_ELPA=0**: ELPA is not enabled by default (only on request via input file); same as non-Intel branch.
-* **CP2K_ELPA**=&lt;not-defined&gt;: requests ELPA-kernel according to CPUID (default with CP2K/Intel-branch).
+* **CP2K_ELPA=0**: ELPA is not enabled by default (only on request via input file); same as non-Intel fork.
+* **CP2K_ELPA**=&lt;not-defined&gt;: requests ELPA-kernel according to CPUID (default with CP2K/Intel-fork).
 
 ### Memory Allocation
 
@@ -138,10 +137,10 @@ mpirun -np 16 \
 
 For an actual workload, one may try `cp2k/tests/QS/benchmark/H2O-32.inp`, or for example the workloads under `cp2k/tests/QS/benchmark_single_node` which are supposed to fit into a single node (in fact to fit into 16 GB of memory). For the latter set of workloads (and many others), LIBINT and LIBXC may be required.
 
-The CP2K/Intel branch carries several "reconfigurations" and environment variables, which allow to adjust important runtime options. Most of these options are also accessible via the input file format (input reference e.g., [https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL/DBCSR.html](https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL/DBCSR.html)).
+The CP2K/Intel fork carries several "reconfigurations" and environment variables, which allow to adjust important runtime options. Most of these options are also accessible via the input file format (input reference e.g., [https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL/DBCSR.html](https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL/DBCSR.html)).
 
-* **CP2K_RECONFIGURE**: environment variable for reconfiguring CP2K (default depends on whether the ACCeleration layer is enabled or not). With the ACCeleration layer enabled, CP2K is reconfigured (as if CP2K_RECONFIGURE=1 is set) e.g. an increased number of entries per matrix stack is populated, and otherwise CP2K is not reconfigured. Further, setting CP2K_RECONFIGURE=0 is disabling the code specific to the [Intel branch of CP2K](https://github.com/cp2k/cp2k/tree/intel), and relies on the (optional) LIBXSMM integration into [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and later).
-* **CP2K_STACKSIZE**: environment variable which denotes the number of matrix multiplications which is collected into a single stack. Usually the internal default performs best across a variety of workloads, however depending on the workload a different value can be better. This variable is relatively impactful since the work distribution and balance is affected.
+* **CP2K_RECONFIGURE**: environment variable for reconfiguring CP2K (default depends on whether the ACCeleration layer is enabled or not). With the ACCeleration layer enabled, CP2K is reconfigured (as if CP2K_RECONFIGURE=1 is set) e.g. an increased number of entries per matrix stack is populated, and otherwise CP2K is not reconfigured. Further, setting CP2K_RECONFIGURE=0 is disabling the code specific to the [Intel fork of CP2K](https://github.com/hfp/cp2k.git), and relies on the (optional) LIBXSMM integration into [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and later).
+* **CP2K_STACKSIZE**: environment variable which denotes the number of matrix multiplications which is collected into a single stack. Usually the internal default performs best across a variety of workloads, however depending on the workload a different value can be better. This variable can be of relatively high impact since the work distribution and balance is affected.
 * **CP2K_HUGEPAGES**: environment variable for disabling (0) memory allocation based on huge pages, which is enabled by default (if TBBROOT was present at build-time of the application).
 * **CP2K_RMA**: enables (1) an experimental Remote Memory Access (RMA) based multiplication algorithm (requires MPI3).
 * **CP2K_SORT**: enables (1) an indirect sorting of each multiplication stack according to the C-index (experimental).
