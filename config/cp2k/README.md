@@ -83,15 +83,33 @@ Taking the ARCH files that are part of the CP2K/Intel fork automatically picks u
 git clone https://github.com/hfp/libxsmm.git
 https://github.com/cp2k/cp2k/releases/download/v6.1.0/cp2k-6.1.tar.bz2
 tar xvf cp2k-6.1.tar.bz2
+```
+
+To download the ARCH files from the Intel-fork, simply run the following:
+
+```bash
+cd cp2k-6.1
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh cp2k
+```
+
+Alternatively, one can download the afore mentioned ARCH-files manually:
+
+```bash
 cd cp2k-6.1/arch
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
-cd ..
+```
+
+To build the official CP2K sources/release now works the same way as for the Intel-fork:
+
+```bash
 source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=2
+cd cp2k-6.1/makefiles; make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=2
 ```
 
 To further improve performance and versatility, one may supply LIBINTROOT, LIBXCROOT, and ELPAROOT when relying on CP2K/Intel's ARCH files (see the following section about these libraries).
