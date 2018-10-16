@@ -108,16 +108,19 @@ if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/.filelist 2>
   ${CAT} ${MSGBUFFER}
 fi
 if [ -e .filelist ]; then
-  for LINE in $(${CAT} .filelist | ${TR} -s " "); do
+  ${CAT} .filelist | ${TR} -s " " | \
+  while read LINE; do
     FILE=$(${ECHO} "${LINE}" | ${CUT} -d" " -f1)
     DIR=$(${ECHO} "${LINE}" | ${CUT} -d" " -f2)
-    if [ "${FILE}" =~ "://" ]; then
-      ${WGET} -N ${FILE}
-    else
-      ${WGET} -N ${BASEURL}/${APPLICATION}/${FILE}
-    fi
-    if [ -d ${DIR} ]; then
-      ${MV} $(${BASENAME} ${FILE}) ${DIR}
+    if [ "" != "${LINE}" ]; then # skip empty lines
+      if [[ "${FILE}" =~ "://" ]]; then
+        ${WGET} -N ${FILE}
+      else
+        ${WGET} -N ${BASEURL}/${APPLICATION}/${FILE}
+      fi
+      if [ "${FILE}" != "${DIR}" ] && [ -d ${DIR} ]; then
+        ${MV} $(${BASENAME} ${FILE}) ${DIR}
+      fi
     fi
   done
   # cleanup list of file names
