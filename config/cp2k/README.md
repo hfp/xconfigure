@@ -81,9 +81,9 @@ Taking the ARCH files that are part of the CP2K/Intel fork automatically picks u
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
-wget https://sourceforge.net/projects/cp2k/files/cp2k-5.1.tar.bz2
-tar xvf cp2k-5.1.tar.bz2
-cd cp2k-5.1/arch
+https://github.com/cp2k/cp2k/releases/download/v6.1.0/cp2k-6.1.tar.bz2
+tar xvf cp2k-6.1.tar.bz2
+cd cp2k-6.1/arch
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
