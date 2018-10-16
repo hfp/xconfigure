@@ -1,6 +1,6 @@
 # CP2K<a name="cp2k-open-source-molecular-dynamics"></a>
 
-<a name="getting-the-source-code"></a>This document focuses on building and running the [Intel fork of CP2K](https://github.com/hfp/cp2k.git). The fork was formerly a branch of CP2K's Git-mirror; however CP2K is meanwhile natively hosted at GitHub. This work is supposed to track the master version of CP2K in a timely fashion. The LIBXSMM library is highly recommended and can be found at [https://github.com/hfp/libxsmm](https://libxsmm.readthedocs.io). In terms of functionality (and performance) it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, [LIBXSMM](../libxsmm/README.md#libxsmm) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and intends to substitute CP2K's "libsmm" library).
+<a name="getting-the-source-code"></a>This document focuses on building and running the [Intel fork of CP2K](https://github.com/hfp/cp2k.git). The fork was formerly a branch of CP2K's Git-mirror; CP2K is meanwhile natively hosted at GitHub. This work is supposed to track the master version of CP2K in a timely fashion. The LIBXSMM library is highly recommended and can be found at [https://github.com/hfp/libxsmm](https://libxsmm.readthedocs.io). In terms of functionality (and performance) it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, [LIBXSMM](../libxsmm/README.md#libxsmm) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and intends to substitute CP2K's "libsmm" library).
 
 <a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests (it is possible to combine components from different versions):
 
@@ -44,7 +44,7 @@ LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Inte
 ```bash
 git clone https://github.com/hfp/libxsmm.git
 git clone https://github.com/hfp/cp2k.git
-cd cp2k
+cd cp2k; rm -rf exe lib obj
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 ```
 
@@ -118,7 +118,7 @@ At runtime, a build of the Intel-fork supports an environment variable CP2K_ELPA
 
 Dynamic allocation of heap memory usually requires global book keeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
 
-To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K. Usually, Intel TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
+To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K (default: `TBBMALLOC=0`). Usually, Intel TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
 
 ## Run Instructions<a name="running-the-application"></a>
 
@@ -141,7 +141,7 @@ The CP2K/Intel fork carries several "reconfigurations" and environment variables
 
 * **CP2K_RECONFIGURE**: environment variable for reconfiguring CP2K (default depends on whether the ACCeleration layer is enabled or not). With the ACCeleration layer enabled, CP2K is reconfigured (as if CP2K_RECONFIGURE=1 is set) e.g. an increased number of entries per matrix stack is populated, and otherwise CP2K is not reconfigured. Further, setting CP2K_RECONFIGURE=0 is disabling the code specific to the [Intel fork of CP2K](https://github.com/hfp/cp2k.git), and relies on the (optional) LIBXSMM integration into [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and later).
 * **CP2K_STACKSIZE**: environment variable which denotes the number of matrix multiplications which is collected into a single stack. Usually the internal default performs best across a variety of workloads, however depending on the workload a different value can be better. This variable can be of relatively high impact since the work distribution and balance is affected.
-* **CP2K_HUGEPAGES**: environment variable for disabling (0) memory allocation based on huge pages, which is enabled by default (if TBBROOT was present at build-time of the application).
+* **CP2K_HUGEPAGES**: environment variable for disabling (0) memory allocation based on huge pages (enabled if TBBROOT was present at build-time and `TBBMALLOC=1` was given).
 * **CP2K_RMA**: enables (1) an experimental Remote Memory Access (RMA) based multiplication algorithm (requires MPI3).
 * **CP2K_SORT**: enables (1) an indirect sorting of each multiplication stack according to the C-index (experimental).
 
