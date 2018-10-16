@@ -36,7 +36,7 @@ chmod +x info.sh
 To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 ```
 
 LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
@@ -57,12 +57,12 @@ To further improve performance and versatility, one should supply LIBINTROOT, LI
 
 ### Build an Official Release
 
-Here are two ways to build an official release of CP2K using an Intel tool chain:
+Here are two ways to build an [official release of CP2K](https://github.com/cp2k/cp2k/releases) using an Intel tool chain:
 
 * Use the ARCH files from CP2K/intel fork.
 * Write an own ARCH file.
 
-LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file. Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
+LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -84,13 +84,13 @@ git clone https://github.com/hfp/libxsmm.git
 wget https://sourceforge.net/projects/cp2k/files/cp2k-5.1.tar.bz2
 tar xvf cp2k-5.1.tar.bz2
 cd cp2k-5.1/arch
-wget https://github.com/cp2k/cp2k/raw/intel/cp2k/arch/Linux-x86-64-intelx.arch
-wget https://github.com/cp2k/cp2k/raw/intel/cp2k/arch/Linux-x86-64-intelx.popt
-wget https://github.com/cp2k/cp2k/raw/intel/cp2k/arch/Linux-x86-64-intelx.psmp
-wget https://github.com/cp2k/cp2k/raw/intel/cp2k/arch/Linux-x86-64-intelx.sopt
-wget https://github.com/cp2k/cp2k/raw/intel/cp2k/arch/Linux-x86-64-intelx.ssmp
-cd ../makefiles
-source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
+cd ..
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=2
 ```
 
