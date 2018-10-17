@@ -66,15 +66,14 @@ if [ "0" != "${NUMFILES}" ]; then
 fi
 
 for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
-  BASENAME=$(basename ${FILE})
-  NAME=$(echo ${BASENAME} | cut -d. -f1)
-  NODERANKS=$(grep "^mpirun" ${FILE} | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1)
-  TPERR=$(grep OMP_NUM_THREADS ${FILE} | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")
+  BASENAME=$(basename ${FILE} | rev | cut -d. -f2- | rev)
+  NODERANKS=$(grep "^mpirun" ${FILE} | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | tail -n1 | cut -d" " -f1)
+  TPERR=$(grep OMP_NUM_THREADS ${FILE} | tail -n1 | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")
   if [ "" = "${TPERR}" ]; then
     TPERR=$(grep "Threads/MPI process:" ${FILE} | sed -n "s/..*\s\s*\([0-9][0-9]*\)/\1/p")
     if [ "" = "${TPERR}" ] || [ "0" = "${TPERR}" ]; then TPERR=1; GUESS=1; fi
   fi
-  RANKS=$(grep "^mpirun" ${FILE} | grep "\-perhost" | sed -n "s/..*-perhost\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1 | tr -d -c [:digit:])
+  RANKS=$(grep "^mpirun" ${FILE} | grep "\-perhost" | sed -n "s/..*-perhost\s\s*\([^\s][^\s]*\).*/\1/p" | cut -d" " -f1 | tail -n1 | tr -d -c [:digit:])
   if [ "" = "${RANKS}" ]; then
     RANKS=$(sed -n "s/ *Number of MPI processes:  *\([0-9][0-9]*\)\s*$/\1/p" ${FILE})
     if [ "" = "${RANKS}" ]; then
@@ -93,7 +92,7 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
       NODES=$(echo ${BASENAME} | tr -s -c [:digit:] "-" | cut -d- -f2)
     fi
     NODERANKS=${RANKS}
-    if [ "" != "${NODES}" ]; then
+    if [ "" != "${NODES}" ] && [ "0" != "$((NODES<=NODERANKS))" ]; then
       RANKS=$((NODERANKS/NODES))
     else
       GUESS=1
@@ -128,14 +127,14 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
     NTG=$(grep "fft and procs/group =" ${FILE} | cut -d= -f2 | tr -s " " | cut -d" " -f2 \
           | sed -n "s/\([0-9][0-9]*\)/\1/p")
     if [ "0" != "${TWALL}" ]; then
-      echo -e -n "$(printf %-23.23s ${NAME})\t${NODES}\t${RANKS}\t${TPERR}"
+      echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t$(printf %-7.7s ${TWALL}${FSCDS})"
       echo -e -n "\t${NPOOL}"
       echo -e -n "\t${NDIAG}"
       echo -e -n "\t${NTG}"
       echo
     elif [ "0" != "${NUMFILES}" ] && [ "0" = "${BEST}" ] && [ "0" = "${GUESS=1}" ]; then
-      echo -e -n "$(printf %-23.23s ${NAME})\t${NODES}\t${RANKS}\t${TPERR}"
+      echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t0\t-"
       echo -e -n "\t${NPOOL}"
       echo -e -n "\t${NDIAG}"
