@@ -26,6 +26,7 @@ pages:
   - LIBINT: libint/README.md
   - LIBXC: libxc/README.md
   - LIBXSMM: libxsmm/README.md
+  - TF: tf/README.md
   - QE: qe/README.md
 - About:
   - Contributing: CONTRIBUTING.md
