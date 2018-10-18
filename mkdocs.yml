@@ -18,7 +18,6 @@ theme:
     custom_dir: .theme
 theme_dir: .theme
 
-use_directory_urls: true
 pages:
 - index.md
 - Applications:
