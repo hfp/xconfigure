@@ -30,7 +30,7 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-TARGET="-xCORE-AVX2"
+TARGET="-march=core-avx2"
 OMPFLAG="-qopenmp -qoverride_limits"
 #IPO="-ipo-separate"
 OPTC=-O3
