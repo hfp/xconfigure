@@ -103,7 +103,7 @@ for FILE in ${FILES}; do
     TPERR=$(grep OMP_NUM_THREADS ${FILE} | tail -n1 | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")
     if [ "" = "${TPERR}" ]; then
       TPERR=$(grep "GLOBAL| Number of threads for this process" ${FILE} | grep -m1 -o "[0-9][0-9]*")
-      if [ "" = "${TPERR}" ]; then TPERR=1; fi
+      if [ "" = "${TPERR}" ] || [ "0" = "${TPERR}" ]; then TPERR=1; fi
     fi
     DURATION=$(grep "CP2K                                 1" ${FILE} | tr -s "\n" " " | tr -s " " | cut -d" " -f7)
     TWALL=$(echo "${DURATION}" | cut -d. -f1 | sed -n "s/\([0-9][0-9]*\)/\1/p")
