@@ -122,9 +122,13 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
     RANPP=$(grep "proc/nbgrp/npool/nimage =" ${FILE} | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
     if [ "" = "${RANPP}" ] || [ "0" = "${RANPP}" ]; then RANPP=${RANKS}; fi
     NPOOL=$((NODERANKS/RANPP))
-    NDIAG=$(($(grep "size of sub-group:" ${FILE} | cut -d: -f2 | cut -dp -f1)))
-    if [ "0" = "${NDIAG}" ]; then NDIAG=$((RANPP/2)); fi
-    if [ "0" = "${NDIAG}" ]; then NDIAG=1; fi
+    NDIAG=$(grep "size of sub-group:" ${FILE} | cut -d: -f2 | cut -dp -f1 | tr -dc [:graph:])
+    if [ "" = "${NDIAG}" ]; then
+      NDIAG=$((RANPP/2))
+      if [ "0" = "${NDIAG}" ]; then NDIAG=1; fi
+    else
+      NDIAG=$((NDIAG))
+    fi
     NTG=$(grep "fft and procs/group =" ${FILE} | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
     if [ "0" != "${TWALL}" ]; then
       echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
