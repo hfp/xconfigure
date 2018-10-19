@@ -102,9 +102,9 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
   fi
   if [ "" != "${NODERANKS}" ] && [ "" != "${RANKS}" ] && [ "0" != "${RANKS}" ]; then
     NODES=$((NODERANKS/RANKS))
-    XTOTAL=$(grep "PWSCF        :" ${FILE})
+    XTOTAL=$(grep "PWSCF        :" ${FILE} | tail -n1)
     if [ "" = "${XTOTAL}" ]; then
-      XTOTAL=$(grep "CP           :" ${FILE})
+      XTOTAL=$(grep "CP           :" ${FILE} | tail -n1)
     fi
     TOTAL=$(echo "${XTOTAL}" | sed -n "s/.\+ CPU \+\(.\+\) WALL/\1/p" | tr -dc [:graph:] \
       | sed -n "s/^\([0-9]\+d\)*\([0-9]\+h\)*\([0-9]\+m\)*\([0-9]*\.[0-9]*s\)*$/\1  \2  \3  \4/p" \
@@ -119,17 +119,17 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
     if [ "" = "${HOURS}" ]; then HOURS=0; fi
     if [ "" = "${NDAYS}" ]; then NDAYS=0; fi
     TWALL=$((SECDS + 60 * MINTS + 3600 * HOURS + 86400 * NDAYS))
-    RANPP=$(grep "proc/nbgrp/npool/nimage =" ${FILE} | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
+    RANPP=$(grep "proc/nbgrp/npool/nimage =" ${FILE} | tail -n1 | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
     if [ "" = "${RANPP}" ] || [ "0" = "${RANPP}" ]; then RANPP=${RANKS}; fi
     NPOOL=$((NODERANKS/RANPP))
-    NDIAG=$(grep "size of sub-group:" ${FILE} | cut -d: -f2 | cut -dp -f1 | tr -dc [:graph:])
+    NDIAG=$(grep "size of sub-group:" ${FILE} | tail -n1 | cut -d: -f2 | cut -dp -f1 | tr -dc [:graph:])
     if [ "" = "${NDIAG}" ]; then
       NDIAG=$((RANPP/2))
       if [ "0" = "${NDIAG}" ]; then NDIAG=1; fi
     else
       NDIAG=$((NDIAG))
     fi
-    NTG=$(grep "fft and procs/group =" ${FILE} | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
+    NTG=$(grep "fft and procs/group =" ${FILE} | tail -n1 | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
     if [ "0" != "${TWALL}" ]; then
       echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t$(printf %-7.7s ${TWALL}${FSCDS})"
