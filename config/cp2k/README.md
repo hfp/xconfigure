@@ -58,7 +58,7 @@ cd cp2k; rm -rf exe lib obj
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1
 ```
 
-To further adjust CP2K at build time, additional key-value pairs can be passed at Make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
+Using the GNU tool-chain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.g., `configure-elpa-skx-gnu-omp.sh` instead of `configure-elpa-skx-omp.sh`). To further adjust CP2K at build time, additional key-value pairs can be passed at Make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
 
 * **SYM**: set `SYM=1` to include debug symbols into the executable e.g., helpful with performance profiling.
 * **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.

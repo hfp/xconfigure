@@ -42,7 +42,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS="--enable-openmp"
+CONFOPTS="--enable-avx512 --enable-openmp"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
