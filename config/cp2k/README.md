@@ -49,7 +49,16 @@ cd cp2k; rm -rf exe lib obj
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 ```
 
-To further adjust CP2K at build time, additional key-value pairs can be passed at make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
+Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel MPI and Intel MKL, one can rely on the GNU-key (`GNU=1`):
+
+```bash
+git clone https://github.com/hfp/libxsmm.git
+git clone https://github.com/hfp/cp2k.git
+cd cp2k; rm -rf exe lib obj
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1
+```
+
+To further adjust CP2K at build time, additional key-value pairs can be passed at Make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
 
 * **SYM**: set `SYM=1` to include debug symbols into the executable e.g., helpful with performance profiling.
 * **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.
@@ -78,7 +87,7 @@ tar xvf 1.9.tar.gz
 cd libxsmm-1.9 ; make
 ```
 
-Taking the ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
+Taking the ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on Make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -188,7 +197,7 @@ The column called "Convergence" must monotonically converge towards zero.
 
 ## Performance
 
-An info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). For legacy reasons (run command is not part of the log, etc.), certain schemes for the filename are eventually parsed and translated as well.
+An info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). If for some reason the command to launch CP2K is not part of the log and the run-arguments cannot be determined otherwise, the number of nodes is eventually parsed using the filename of the log itself (e.g., first occurrence of a number along with an optional "n" is treated as the number of nodes used for execution).
 
 ```bash
 ./run-cp2k.sh | tee cp2k-h2o64-2x32x2.txt

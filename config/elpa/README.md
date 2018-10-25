@@ -20,7 +20,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -69,7 +69,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -100,7 +100,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"):
@@ -131,7 +131,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2017.6.256/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon E5v4 processor (formerly codenamed "Broadwell"):
