@@ -6,7 +6,7 @@
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
-**NOTE**: this version fails the ELPA regression tests in CP2K, and hence it should be avoided for use in production with CP2K or Quantum Espresso (QE).
+**NOTE**: this version **fails ELPA regression tests** in CP2K, and hence it should be avoided for use in production with CP2K or Quantum Espresso (QE).
 
 ```bash
 wget https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001/elpa-2018.05.001.tar.gz
