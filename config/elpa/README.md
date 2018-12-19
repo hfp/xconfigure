@@ -46,7 +46,7 @@ After building and installing the desired configuration(s), one may have a look 
 For different targets (instruction set extensions) or for different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
 
 ```bash
-./configure-elpa-hsw-omp.sh tagname
+./configure-elpa-skx-omp.sh tagname
 ```
 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
