@@ -143,6 +143,87 @@ At runtime, a build of the Intel-fork supports an environment variable CP2K_ELPA
 * **CP2K_ELPA=0**: ELPA is not enabled by default (only on request via input file); same as non-Intel fork.
 * **CP2K_ELPA**=&lt;not-defined&gt;: requests ELPA-kernel according to CPUID (default with CP2K/Intel-fork).
 
+### Step-by-step Guide
+
+This step-by-step guide attempts to build the official release of CP2K. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
+
+The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
+
+```bash
+cd $HOME
+wget https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+tar xvf elpa-2017.11.001.tar.gz
+cd elpa-2017.11.001
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh elpa
+./configure-elpa-skx-gnu-omp.sh
+make -j
+make install
+make clean
+```
+
+The second step builds LIBINT, which should not be cross-compiled. Simply compile on the real target-architecture.
+
+```bash
+cd $HOME
+wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
+tar xvf release-1-1-6.tar.gz
+cd libint-release-1-1-6
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh libint
+configure-libint-skx-gnu.sh
+make -j
+make install
+make distclean
+```
+
+The third step builds LIBXC.
+
+```bash
+cd $HOME
+wget --content-disposition http://www.tddft.org/programs/octopus/down.php?file=libxc/4.2.3/libxc-4.2.3.tar.gz
+tar xvf libxc-4.2.3.tar.gz
+cd libxc-4.2.3
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh libxc
+configure-libxc-skx-gnu.sh
+make -j
+make install
+make distclean
+```
+
+The fourth step makes LIBXSMM available, which is compiled as part of the next step.
+
+```bash
+cd $HOME
+wget https://github.com/hfp/libxsmm/archive/63ca18bbae122e74d26b73d14e2bc59b07808d83.tar.gz
+tar xvf libxsmm-63ca18bbae122e74d26b73d14e2bc59b07808d83.tar.gz
+```
+
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (do not reuse older/outdated files).
+
+```bash
+cd $HOME
+wget https://github.com/cp2k/cp2k/archive/v6.1.0.tar.gz
+tar xvf cp2k-6.1.0.tar.gz
+cd cp2k-6.1.0
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh cp2k
+patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
+rm -rf exe lib obj
+cd makefiles
+make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 AVX=3 MIC=0 \
+	LIBINTROOT=$HOME/libint/gnu-skx \
+	LIBXCROOT=$HOME/libxc/gnu-skx \
+	ELPAROOT=$HOME/elpa/gnu-skx-omp -j
+```
+
+The CP2K executable should be now ready (`exe/Linux-x86-64-intelx/cp2k.psmp`).
+
 ### Memory Allocation
 
 Dynamic allocation of heap memory usually requires global book keeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
