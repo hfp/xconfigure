@@ -131,7 +131,7 @@ To configure, build, and install LIBINT (version&#160;1.1.5 and 1.1.6 have been 
 
 To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/README/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make). After CP2K&#160;5.1, only the latest major release of LIBXC (by the time of the CP2K-release) will be supported (e.g., LIBXC&#160;4.x by the time of CP2K&#160;6.1).
 
-To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../elpa/README/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-fork defaults to ELPA-2017.05 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
+To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../elpa/README/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-fork defaults to ELPA-2017.11 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
 
 ```bash
 make ARCH=Linux-x86-64-intelx VERSION=psmp ELPAROOT=/path/to/elpa/default-arch
