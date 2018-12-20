@@ -199,8 +199,8 @@ The fourth step makes LIBXSMM available, which is compiled as part of the next s
 
 ```bash
 cd $HOME
-wget https://github.com/hfp/libxsmm/archive/63ca18bbae122e74d26b73d14e2bc59b07808d83.tar.gz
-tar xvf libxsmm-63ca18bbae122e74d26b73d14e2bc59b07808d83.tar.gz
+wget https://github.com/hfp/libxsmm/archive/master.tar.gz
+tar xvf libxsmm-master.tar.gz
 ```
 
 This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (do not reuse older/outdated files).
