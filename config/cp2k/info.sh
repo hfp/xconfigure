@@ -44,6 +44,14 @@ else
   SORT="sort -k2,2n -k6,6n"
 fi
 
+if [ "-depth" = "$1" ]; then
+  DEPTH=$2
+  shift 2
+fi
+if [ "" = "${DEPTH}" ]; then
+  DEPTH=1
+fi
+
 if [ "" != "$1" ] && [ -e $1 ]; then
   FILEPATH="$1"
   shift
@@ -51,12 +59,12 @@ else
   FILEPATH="."
 fi
 
-NUMFILES=$(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}" | wc -l)
+NUMFILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}" | wc -l)
 if [ "0" = "${NUMFILES}" ]; then
   PATTERN="*"
 fi
 
-FILES=$(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}")
+FILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}")
 FILE0=$(echo "${FILES}" | head -n1)
 PRINTFLOPS=0
 NUMFILES=0
