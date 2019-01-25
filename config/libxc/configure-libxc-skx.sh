@@ -37,7 +37,7 @@ DEST=${HERE}/../libxc/${PRFX}skx
 if [ "${HERE}" = "${DEST}" ]; then
   echo "Warning: LIBXC source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
-  if [ ! $REPLY =~ ^[Yy]$ ]; then
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
   fi
 fi

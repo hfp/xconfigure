@@ -37,7 +37,7 @@ DEST=${HERE}/../elpa/${PRFX}skx-omp
 if [ "${HERE}" = "${DEST}" ]; then
   echo "Warning: ELPA source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
-  if [ ! $REPLY =~ ^[Yy]$ ]; then
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
   fi
 fi
