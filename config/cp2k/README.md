@@ -104,7 +104,7 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-Alternatively, one can download the afore mentioned ARCH-files manually:
+<a name="get-the-arch-files"></a>Alternatively, one can download the afore mentioned ARCH-files manually:
 
 ```bash
 cd cp2k-6.1/arch
