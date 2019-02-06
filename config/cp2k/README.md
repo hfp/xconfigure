@@ -12,8 +12,7 @@
 * Intel Compiler&#160;2018 (u3, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
     * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2019 (u1):  (fail at runtime)
-    * source /opt/intel/compilers_and_libraries_2019.1.144/linux/bin/compilervars.sh intel64
+* Intel Compiler&#160;2019 (u1, u2): failure at runtime
 * Intel MPI; usually any version is fine
 
 There are no configuration wrapper scripts provided for CP2K, please follow below recipe. However, attempting to run below command yields an [info-script](#performance):
