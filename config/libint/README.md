@@ -2,7 +2,7 @@
 
 ## Version&#160;1.x
 
-For CP2K, LIBINT&#160;1.x is required. [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
+For CP2K, LIBINT&#160;1.1.x is required (1.2.x or 2.x cannot be used). [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
 
 ```bash
 wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
