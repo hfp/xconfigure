@@ -16,9 +16,8 @@ extra_css:
 theme:
     name: readthedocs
     custom_dir: .theme
-theme_dir: .theme
 
-pages:
+nav:
 - index.md
 - Applications:
   - CP2K: cp2k/README.md
