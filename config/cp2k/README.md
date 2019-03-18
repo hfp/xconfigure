@@ -5,13 +5,13 @@
 <a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests (it is possible to combine components from different versions):
 
 * Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
-    * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
-      source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
+  * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
+    source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
 * Intel Compiler&#160;2017 Update&#160;4, and any later update of the 2017 suite (u4, u5, u6, u7)
-    * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
+  * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2018 (u3, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
-    * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
-    * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
+  * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+  * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
 * Intel MPI; usually any version is fine
 
@@ -216,9 +216,9 @@ patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
 rm -rf exe lib obj
 cd makefiles
 make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 AVX=3 MIC=0 \
-	LIBINTROOT=$HOME/libint/gnu-skx \
-	LIBXCROOT=$HOME/libxc/gnu-skx \
-	ELPAROOT=$HOME/elpa/gnu-skx-omp -j
+  LIBINTROOT=$HOME/libint/gnu-skx \
+  LIBXCROOT=$HOME/libxc/gnu-skx \
+  ELPAROOT=$HOME/elpa/gnu-skx-omp -j
 ```
 
 The CP2K executable should be now ready (`exe/Linux-x86-64-intelx/cp2k.psmp`).
@@ -245,7 +245,7 @@ mpirun -np 16 \
 
 It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and thread affinization (with no performance penalty) at startup of the application. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with the above mentioned 48-core system type) may look like:
 
-```
+```text
 ./plan.sh 8 48
 ================================================================================
 Planning for 8 node(s) with 2x24 core(s) per node and 2 threads per core.
@@ -272,7 +272,7 @@ mpirun -perhost 24 -host node1,node2,node3,node4,node5,node6,node7,node8 \
 
 There is nothing that can replace the full regression test suite. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
 
-```
+```text
   Step     Update method      Time    Convergence         Total energy    Change
   ------------------------------------------------------------------------------
      1 OT DIIS     0.15E+00    0.5     0.01337191     -1059.6804814927 -1.06E+03
@@ -294,7 +294,7 @@ The column called "Convergence" must monotonically converge towards zero.
 
 The [script](#plan-script) for planning MPI-execution (`plan.sh`) is highly recommend along with reading the section about [how to run CP2K](#run-instructions). As soon as several experiments finished, it becomes handy to summarize the log-output. For this use case, an info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). If for some reason the command to launch CP2K is not part of the log and the run-arguments cannot be determined otherwise, the number of nodes is eventually parsed using the filename of the log itself (e.g., first occurrence of a number along with an optional "n" is treated as the number of nodes used for execution).
 
-```bash
+```text
 ./run-cp2k.sh | tee cp2k-h2o64-2x32x2.txt
 ls -1 *.txt
 cp2k-h2o64-2x32x2.txt
