@@ -136,6 +136,6 @@ if [ "" = "$(${LS} -1 configure-${APPLICATION}*.sh 2>/dev/null)" ]; then
   # display reminder about build recipe
   ${ECHO}
   ${ECHO} "There is no configuration needed! Please read:"
-  ${ECHO} "https://xconfigure.readthedocs.io/${APPLICATION}/README/"
+  ${ECHO} "https://xconfigure.readthedocs.io/${APPLICATION}/"
 fi
 

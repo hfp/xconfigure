@@ -12,7 +12,7 @@
 * Intel Compiler&#160;2018 (u3, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
     * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2019 (u1, u2): failure at runtime
+* Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
 * Intel MPI; usually any version is fine
 
 There are no configuration wrapper scripts provided for CP2K, please follow below recipe. However, attempting to run below command yields an [info-script](#performance):
@@ -126,11 +126,11 @@ To further improve performance and versatility, one may supply LIBINTROOT, LIBXC
 
 ### LIBINT, LIBXC<a name="libint-and-libxc-dependencies"></a>, and ELPA<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>
 
-To configure, build, and install LIBINT (version&#160;1.1.5 and 1.1.6 have been tested), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../libint/README.md#libint). Also note there is no straightforward way to cross-compile LIBINT&#160;1.1.x for an instruction set extension that is not supported by the compiler host. To incorporate LIBINT into CP2K, the key `LIBINTROOT=/path/to/libint` needs to be supplied when using CP2K/Intel's ARCH files (make).
+To configure, build, and install LIBINT (version&#160;1.1.5 and 1.1.6 have been tested), one can proceed with [https://xconfigure.readthedocs.io/libint/](../libint/README.md#libint). Also note there is no straightforward way to cross-compile LIBINT&#160;1.1.x for an instruction set extension that is not supported by the compiler host. To incorporate LIBINT into CP2K, the key `LIBINTROOT=/path/to/libint` needs to be supplied when using CP2K/Intel's ARCH files (make).
 
-To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/README/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make). After CP2K&#160;5.1, only the latest major release of LIBXC (by the time of the CP2K-release) will be supported (e.g., LIBXC&#160;4.x by the time of CP2K&#160;6.1).
+To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make). After CP2K&#160;5.1, only the latest major release of LIBXC (by the time of the CP2K-release) will be supported (e.g., LIBXC&#160;4.x by the time of CP2K&#160;6.1).
 
-To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/README/](../elpa/README/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-fork defaults to ELPA-2017.11 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
+To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/](../elpa/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-fork defaults to ELPA-2017.11 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
 
 ```bash
 make ARCH=Linux-x86-64-intelx VERSION=psmp ELPAROOT=/path/to/elpa/default-arch
@@ -231,28 +231,42 @@ To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely
 
 ## Run Instructions<a name="running-the-application"></a>
 
-Running the application may go beyond a single node, however for first example the pinning scheme and thread affinization is introduced.
-As a rule of thumb, a high rank-count for single-node computation (perhaps according to the number of physical CPU cores) may be preferred. In contrast (communication bound), a lower rank count for multi-node computations may be desired. In general, CP2K prefers the total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number.
+Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several scheme available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
 
-Running an MPI/OpenMP-hybrid application, an MPI rank-count that is half the number of cores might be a good starting point (below command could be for an HT-enabled dual-socket system with 16 cores per processor and 64 hardware threads).
+<a name="plan-script"></a>Because of the above mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could be the following:
 
 ```bash
 mpirun -np 16 \
   -genv I_MPI_PIN_DOMAIN=auto -genv I_MPI_PIN_ORDER=bunch \
-  -genv KMP_AFFINITY=compact,granularity=fine,1 \
-  -genv OMP_NUM_THREADS=4 \
-  cp2k/exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
+  -genv OMP_PLACES=threads -genv OMP_PROC_BIND=SPREAD \
+  -genv OMP_NUM_THREADS=6 \
+  exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-For an actual workload, one may try `cp2k/tests/QS/benchmark/H2O-32.inp`, or for example the workloads under `cp2k/tests/QS/benchmark_single_node` which are supposed to fit into a single node (in fact to fit into 16 GB of memory). For the latter set of workloads (and many others), LIBINT and LIBXC may be required.
+It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and thread affinization (with no performance penalty) at startup of the application. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with the above mentioned 48-core system type) may look like:
 
-The CP2K/Intel fork carries several "reconfigurations" and environment variables, which allow to adjust important runtime options. Most of these options are also accessible via the input file format (input reference e.g., [https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL/DBCSR.html](https://manual.cp2k.org/trunk/CP2K_INPUT/GLOBAL/DBCSR.html)).
+```bash
+./plan.sh 8 48
+================================================================================
+Planning for 8 node(s) with 2x24 core(s) per node and 2 threads per core.
+================================================================================
+48x2: 48 ranks per node with 2 thread(s) per rank (6% penalty)
+24x4: 24 ranks per node with 4 thread(s) per rank (0% penalty)
+12x8: 12 ranks per node with 8 thread(s) per rank (0% penalty)
+8x12: 8 ranks per node with 12 thread(s) per rank (0% penalty)
+6x16: 6 ranks per node with 16 thread(s) per rank (0% penalty)
+4x24: 4 ranks per node with 24 thread(s) per rank (0% penalty)
+```
 
-* **CP2K_RECONFIGURE**: environment variable for reconfiguring CP2K (default depends on whether the ACCeleration layer is enabled or not). With the ACCeleration layer enabled, CP2K is reconfigured (as if CP2K_RECONFIGURE=1 is set) e.g. an increased number of entries per matrix stack is populated, and otherwise CP2K is not reconfigured. Further, setting CP2K_RECONFIGURE=0 is disabling the code specific to the [Intel fork of CP2K](https://github.com/hfp/cp2k.git), and relies on the (optional) LIBXSMM integration into [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and later).
-* **CP2K_STACKSIZE**: environment variable which denotes the number of matrix multiplications which is collected into a single stack. Usually the internal default performs best across a variety of workloads, however depending on the workload a different value can be better. This variable can be of relatively high impact since the work distribution and balance is affected.
-* **CP2K_HUGEPAGES**: environment variable for disabling (0) memory allocation based on huge pages (enabled if TBBROOT was present at build-time and `TBBMALLOC=1` was given).
-* **CP2K_RMA**: enables (1) an experimental Remote Memory Access (RMA) based multiplication algorithm (requires MPI3).
-* **CP2K_SORT**: enables (1) an indirect sorting of each multiplication stack according to the C-index (experimental).
+The script (`plan.sh <num-node> <num-cores-per-node> <num-threads-per-core> <num-sockets>`) displays the MPI/OpenMP setup sorted by increasing waste (except for the first entry where potential communication overhead is shown) of compute in order to suit the square-number preference. For the seconds setup, the MPI command line may look like:
+
+```bash
+mpirun -perhost 24 -host node1,node2,node3,node4,node5,node6,node7,node8 \
+  -genv I_MPI_PIN_DOMAIN=auto -genv I_MPI_PIN_ORDER=bunch \
+  -genv OMP_PLACES=threads -genv OMP_PROC_BIND=SPREAD \
+  -genv OMP_NUM_THREADS=4 -genv I_MPI_DEBUG=4 \
+  exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
+```
 
 ## Sanity Check
 
@@ -278,7 +292,7 @@ The column called "Convergence" must monotonically converge towards zero.
 
 ## Performance
 
-An info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). If for some reason the command to launch CP2K is not part of the log and the run-arguments cannot be determined otherwise, the number of nodes is eventually parsed using the filename of the log itself (e.g., first occurrence of a number along with an optional "n" is treated as the number of nodes used for execution).
+The [script](#plan-script) for planning MPI-execution (`plan.sh`) is highly recommend along with reading the section about [how to run CP2K](#run-instructions). As soon as several experiments finished, it becomes handy to summarize the log-output. For this use case, an info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). If for some reason the command to launch CP2K is not part of the log and the run-arguments cannot be determined otherwise, the number of nodes is eventually parsed using the filename of the log itself (e.g., first occurrence of a number along with an optional "n" is treated as the number of nodes used for execution).
 
 ```bash
 ./run-cp2k.sh | tee cp2k-h2o64-2x32x2.txt
