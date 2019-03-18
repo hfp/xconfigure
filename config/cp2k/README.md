@@ -245,7 +245,7 @@ mpirun -np 16 \
 
 It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and thread affinization (with no performance penalty) at startup of the application. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with the above mentioned 48-core system type) may look like:
 
-```bash
+```
 ./plan.sh 8 48
 ================================================================================
 Planning for 8 node(s) with 2x24 core(s) per node and 2 threads per core.
@@ -272,7 +272,7 @@ mpirun -perhost 24 -host node1,node2,node3,node4,node5,node6,node7,node8 \
 
 There is nothing that can replace the full regression test suite. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
 
-```bash
+```
   Step     Update method      Time    Convergence         Total energy    Change
   ------------------------------------------------------------------------------
      1 OT DIIS     0.15E+00    0.5     0.01337191     -1059.6804814927 -1.06E+03
