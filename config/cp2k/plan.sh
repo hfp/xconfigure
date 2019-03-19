@@ -61,7 +61,8 @@ then
     NRANKSPERNODE=$((NSQRT*NSQRT/TOTALNUMNODES))
     REST=$(((NCORESPERNODE%NRANKSPERNODE)))
     if [ "0" != "$((MIN_NRANKS   <= NRANKSPERNODE))" ] && \
-       [ "0" != "$((MIN_USE*REST <= NCORESPERNODE))" ];
+       [ "0" != "$((MIN_USE*REST <= NCORESPERNODE))" ] && \
+       [ "${NRANKSPERNODE}" != "${NCORESPERNODE}" ];
     then
       # criterion to add penalty in case of unbalanced load
       if [ "0" != "$((ODD_PENALTY*MIN_USE*REST <= NCORESPERNODE))" ] || \
