@@ -251,14 +251,16 @@ It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and th
 Planning for 8 node(s) with 2x24 core(s) per node and 2 threads per core.
 ================================================================================
 48x2: 48 ranks per node with 2 thread(s) per rank (6% penalty)
+--------------------------------------------------------------------------------
 24x4: 24 ranks per node with 4 thread(s) per rank (0% penalty)
 12x8: 12 ranks per node with 8 thread(s) per rank (0% penalty)
 8x12: 8 ranks per node with 12 thread(s) per rank (0% penalty)
 6x16: 6 ranks per node with 16 thread(s) per rank (0% penalty)
 4x24: 4 ranks per node with 24 thread(s) per rank (0% penalty)
+--------------------------------------------------------------------------------
 ```
 
-The script (`plan.sh <num-node> <num-cores-per-node> <num-threads-per-core> <num-sockets>`) displays the MPI/OpenMP setup sorted by increasing waste (except for the first entry where potential communication overhead is shown) of compute in order to suit the square-number preference. For the seconds setup, the MPI command line may look like:
+The script (`plan.sh <num-node> <num-cores-per-node> <num-threads-per-core> <num-sockets>`) displays MPI/OpenMP configurations sorted by increasing waste of compute due to suiting the square-number preference (except for the first group where potential communication overhead is shown). For the first setup that suits the square-number preference (`24x4`), the MPI command line may look like:
 
 ```bash
 mpirun -perhost 24 -host node1,node2,node3,node4,node5,node6,node7,node8 \
