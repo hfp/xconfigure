@@ -15,23 +15,6 @@ MIN_USE=$((4*NPROCSPERNODE))
 # unbalanced rank-count
 ODD_PENALTY=3
 
-if [ "" != "$1" ]; then
-  TOTALNUMNODES=$1
-  shift
-fi
-if [ "" != "$1" ]; then
-  NCORESPERNODE=$1
-  shift
-fi
-if [ "" != "$1" ]; then
-  NTHREADSPERCORE=$1
-  shift
-fi
-if [ "" != "$1" ]; then
-  NPROCSPERNODE=$1
-  shift
-fi
-
 SORT=$(command -v sort)
 HEAD=$(command -v head)
 SEQ=$(command -v seq)
@@ -51,6 +34,42 @@ function isqrt {
 
 if [ "" != "${SORT}" ] && [ "" != "${HEAD}" ] && [ "" != "${SEQ}" ] && [ "" != "${CUT}" ];
 then
+  if [ "" != "$1" ]; then
+    TOTALNUMNODES=$1
+    shift
+  fi
+  OUTPUT=0
+  if [ "" = "$1" ]; then
+    if [ -e ${HOME}/.xconfigure-cp2k-plan ]; then  # remind configuration
+      NCORESPERNODE=$(${CUT} -d" " -f1 ${HOME}/.xconfigure-cp2k-plan)
+    fi
+  else
+    NCORESPERNODE=$1
+    OUTPUT=1
+    shift
+  fi
+  if [ "" = "$1" ]; then
+    if [ -e ${HOME}/.xconfigure-cp2k-plan ]; then  # remind configuration
+      NTHREADSPERCORE=$(${CUT} -d" " -f2 ${HOME}/.xconfigure-cp2k-plan)
+    fi
+  else
+    NTHREADSPERCORE=$1
+    OUTPUT=1
+    shift
+  fi
+  if [ "" = "$1" ]; then
+    if [ -e ${HOME}/.xconfigure-cp2k-plan ]; then  # remind configuration
+      NPROCSPERNODE=$(${CUT} -d" " -f3 ${HOME}/.xconfigure-cp2k-plan)
+    fi
+  else
+    NPROCSPERNODE=$1
+    OUTPUT=1
+    shift
+  fi
+  # remember system configuration
+  if [ "0" != "${OUTPUT}" ]; then
+    echo "${NCORESPERNODE} ${NTHREADSPERCORE} ${NPROCSPERNODE}" > ${HOME}/.xconfigure-cp2k-plan 2> /dev/null
+  fi
   echo "================================================================================"
   echo "Planning for ${TOTALNUMNODES} node(s) with ${NPROCSPERNODE}x$((NCORESPERNODE/NPROCSPERNODE)) core(s) per node and ${NTHREADSPERCORE} threads per core."
   echo "================================================================================"
@@ -94,17 +113,17 @@ then
   if [ "0" != "$((NRANKSPERNODE_TOP < NCORESPERNODE))" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
-  SQRGROUP=0
+  OUTPUT=0
   for RESULT in ${RESULTS}; do
     NRANKSPERNODE=$(echo "${RESULT}" | ${CUT} -d";" -f1)
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
     PENALTY=$(echo "${RESULT}" | ${CUT} -d";" -f2)
     if [ "0" != "$((PENALTY <= PENALTY_TOP))" ]; then
       echo "${NRANKSPERNODE}x${NTHREADSPERRANK}: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty)"
-      SQRGROUP=1
+      OUTPUT=1
     fi
   done
-  if [ "0" != "${SQRGROUP}" ]; then
+  if [ "0" != "${OUTPUT}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
 else
