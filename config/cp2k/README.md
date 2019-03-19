@@ -5,13 +5,13 @@
 <a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests (it is possible to combine components from different versions):
 
 * Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
-  * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
-    source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
+    * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
+      source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
 * Intel Compiler&#160;2017 Update&#160;4, and any later update of the 2017 suite (u4, u5, u6, u7)
-  * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2018 (u3, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
-  * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
-  * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
+    * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
+* Intel Compiler&#160;2018 (u3, u4, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
+    * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+    * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
 * Intel MPI; usually any version is fine
 
