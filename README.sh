@@ -64,7 +64,6 @@ pandoc -D latex \
   -e 's/<sup>/^/g' -e 's/<\/sup>/^/g' \
   -e 's/\[\[..*\](..*)\]//g' \
   -e 's/\[!\[..*\](..*)\](..*)//g' \
-  -e 's/----*//g' \
 | tee >( pandoc \
   --template=${TMPFILE}.tex --listings \
   -f markdown_github+implicit_figures+all_symbols_escapable+subscript+superscript \
