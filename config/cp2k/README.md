@@ -233,7 +233,7 @@ To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely
 
 Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several scheme available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
 
-<a name="plan-script"></a>Because of the above mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could be the following:
+<a name="plan-script"></a>Because of the above mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could execute 16 ranks with 6 threads per rank (`16x6`):
 
 ```bash
 mpirun -np 16 \
@@ -243,7 +243,7 @@ mpirun -np 16 \
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and thread affinization (with no performance penalty) at startup of the application. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with the above mentioned 48-core system type) may look like:
+It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and thread affinization (with no performance penalty) at startup of the application. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with above mentioned 48-core systems) may look like:
 
 ```text
 ./plan.sh 8 48
@@ -269,6 +269,8 @@ mpirun -perhost 24 -host node1,node2,node3,node4,node5,node6,node7,node8 \
   -genv OMP_NUM_THREADS=4 -genv I_MPI_DEBUG=4 \
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
+
+Please note that `plan.sh` stores the given arguments (except for the node-count) as default for the next plan (`$HOME/.xconfigure-cp2k-plan`). This allows to supply the system-type once, and to plan with varying node-counts in a convenient fashion.
 
 ## Sanity Check
 
