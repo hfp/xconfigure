@@ -7,9 +7,9 @@
 <a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp").
 
 ```bash
-wget https://gitlab.com/QEF/q-e/-/archive/qe-6.3/q-e-qe-6.3.tar.gz
-tar xvf q-e-qe-6.3.tar.gz
-cd q-e-qe-6.3
+wget https://gitlab.com/QEF/q-e/-/archive/qe-6.4/q-e-qe-6.4.tar.bz2
+tar xvf q-e-qe-6.4.tar.bz2
+cd q-e-qe-6.4
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe

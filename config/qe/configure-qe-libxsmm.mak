@@ -41,15 +41,11 @@ ifneq (,$(LIBXSMMROOT))
     LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
   endif
   LDFLAGS += -Wl,--export-dynamic
-  LIBS := $(LIBXSMMROOT)/lib/libxsmm.a $(LIBS)
-  EXT ?= 1
-  ifneq (0,$(EXT))
-    LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBS)
-    ifeq (,$(OPENMP))
-    ifeq (sequential,$(MKL_OMPRTL))
-      LIBS += -liomp5
-    endif
-    endif
+  LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBXSMMROOT)/lib/libxsmm.a $(LIBS)
+  ifeq (,$(OPENMP))
+  ifeq (sequential,$(MKL_OMPRTL))
+    LIBS += -liomp5
+  endif
   endif
 endif
 
