@@ -30,8 +30,6 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-HERE=$(cd $(dirname $0); pwd -P)
-
 BC=$(which bc 2> /dev/null)
 PATTERN="*.txt"
 

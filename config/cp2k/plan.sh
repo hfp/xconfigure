@@ -20,6 +20,13 @@ HEAD=$(command -v head)
 SEQ=$(command -v seq)
 CUT=$(command -v cut)
 
+if [ "" != "${HOME}" ]; then
+  CONFIGFILE=${HOME}/.xconfigure-cp2k-plan
+else
+  HERE=$(cd $(dirname $0); pwd -P)
+  CONFIGFILE=${HERE}/.xconfigure-cp2k-plan
+fi
+
 function isqrt {
   s=1073741824; x=$1; y=0
   while [ "0" != "$((0 < s))" ]; do
