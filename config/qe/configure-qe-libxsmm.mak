@@ -42,7 +42,7 @@ ifneq (,$(wildcard $(LIBXSMMROOT)/lib/libxsmmext.a))
     LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
   endif
   LDFLAGS += -Wl,--export-dynamic
-  LD_LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBXSMMROOT)/lib/libxsmm.a $(LD_LIBS)
+  LAPACK_LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBXSMMROOT)/lib/libxsmm.a $(LAPACK_LIBS)
   ifeq (,$(OPENMP))
   ifeq (sequential,$(MKL_OMPRTL))
     LD_LIBS += -liomp5
