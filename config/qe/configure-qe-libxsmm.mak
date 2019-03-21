@@ -34,6 +34,7 @@
 #LIBXSMMROOT = /path/to/libxsmm
 
 ifneq (,$(LIBXSMMROOT))
+ifneq (,$(wildcard $(LIBXSMMROOT)/lib/libxsmmext.a))
   WRAP ?= 1
   ifeq (2,$(WRAP))
     LDFLAGS += -Wl,--wrap=dgemm_
@@ -41,11 +42,14 @@ ifneq (,$(LIBXSMMROOT))
     LDFLAGS += -Wl,--wrap=sgemm_,--wrap=dgemm_
   endif
   LDFLAGS += -Wl,--export-dynamic
-  LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBXSMMROOT)/lib/libxsmm.a $(LIBS)
+  LD_LIBS := $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBXSMMROOT)/lib/libxsmm.a $(LD_LIBS)
   ifeq (,$(OPENMP))
   ifeq (sequential,$(MKL_OMPRTL))
-    LIBS += -liomp5
+    LD_LIBS += -liomp5
   endif
   endif
+else
+  $(info LIBXSMM library not found at $(LIBXSMMROOT))
+endif
 endif
 
