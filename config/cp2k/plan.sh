@@ -115,17 +115,20 @@ then
   NSQRT_MIN=$(isqrt $((NRANKSMIN)))
   NSQRT_MAX=$(isqrt $((NCORESTOTAL)))
   for NSQRT in $(${SEQ} ${NSQRT_MIN} ${NSQRT_MAX}); do
-    NRANKSPERNODE=$((NSQRT*NSQRT/TOTALNUMNODES))
-    PENALTY=$((NCORESPERNODE%NRANKSPERNODE))
-    # criterion to add penalty in case of unbalanced load
-    if [ "0" != "$((ODD_PENALTY*MIN_USE*PENALTY <= NCORESPERNODE))" ] || \
-       [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
-    then
-      if [ "0" != "$((MIN_USE*PENALTY <= NCORESPERNODE))" ] && \
-         [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
+    NSQR=$((NSQRT*NSQRT))
+    NRANKSPERNODE=$((NSQR/TOTALNUMNODES))
+    if [ "${NSQR}" == "$((TOTALNUMNODES*NRANKSPERNODE))" ]; then
+      PENALTY=$((NCORESPERNODE%NRANKSPERNODE))
+      # criterion to add penalty in case of unbalanced load
+      if [ "0" != "$((ODD_PENALTY*MIN_USE*PENALTY <= NCORESPERNODE))" ] || \
+         [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
       then
-        PENALTY=$(((100*PENALTY+NCORESPERNODE-1)/NCORESPERNODE))
-        RESULTS+="${NRANKSPERNODE};${PENALTY}\n"
+        if [ "0" != "$((MIN_USE*PENALTY <= NCORESPERNODE))" ] && \
+           [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
+        then
+          PENALTY=$(((100*PENALTY+NCORESPERNODE-1)/NCORESPERNODE))
+          RESULTS+="${NRANKSPERNODE};${PENALTY}\n"
+        fi
       fi
     fi
   done
@@ -135,6 +138,7 @@ then
   PENALTY_NCORES=$((NCORESTOTAL-NSQRT_MAX*NSQRT_MAX))
   PENALTY_TOP=$(((100*PENALTY_NCORES+NCORESTOTAL-1)/NCORESTOTAL))
   NRANKSPERNODE=${NCORESPERNODE}
+  OUTPUT=0
   while [ "0" != "$((NRANKSPERNODE_TOP < NRANKSPERNODE))" ]; do
     # criterion to add penalty in case of unbalanced load
     if [ "0" != "$((ODD_PENALTY*MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ] || \
@@ -143,11 +147,12 @@ then
       NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
       if [ "0" != "$((MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ]; then
         echo "${NRANKSPERNODE}x${NTHREADSPERCORE}: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
+        OUTPUT=1
       fi
     fi
     NRANKSPERNODE=$((NRANKSPERNODE >> 1))
   done
-  if [ "0" != "$((NRANKSPERNODE_TOP < NCORESPERNODE))" ]; then
+  if [ "0" != "${OUTPUT}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
   OUTPUT=0
