@@ -248,15 +248,13 @@ It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and th
 ```text
 ./plan.sh 8 48
 ================================================================================
-Planning for 8 node(s) with 2x24 core(s) per node and 2 threads per core.
+384 cores: 8 node(s) with 2x24 core(s) per node and 2 threads per core
 ================================================================================
-48x2: 48 ranks per node with 2 thread(s) per rank (6% penalty)
+[48x2]: 48 ranks per node with 2 thread(s) per rank (6% penalty)
+[24x2]: 24 ranks per node with 4 thread(s) per rank (6% penalty)
+[12x2]: 12 ranks per node with 8 thread(s) per rank (6% penalty)
 --------------------------------------------------------------------------------
-24x4: 24 ranks per node with 4 thread(s) per rank (0% penalty)
-12x8: 12 ranks per node with 8 thread(s) per rank (0% penalty)
-8x12: 8 ranks per node with 12 thread(s) per rank (0% penalty)
-6x16: 6 ranks per node with 16 thread(s) per rank (0% penalty)
-4x24: 4 ranks per node with 24 thread(s) per rank (0% penalty)
+[8x12]: 8 ranks per node with 12 thread(s) per rank (0% penalty) -> 8x8
 --------------------------------------------------------------------------------
 ```
 

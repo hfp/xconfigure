@@ -107,10 +107,11 @@ then
   if [ "0" != "${OUTPUT}" ]; then
     echo "${NCORESPERNODE} ${NTHREADSPERCORE} ${NPROCSPERNODE}" > ${HOME}/.xconfigure-cp2k-plan 2> /dev/null
   fi
-  echo "================================================================================"
-  echo "Planning for ${TOTALNUMNODES} node(s) with ${NPROCSPERNODE}x$((NCORESPERNODE/NPROCSPERNODE)) core(s) per node and ${NTHREADSPERCORE} threads per core."
-  echo "================================================================================"
   NCORESTOTAL=$((TOTALNUMNODES*NCORESPERNODE))
+  NCORESOCKET=$((NCORESPERNODE/NPROCSPERNODE))
+  echo "================================================================================"
+  echo "${NCORESTOTAL} cores: ${TOTALNUMNODES} node(s) with ${NPROCSPERNODE}x${NCORESOCKET} core(s) per node and ${NTHREADSPERCORE} threads per core"
+  echo "================================================================================"
   NRANKSMIN=$((TOTALNUMNODES*NPROCSPERNODE))
   NSQRT_MIN=$(isqrt $((NRANKSMIN)))
   NSQRT_MAX=$(isqrt $((NCORESTOTAL)))
@@ -127,7 +128,7 @@ then
            [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
         then
           PENALTY=$(((100*PENALTY+NCORESPERNODE-1)/NCORESPERNODE))
-          RESULTS+="${NRANKSPERNODE};${PENALTY}\n"
+          RESULTS+="${NRANKSPERNODE};${PENALTY};${NSQRT}\n"
         fi
       fi
     fi
@@ -135,7 +136,8 @@ then
   RESULTS=$(echo -e ${RESULTS} | ${SORT} -t";" -u -k2n -k1nr)
   NRANKSPERNODE_TOP=$(echo "${RESULTS}" | ${CUT} -d";" -f1 | ${HEAD} -n1)
   NTHREADSPERNODE=$((NCORESPERNODE*NTHREADSPERCORE))
-  PENALTY_NCORES=$((NCORESTOTAL-NSQRT_MAX*NSQRT_MAX))
+  NSQR_MAX=$((NSQRT_MAX*NSQRT_MAX))
+  PENALTY_NCORES=$((NCORESTOTAL-NSQR_MAX))
   PENALTY_TOP=$(((100*PENALTY_NCORES+NCORESTOTAL-1)/NCORESTOTAL))
   NRANKSPERNODE=${NCORESPERNODE}
   OUTPUT=0
@@ -146,7 +148,7 @@ then
     then
       NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
       if [ "0" != "$((MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ]; then
-        echo "${NRANKSPERNODE}x${NTHREADSPERCORE}: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
+        echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
         OUTPUT=1
       fi
     fi
@@ -161,12 +163,24 @@ then
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
     PENALTY=$(echo "${RESULT}" | ${CUT} -d";" -f2)
     if [ "0" != "$((PENALTY <= PENALTY_TOP))" ]; then
-      echo "${NRANKSPERNODE}x${NTHREADSPERRANK}: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty)"
+      NSQRT=$(echo "${RESULT}" | ${CUT} -d";" -f3)
+      echo "[${NRANKSPERNODE}x${NTHREADSPERRANK}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty) -> ${NSQRT}x${NSQRT}"
       OUTPUT=1
     fi
   done
   if [ "0" != "${OUTPUT}" ]; then
     echo "--------------------------------------------------------------------------------"
+  fi
+  NUMNODES_LO=$((NSQR_MAX/NCORESPERNODE))
+  NUMRANKS_UP=$((((NRANKSMIN+MIN_NRANKS-1)/MIN_NRANKS)*MIN_NRANKS))
+  NUMNODES_UP=$(((NUMRANKS_UP+NCORESOCKET)/NCORESPERNODE))
+  NUMNODES_HI=$((NUMNODES_LO+NUMNODES_UP))
+  if [ "0" != "${NUMNODES_UP}" ] && [ "${TOTALNUMNODES}" != "${NUMNODES_HI}" ] && [ "0" != "${NUMNODES_HI}" ]; then
+    if [ "${TOTALNUMNODES}" != "${NUMNODES_LO}" ] && [ "${NUMNODES_LO}" != "${NUMNODES_HI}" ]; then
+      echo "Try also ${NUMNODES_LO} and ${NUMNODES_HI} nodes!"
+    else
+      echo "Try also ${NUMNODES_HI} node(s)!"
+    fi
   fi
 else
   echo "Error: missing prerequisites!"
