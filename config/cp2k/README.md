@@ -72,6 +72,8 @@ Here are two ways to build an [official release of CP2K](https://github.com/cp2k
 * Use the ARCH files from CP2K/intel fork.
 * Write an own ARCH file.
 
+**NOTE**: have a look at the [step-by-step guide](#step-by-step-guide) to build CP2K&#160;6.1.0 with LIBXSMM, ELPA, LIBXC, and LIBINT.
+
 LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
 
 ```bash
@@ -91,14 +93,14 @@ Taking the ARCH files that are part of the CP2K/Intel fork automatically picks u
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
-https://github.com/cp2k/cp2k/releases/download/v6.1.0/cp2k-6.1.tar.bz2
-tar xvf cp2k-6.1.tar.bz2
+wget https://github.com/cp2k/cp2k/archive/v6.1.0.tar.gz
+tar xvf v6.1.0.tar.gz
 ```
 
 To download the ARCH files from the Intel-fork, simply run the following:
 
 ```bash
-cd cp2k-6.1
+cd cp2k-6.1.0
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh cp2k
@@ -107,7 +109,7 @@ chmod +x configure-get.sh
 <a name="get-the-arch-files"></a>Alternatively, one can download the afore mentioned ARCH-files manually:
 
 ```bash
-cd cp2k-6.1/arch
+cd cp2k-6.1.0/arch
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
@@ -144,7 +146,7 @@ At runtime, a build of the Intel-fork supports an environment variable CP2K_ELPA
 
 ### Step-by-step Guide
 
-This step-by-step guide attempts to build the official release of CP2K. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
+This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K using the GNU Compiler Collection, Intel MPI, Intel MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
 The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
 
@@ -182,9 +184,9 @@ The third step builds LIBXC.
 
 ```bash
 cd $HOME
-wget --content-disposition http://www.tddft.org/programs/octopus/down.php?file=libxc/4.2.3/libxc-4.2.3.tar.gz
-tar xvf libxc-4.2.3.tar.gz
-cd libxc-4.2.3
+wget --content-disposition http://www.tddft.org/programs/octopus/down.php?file=libxc/4.3.4/libxc-4.3.4.tar.gz
+tar xvf libxc-4.3.4.tar.gz
+cd libxc-4.3.4
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
