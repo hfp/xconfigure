@@ -69,6 +69,17 @@ function isqrt {
   echo "${y}"
 }
 
+function suggest {
+  ncoretotal=$1; ncoresnode=$2
+  while [ "${total}" != "${ncoretotal}" ] && [ "0" != "$((ncoresnode < ncoretotal))" ]; do
+    total=${ncoretotal}
+    nsqrt=$(isqrt ${ncoretotal})
+    nodes=$((nsqrt*nsqrt/ncoresnode))
+    ncoretotal=$((nodes*ncoresnode))
+  done
+  echo "$(((ncoretotal+ncoresnode-1)/ncoresnode))"
+}
+
 if [ "" != "${SORT}" ] && [ "" != "${HEAD}" ] && [ "" != "${SEQ}" ] && [ "" != "${CUT}" ];
 then
   if [ "" != "$1" ]; then
@@ -113,8 +124,8 @@ then
   echo "${NCORESTOTAL} cores: ${TOTALNUMNODES} node(s) with ${NPROCSPERNODE}x${NCORESOCKET} core(s) per node and ${NTHREADSPERCORE} threads per core"
   echo "================================================================================"
   NRANKSMIN=$((TOTALNUMNODES*NPROCSPERNODE))
-  NSQRT_MIN=$(isqrt $((NRANKSMIN)))
-  NSQRT_MAX=$(isqrt $((NCORESTOTAL)))
+  NSQRT_MIN=$(isqrt ${NRANKSMIN})
+  NSQRT_MAX=$(isqrt ${NCORESTOTAL})
   for NSQRT in $(${SEQ} ${NSQRT_MIN} ${NSQRT_MAX}); do
     NSQR=$((NSQRT*NSQRT))
     NRANKSPERNODE=$((NSQR/TOTALNUMNODES))
@@ -171,11 +182,9 @@ then
   if [ "0" != "${OUTPUT}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
-  NUMNODES_LO=$((NSQR_MAX/NCORESPERNODE))
-  NUMRANKS_UP=$((((NRANKSMIN+MIN_NRANKS-1)/MIN_NRANKS)*MIN_NRANKS))
-  NUMNODES_UP=$(((NUMRANKS_UP+NCORESOCKET)/NCORESPERNODE))
-  NUMNODES_HI=$((NUMNODES_LO+NUMNODES_UP))
-  if [ "0" != "${NUMNODES_UP}" ] && [ "${TOTALNUMNODES}" != "${NUMNODES_HI}" ] && [ "0" != "${NUMNODES_HI}" ]; then
+  NUMNODES_LO=$(suggest ${NSQR_MAX} ${NCORESPERNODE})
+  NUMNODES_HI=$(suggest $((NSQR_MAX*TOTALNUMNODES/NUMNODES_LO)) ${NCORESPERNODE})
+  if [ "${TOTALNUMNODES}" != "${NUMNODES_HI}" ] && [ "0" != "${NUMNODES_HI}" ]; then
     if [ "${TOTALNUMNODES}" != "${NUMNODES_LO}" ] && [ "${NUMNODES_LO}" != "${NUMNODES_HI}" ]; then
       echo "Try also ${NUMNODES_LO} and ${NUMNODES_HI} nodes!"
     else

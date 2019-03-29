@@ -256,6 +256,7 @@ It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and th
 --------------------------------------------------------------------------------
 [8x12]: 8 ranks per node with 12 thread(s) per rank (0% penalty) -> 8x8
 --------------------------------------------------------------------------------
+Try also 3 and 12 nodes!
 ```
 
 The script (`plan.sh <num-node> <num-cores-per-node> <num-threads-per-core> <num-sockets>`) displays MPI/OpenMP configurations sorted by increasing waste of compute due to suiting the square-number preference (except for the first group where potential communication overhead is shown). For the first setup that suits the square-number preference (`24x4`), the MPI command line may look like:
