@@ -72,7 +72,7 @@ Here are two ways to build an [official release of CP2K](https://github.com/cp2k
 * Use the ARCH files from CP2K/intel fork.
 * Write an own ARCH file.
 
-**NOTE**: have a look at the [step-by-step guide](#step-by-step-guide) to build CP2K&#160;6.1.0 with LIBXSMM, ELPA, LIBXC, and LIBINT.
+**NOTE**: the [step-by-step guide](#step-by-step-guide) builds CP2K&#160;6.1.0 with LIBXSMM, ELPA, LIBXC, and LIBINT.
 
 LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance is mostly related to libraries (`-O2` optimizations are sufficient in any case), more important for performance are target-flags such as `-xHost`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
 
