@@ -148,6 +148,13 @@ At runtime, a build of the Intel-fork supports an environment variable CP2K_ELPA
 
 This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K using the GNU Compiler Collection, Intel MPI, Intel MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
+As the step-by-step guide uses GNU Fortran, only Intel MPI and Intel MKL are sourced (sourcing all Intel development tools does not harm). Regarding GNU Fortran, version 7.x or 8.x is recommended (older versions may not be sufficient).
+
+```bash
+source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpivars.sh
+source /opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/bin/mklvars.sh intel64
+```
+
 The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
 
 ```bash
