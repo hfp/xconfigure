@@ -7,9 +7,9 @@
 <a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp").
 
 ```bash
-wget https://gitlab.com/QEF/q-e/-/archive/qe-6.4/q-e-qe-6.4.tar.bz2
-tar xvf q-e-qe-6.4.tar.bz2
-cd q-e-qe-6.4
+wget https://gitlab.com/QEF/q-e/-/archive/qe-6.4.1/q-e-qe-6.4.1.tar.bz2
+tar xvf q-e-qe-6.4.1.tar.bz2
+cd q-e-qe-6.4.1
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe
@@ -24,14 +24,14 @@ source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh i
 For example, configure for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"), and build the desired application(s) e.g., "pw", "cp", or "all".
 
 ```bash
-./configure-qe-hsw-omp.sh
+./configure-qe-skx-omp.sh
 make pw -j
 ```
 
 Building "all" (or `make` without target argument) requires repeating `make all` until no compilation error occurs. This is because of some incorrect build dependencies (build order issue which might have been introduced by the configure wrapper scripts). In case of starting over, one can run `make distclean`, reconfigure the application, and build it again. For different targets (instruction set extensions) or different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
 
 ```bash
-./configure-qe-hsw-omp.sh tagname
+./configure-qe-skx-omp.sh tagname
 ```
 
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of QE. Please note: this tagname also selects the corresponding ELPA library (or should match the tagname used to build ELPA). Make sure to save your current QE build before building an additional variant!
