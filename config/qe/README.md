@@ -21,7 +21,7 @@ Please make the Intel Compiler available on the command line, which may vary wit
 source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
 ```
 
-For example, configure for an Intel Xeon&#160;E5v4 processor (formerly codenamed "Broadwell"), and build the desired application(s) e.g., "pw", "cp", or "all".
+For example, configure for an Intel Xeon&#160;Scalable Processor (applicable to CPUs previously codenamed "Skylake" and "Cascadelake" server), and build the desired application(s) e.g., "pw", "cp", or "all".
 
 ```bash
 ./configure-qe-skx-omp.sh
