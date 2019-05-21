@@ -41,7 +41,7 @@ NTHREADSPERCORE=2
 # min. number of ranks per node
 MIN_NRANKS=$((2*NPROCSPERNODE))
 # percentage in 100/MIN_USE
-MIN_USE=$((4*NPROCSPERNODE))
+MIN_USE=$((1*NPROCSPERNODE))
 # unbalanced rank-count
 ODD_PENALTY=3
 
@@ -173,7 +173,10 @@ then
     NRANKSPERNODE=$(echo "${RESULT}" | ${CUT} -d";" -f1)
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
     PENALTY=$(echo "${RESULT}" | ${CUT} -d";" -f2)
-    if [ "0" != "$((PENALTY <= PENALTY_TOP))" ]; then
+    if [[ "0" != "$((PENALTY <= PENALTY_TOP))" || \
+         ("0" = "$((NRANKSPERNODE%NPROCSPERNODE))" \
+       && "0" != "$((PENALTY <= 2*PENALTY_TOP))") ]];
+    then
       NSQRT=$(echo "${RESULT}" | ${CUT} -d";" -f3)
       echo "[${NRANKSPERNODE}x${NTHREADSPERRANK}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty) -> ${NSQRT}x${NSQRT}"
       OUTPUT=1
