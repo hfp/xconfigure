@@ -37,6 +37,20 @@ OPTC=-O3
 OPTF=-O2
 if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 
+# attempt to detect MKLROOT
+if [ "" = "${MKLROOT}" ]; then
+  MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
+  if [ "" != "${MKL_INCFILE}" ]; then
+    MKLROOT=$(dirname ${MKL_INCFILE})/..
+  fi
+fi
+if [ "" = "${MKLROOT}" ]; then
+  MKL_INCFILE=$(ls -1 /usr/include/mkl/mkl.h 2>/dev/null | head -n1)
+  if [ "" != "${MKL_INCFILE}" ]; then
+    MKLROOT=$(dirname ${MKL_INCFILE})/../..
+  fi
+fi
+
 # consider more accurate -fp-model (C/C++: precise, Fortran: source)
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 EXX_ACE="-D__EXX_ACE"
