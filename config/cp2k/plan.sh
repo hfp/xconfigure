@@ -39,9 +39,9 @@ NPROCSPERNODE=2
 # number of threads per core
 NTHREADSPERCORE=2
 # min. number of ranks per node
-MIN_NRANKS=$((2*NPROCSPERNODE))
+MIN_NRANKS=$((1*NPROCSPERNODE))
 # percentage in 100/MIN_USE
-MIN_USE=$((1*NPROCSPERNODE))
+MIN_USE=$((1*MIN_NRANKS))
 # unbalanced rank-count
 ODD_PENALTY=3
 
