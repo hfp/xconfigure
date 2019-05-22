@@ -151,7 +151,7 @@ then
   PENALTY_NCORES=$((NCORESTOTAL-NSQR_MAX))
   PENALTY_TOP=$(((100*PENALTY_NCORES+NCORESTOTAL-1)/NCORESTOTAL))
   NRANKSPERNODE=${NCORESPERNODE}
-  OUTPUT=0
+  OUTPUT_POT=0
   while [ "0" != "$((NRANKSPERNODE_TOP < NRANKSPERNODE))" ]; do
     # criterion to add penalty in case of unbalanced load
     if [ "0" != "$((ODD_PENALTY*MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ] || \
@@ -160,29 +160,26 @@ then
       NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
       if [ "0" != "$((MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ]; then
         echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
-        OUTPUT=1
+        OUTPUT_POT=$((OUTPUT_POT+1))
       fi
     fi
     NRANKSPERNODE=$((NRANKSPERNODE >> 1))
   done
-  if [ "0" != "${OUTPUT}" ]; then
+  if [ "0" != "${OUTPUT_POT}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
-  OUTPUT=0
+  OUTPUT_SQR=0
   for RESULT in ${RESULTS}; do
     NRANKSPERNODE=$(echo "${RESULT}" | ${CUT} -d";" -f1)
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
     PENALTY=$(echo "${RESULT}" | ${CUT} -d";" -f2)
-    if [[ "0" != "$((PENALTY <= PENALTY_TOP))" || \
-         ("0" = "$((NRANKSPERNODE%NPROCSPERNODE))" \
-       && "0" != "$((PENALTY <= 2*PENALTY_TOP))") ]];
-    then
+    if [ "0" != "$((PENALTY <= PENALTY_TOP))" ] || [ "0" != "$((OUTPUT_SQR<OUTPUT_POT))" ]; then
       NSQRT=$(echo "${RESULT}" | ${CUT} -d";" -f3)
       echo "[${NRANKSPERNODE}x${NTHREADSPERRANK}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty) -> ${NSQRT}x${NSQRT}"
-      OUTPUT=1
+      OUTPUT_SQR=$((OUTPUT_SQR+1))
     fi
   done
-  if [ "0" != "${OUTPUT}" ]; then
+  if [ "0" != "${OUTPUT_SQR}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
   NUMNODES_LO=$(suggest ${NSQR_MAX} ${NCORESPERNODE})
