@@ -1,108 +1,49 @@
-diff --git a/src/mpiwrap/message_passing.F b/src/mpiwrap/message_passing.F
-index b42222da6..0f2bdfadd 100644
---- a/src/mpiwrap/message_passing.F
-+++ b/src/mpiwrap/message_passing.F
-@@ -655,7 +655,7 @@ MODULE message_passing
- 
-    TYPE mp_file_indexing_meta_type
-       INTEGER, DIMENSION(:), POINTER   :: index
--      INTEGER(kind=address_kind), &
-+      INTEGER(kind=file_offset), &
-          DIMENSION(:), POINTER         :: chunks
-    END TYPE mp_file_indexing_meta_type
- 
-@@ -760,8 +760,12 @@ CONTAINS
- !$       ENDIF
- !$OMP END MASTER
- !$    ENDIF
-+#if __MPI_VERSION > 2
-+      CALL mpi_comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN, ierr)
-+#else
-       CALL mpi_errhandler_set(MPI_COMM_WORLD, MPI_ERRORS_RETURN, ierr)
--      IF (ierr /= 0) CALL mp_stop(ierr, "mpi_errhandler_set @ mp_world_init")
-+#endif
-+      IF (ierr /= 0) CALL mp_stop(ierr, "mpi_comm_set_errhandler @ mp_world_init")
-       mp_comm = MPI_COMM_WORLD
-       debug_comm_count = 1
- #else
-@@ -2630,7 +2634,7 @@ CONTAINS
-       ALLOCATE (res(1:msglen), STAT=ierr)
-       IF (ierr /= 0) &
-          CPABORT("allocate @ "//routineN)
--      CALL mpi_allreduce(msg, res, 1, MPI_2DOUBLE_PRECISION, MPI_MINLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_2DOUBLE_PRECISION, MPI_MINLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2674,7 +2678,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_2INTEGER, MPI_MINLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_2INTEGER, MPI_MINLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2718,7 +2722,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_INTEGER8, MPI_MINLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_INTEGER8, MPI_MINLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2762,7 +2766,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_2REAL, MPI_MINLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_2REAL, MPI_MINLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2806,7 +2810,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_2DOUBLE_PRECISION, MPI_MAXLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_2DOUBLE_PRECISION, MPI_MAXLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2850,7 +2854,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_2INTEGER, MPI_MAXLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_2INTEGER, MPI_MAXLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2894,7 +2898,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_INTEGER8, MPI_MAXLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_INTEGER8, MPI_MAXLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -2938,7 +2942,7 @@ CONTAINS
- #if defined(__parallel)
-       msglen = SIZE(msg)
-       ALLOCATE (res(1:msglen))
--      CALL mpi_allreduce(msg, res, 1, MPI_2REAL, MPI_MAXLOC, gid, ierr)
-+      CALL mpi_allreduce(msg, res, msglen/2, MPI_2REAL, MPI_MAXLOC, gid, ierr)
-       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_allreduce @ "//routineN)
-       msg = res
-       DEALLOCATE (res)
-@@ -3656,7 +3660,7 @@ CONTAINS
-       INTEGER, INTENT(IN)                       :: count
-       INTEGER, DIMENSION(1:count), &
-          INTENT(IN), TARGET                     :: lengths
--      INTEGER(kind=address_kind), &
-+      INTEGER(kind=file_offset), &
-          DIMENSION(1:count), INTENT(in), TARGET :: displs
-       TYPE(mp_file_descriptor_type)             :: type_descriptor
- 
+658c658
+<       INTEGER(kind=address_kind), &
+---
+>       INTEGER(kind=file_offset), &
+762a763,765
+> #if __MPI_VERSION > 2
+>       CALL mpi_comm_set_errhandler(MPI_COMM_WORLD, MPI_ERRORS_RETURN, ierr)
+> #else
+764c767,768
+<       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_errhandler_set @ mp_world_init")
+---
+> #endif
+>       IF (ierr /= 0) CALL mp_stop(ierr, "mpi_comm_set_errhandler @ mp_world_init")
+2633c2637
+<       CALL mpi_allreduce(msg, res, 1, MPI_2DOUBLE_PRECISION, MPI_MINLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_2DOUBLE_PRECISION, MPI_MINLOC, gid, ierr)
+2677c2681
+<       CALL mpi_allreduce(msg, res, 1, MPI_2INTEGER, MPI_MINLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_2INTEGER, MPI_MINLOC, gid, ierr)
+2721c2725
+<       CALL mpi_allreduce(msg, res, 1, MPI_INTEGER8, MPI_MINLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_INTEGER8, MPI_MINLOC, gid, ierr)
+2765c2769
+<       CALL mpi_allreduce(msg, res, 1, MPI_2REAL, MPI_MINLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_2REAL, MPI_MINLOC, gid, ierr)
+2809c2813
+<       CALL mpi_allreduce(msg, res, 1, MPI_2DOUBLE_PRECISION, MPI_MAXLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_2DOUBLE_PRECISION, MPI_MAXLOC, gid, ierr)
+2853c2857
+<       CALL mpi_allreduce(msg, res, 1, MPI_2INTEGER, MPI_MAXLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_2INTEGER, MPI_MAXLOC, gid, ierr)
+2897c2901
+<       CALL mpi_allreduce(msg, res, 1, MPI_INTEGER8, MPI_MAXLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_INTEGER8, MPI_MAXLOC, gid, ierr)
+2941c2945
+<       CALL mpi_allreduce(msg, res, 1, MPI_2REAL, MPI_MAXLOC, gid, ierr)
+---
+>       CALL mpi_allreduce(msg, res, msglen/2, MPI_2REAL, MPI_MAXLOC, gid, ierr)
+3659c3663
+<       INTEGER(kind=address_kind), &
+---
+>       INTEGER(kind=file_offset), &
