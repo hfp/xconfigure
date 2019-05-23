@@ -4,5 +4,5 @@ There is a recipe available for [TensorFlow with LIBXSMM](https://libxsmm.readth
 
 # TensorFlow Serving
 
-Similarly, there is a recipe available for [TensorFlow Serving with LIBXSMM](https://libxsmm.readthedocs.io/tfserving/) ([PDF](https://github.com/hfp/libxsmm/raw/master/documentation/tfserving.pdf)).
+For experimentation, there is a recipe available for [TensorFlow Serving with LIBXSMM](tfserving.md). Please note this recipe is likely outdated and not intended for production use.
 
