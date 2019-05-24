@@ -33,11 +33,11 @@
 # number of systems (clusters nodes)
 TOTALNUMNODES=1
 # number of physical cores per node
-NCORESPERNODE=16
+NCORESPERNODE=1
 # number of sockets per system
-NPROCSPERNODE=2
+NPROCSPERNODE=1
 # number of threads per core
-NTHREADSPERCORE=2
+NTHREADSPERCORE=1
 # min. number of ranks per node
 MIN_NRANKS=$((1*NPROCSPERNODE))
 # percentage in 100/MIN_USE
@@ -86,10 +86,31 @@ then
     TOTALNUMNODES=$1
     shift
   fi
+  if [ -e /proc/cpuinfo ] && \
+     [ "" != "$(command -v grep)" ] && \
+     [ "" != "$(command -v wc)" ] && \
+     [ "" != "$(command -v tr)" ];
+  then
+    NS=$(grep "physical id" /proc/cpuinfo | ${SORT} -u | wc -l | tr -d " ")
+    NC=$((NS*$(grep "core id" /proc/cpuinfo | ${SORT} -u | wc -l | tr -d " ")))
+    NT=$(grep "core id" /proc/cpuinfo | wc -l | tr -d " ")
+  elif [ "Darwin" = "$(uname)" ] && \
+       [ "" != "$(command -v sysctl)" ] && \
+       [ "" != "$(command -v tr)" ];
+  then
+    NS=$(sysctl hw.packages | ${CUT} -d: -f2 | tr -d " ")
+    NC=$(sysctl hw.physicalcpu | ${CUT} -d: -f2 | tr -d " ")
+    NT=$(sysctl hw.logicalcpu | ${CUT} -d: -f2 | tr -d " ")
+  fi
+  if [ "" != "${NC}" ] && [ "" != "${NT}" ]; then
+    HT=$((NT/NC))
+  fi
   OUTPUT=0
   if [ "" = "$1" ]; then
-    if [ -e ${HOME}/.xconfigure-cp2k-plan ]; then  # remind configuration
-      NCORESPERNODE=$(${CUT} -d" " -f1 ${HOME}/.xconfigure-cp2k-plan)
+    if [ -e ${CONFIGFILE} ]; then  # remind configuration
+      NCORESPERNODE=$(${CUT} -d" " -f1 ${CONFIGFILE})
+    elif [ "" != "${NC}" ]; then
+      NCORESPERNODE=${NC}
     fi
   else
     NCORESPERNODE=$1
@@ -97,8 +118,10 @@ then
     shift
   fi
   if [ "" = "$1" ]; then
-    if [ -e ${HOME}/.xconfigure-cp2k-plan ]; then  # remind configuration
-      NTHREADSPERCORE=$(${CUT} -d" " -f2 ${HOME}/.xconfigure-cp2k-plan)
+    if [ -e ${CONFIGFILE} ]; then  # remind configuration
+      NTHREADSPERCORE=$(${CUT} -d" " -f2 ${CONFIGFILE})
+    elif [ "" != "${HT}" ]; then
+      NTHREADSPERCORE=${HT}
     fi
   else
     NTHREADSPERCORE=$1
@@ -106,8 +129,10 @@ then
     shift
   fi
   if [ "" = "$1" ]; then
-    if [ -e ${HOME}/.xconfigure-cp2k-plan ]; then  # remind configuration
-      NPROCSPERNODE=$(${CUT} -d" " -f3 ${HOME}/.xconfigure-cp2k-plan)
+    if [ -e ${CONFIGFILE} ]; then  # remind configuration
+      NPROCSPERNODE=$(${CUT} -d" " -f3 ${CONFIGFILE})
+    elif [ "" != "${NS}" ]; then
+      NPROCSPERNODE=${NS}
     fi
   else
     NPROCSPERNODE=$1
@@ -116,12 +141,12 @@ then
   fi
   # remember system configuration
   if [ "0" != "${OUTPUT}" ]; then
-    echo "${NCORESPERNODE} ${NTHREADSPERCORE} ${NPROCSPERNODE}" > ${HOME}/.xconfigure-cp2k-plan 2> /dev/null
+    echo "${NCORESPERNODE} ${NTHREADSPERCORE} ${NPROCSPERNODE}" > ${CONFIGFILE} 2> /dev/null
   fi
   NCORESTOTAL=$((TOTALNUMNODES*NCORESPERNODE))
   NCORESOCKET=$((NCORESPERNODE/NPROCSPERNODE))
   echo "================================================================================"
-  echo "${NCORESTOTAL} cores: ${TOTALNUMNODES} node(s) with ${NPROCSPERNODE}x${NCORESOCKET} core(s) per node and ${NTHREADSPERCORE} threads per core"
+  echo "${NCORESTOTAL} cores: ${TOTALNUMNODES} node(s) with ${NPROCSPERNODE}x${NCORESOCKET} core(s) per node and ${NTHREADSPERCORE} thread(s) per core"
   echo "================================================================================"
   NRANKSMIN=$((TOTALNUMNODES*NPROCSPERNODE))
   NSQRT_MIN=$(isqrt ${NRANKSMIN})
