@@ -183,7 +183,9 @@ then
        [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
     then
       NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
-      if [ "0" != "$((MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ]; then
+      if [ "0" != "$((MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ] && \
+         [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
+      then
         echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
         OUTPUT_POT=$((OUTPUT_POT+1))
       fi
