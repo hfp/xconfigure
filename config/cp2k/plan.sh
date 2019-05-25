@@ -38,12 +38,10 @@ NCORESPERNODE=1
 NPROCSPERNODE=1
 # number of threads per core
 NTHREADSPERCORE=1
-# min. number of ranks per node
-MIN_NRANKS=$((1*NPROCSPERNODE))
-# percentage in 100/MIN_USE
-MIN_USE=$((1*MIN_NRANKS))
+# number of ranks per node
+PENALTY_MIN=1
 # unbalanced rank-count
-ODD_PENALTY=3
+PENALTY_ODD=3
 
 SORT=$(command -v sort)
 HEAD=$(command -v head)
@@ -139,6 +137,8 @@ then
     OUTPUT=1
     shift
   fi
+  # min. number of ranks per node
+  MIN_NRANKS=$((PENALTY_MIN*NPROCSPERNODE))
   # remember system configuration
   if [ "0" != "${OUTPUT}" ]; then
     echo "${NCORESPERNODE} ${NTHREADSPERCORE} ${NPROCSPERNODE}" > ${CONFIGFILE} 2> /dev/null
@@ -157,10 +157,10 @@ then
     if [ "${NSQR}" == "$((TOTALNUMNODES*NRANKSPERNODE))" ]; then
       PENALTY=$((NCORESPERNODE%NRANKSPERNODE))
       # criterion to add penalty in case of unbalanced load
-      if [ "0" != "$((ODD_PENALTY*MIN_USE*PENALTY <= NCORESPERNODE))" ] || \
+      if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*PENALTY <= NCORESPERNODE))" ] || \
          [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
       then
-        if [ "0" != "$((MIN_USE*PENALTY <= NCORESPERNODE))" ] && \
+        if [ "0" != "$((MIN_NRANKS*PENALTY <= NCORESPERNODE))" ] && \
            [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
         then
           PENALTY=$(((100*PENALTY+NCORESPERNODE-1)/NCORESPERNODE))
@@ -179,11 +179,11 @@ then
   OUTPUT_POT=0
   while [ "0" != "$((NRANKSPERNODE_TOP < NRANKSPERNODE))" ]; do
     # criterion to add penalty in case of unbalanced load
-    if [ "0" != "$((ODD_PENALTY*MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ] || \
+    if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] || \
        [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
     then
       NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
-      if [ "0" != "$((MIN_USE*PENALTY_NCORES <= NCORESTOTAL))" ] && \
+      if [ "0" != "$((MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
       then
         echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
