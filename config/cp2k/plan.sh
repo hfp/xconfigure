@@ -203,7 +203,9 @@ then
     NRANKSPERNODE=$(echo "${RESULT}" | ${CUT} -d";" -f1)
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
     PENALTY=$(echo "${RESULT}" | ${CUT} -d";" -f2)
-    if [ "0" != "$((PENALTY <= PENALTY_TOP))" ] || [ "0" != "$((OUTPUT_SQR<OUTPUT_POT))" ]; then
+    if [ "0" != "$((OUTPUT_SQR < OUTPUT_POT))" ] || \
+       [ "0" != "$((PENALTY <= PENALTY_TOP))" ];
+    then
       NSQRT=$(echo "${RESULT}" | ${CUT} -d";" -f3)
       echo "[${NRANKSPERNODE}x${NTHREADSPERRANK}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty) -> ${NSQRT}x${NSQRT}"
       OUTPUT_SQR=$((OUTPUT_SQR+1))
