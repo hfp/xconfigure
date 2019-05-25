@@ -169,7 +169,7 @@ then
       fi
     fi
   done
-  RESULTS=$(echo -e ${RESULTS} | ${SORT} -t";" -u -k2n -k1nr)
+  RESULTS=$(echo -e "${RESULTS}" | ${SORT} -t";" -u -k2n -k1nr)
   NRANKSPERNODE_TOP=$(echo "${RESULTS}" | ${CUT} -d";" -f1 | ${HEAD} -n1)
   NTHREADSPERNODE=$((NCORESPERNODE*NTHREADSPERCORE))
   NSQR_MAX=$((NSQRT_MAX*NSQRT_MAX))
@@ -194,6 +194,9 @@ then
     echo "--------------------------------------------------------------------------------"
   fi
   OUTPUT_SQR=0
+  if [ "" != "$(command -v tr)" ]; then # reorder by decreasing rank-count
+    RESULTS=$(echo -e "${RESULTS}" | tr " " "\n" | ${SORT} -t";" -k1nr -k2n)
+  fi
   for RESULT in ${RESULTS}; do
     NRANKSPERNODE=$(echo "${RESULT}" | ${CUT} -d";" -f1)
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
