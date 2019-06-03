@@ -43,10 +43,12 @@ PENALTY_MIN=1
 # unbalanced rank-count
 PENALTY_ODD=3
 
+GREP=$(command -v grep)
 SORT=$(command -v sort)
 HEAD=$(command -v head)
 SEQ=$(command -v seq)
 CUT=$(command -v cut)
+TR=$(command -v tr)
 
 if [ "" != "${HOME}" ]; then
   CONFIGFILE=${HOME}/.xconfigure-cp2k-plan
@@ -78,31 +80,26 @@ function suggest {
   echo "$(((ncoretotal+ncoresnode-1)/ncoresnode))"
 }
 
-if [ "" != "${SORT}" ] && [ "" != "${HEAD}" ] && [ "" != "${SEQ}" ] && [ "" != "${CUT}" ];
+if [ "" != "${GREP}" ] && [ "" != "${SORT}" ] && [ "" != "${HEAD}" ] && \
+   [ "" != "${SEQ}" ] && [ "" != "${CUT}" ] && [ "" != "${TR}" ];
 then
   HELP=0
   if [ "--help" = "$1" ] || [ "-help" = "$1" ] || [ "-h" = "$1" ]; then
     HELP=1
-	shift
+    shift
   elif [ "" != "$1" ]; then
     TOTALNUMNODES=$1
     shift
   fi
-  if [ -e /proc/cpuinfo ] && \
-     [ "" != "$(command -v grep)" ] && \
-     [ "" != "$(command -v wc)" ] && \
-     [ "" != "$(command -v tr)" ];
+  if [ -e /proc/cpuinfo ] && [ "" != "$(command -v wc)" ];
   then
-    NS=$(grep "physical id" /proc/cpuinfo | ${SORT} -u | wc -l | tr -d " ")
-    NC=$((NS*$(grep "core id" /proc/cpuinfo | ${SORT} -u | wc -l | tr -d " ")))
-    NT=$(grep "core id" /proc/cpuinfo | wc -l | tr -d " ")
-  elif [ "Darwin" = "$(uname)" ] && \
-       [ "" != "$(command -v sysctl)" ] && \
-       [ "" != "$(command -v tr)" ];
-  then
-    NS=$(sysctl hw.packages | ${CUT} -d: -f2 | tr -d " ")
-    NC=$(sysctl hw.physicalcpu | ${CUT} -d: -f2 | tr -d " ")
-    NT=$(sysctl hw.logicalcpu | ${CUT} -d: -f2 | tr -d " ")
+    NS=$(${GREP} "physical id" /proc/cpuinfo | ${SORT} -u | wc -l | ${TR} -d " ")
+    NC=$((NS*$(${GREP} "core id" /proc/cpuinfo | ${SORT} -u | wc -l | ${TR} -d " ")))
+    NT=$(${GREP} "core id" /proc/cpuinfo | wc -l | ${TR} -d " ")
+  elif [ "Darwin" = "$(uname)" ] && [ "" != "$(command -v sysctl)" ]; then
+    NS=$(sysctl hw.packages | ${CUT} -d: -f2 | ${TR} -d " ")
+    NC=$(sysctl hw.physicalcpu | ${CUT} -d: -f2 | ${TR} -d " ")
+    NT=$(sysctl hw.logicalcpu | ${CUT} -d: -f2 | ${TR} -d " ")
   fi
   if [ "" != "${NC}" ] && [ "" != "${NT}" ]; then
     HT=$((NT/NC))
@@ -214,9 +211,8 @@ then
     echo "--------------------------------------------------------------------------------"
   fi
   OUTPUT_SQR=0
-  if [ "" != "$(command -v tr)" ]; then # reorder by decreasing rank-count
-    RESULTS=$(echo -e "${RESULTS}" | tr " " "\n" | ${SORT} -t";" -k1nr -k2n)
-  fi
+  # reorder by decreasing rank-count
+  RESULTS=$(echo -e "${RESULTS}" | ${TR} " " "\n" | ${SORT} -t";" -k1nr -k2n)
   for RESULT in ${RESULTS}; do
     NRANKSPERNODE=$(echo "${RESULT}" | ${CUT} -d";" -f1)
     NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
@@ -232,15 +228,17 @@ then
   if [ "0" != "${OUTPUT_SQR}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
-  NUMNODES_LO=$(suggest ${NSQR_MAX} ${NCORESPERNODE})
-  NUMNODES_HI=$(suggest $((NSQR_MAX*TOTALNUMNODES/NUMNODES_LO)) ${NCORESPERNODE})
-  if [ "${TOTALNUMNODES}" != "${NUMNODES_HI}" ] && [ "0" != "${NUMNODES_HI}" ]; then
-    if [ "${TOTALNUMNODES}" != "${NUMNODES_LO}" ] && [ "${NUMNODES_LO}" != "${NUMNODES_HI}" ]; then
-      echo "Try also ${NUMNODES_LO} and ${NUMNODES_HI} nodes!"
-    else
-      echo "Try also ${NUMNODES_HI} node(s)!"
-    fi
-  fi
+  NUMNODES_SQRT=$(isqrt ${TOTALNUMNODES})
+  NUMNODES_SQRU=$((NUMNODES_SQRT+1))
+  NUMNODES_LO1=$((NUMNODES_SQRT*NUMNODES_SQRT))
+  NUMNODES_HI1=$((NUMNODES_SQRU*NUMNODES_SQRU))
+  NUMNODES_LO2=$(suggest ${NSQR_MAX} ${NCORESPERNODE})
+  NUMNODES_HI2=$(suggest $((NSQR_MAX*TOTALNUMNODES/NUMNODES_LO2)) ${NCORESPERNODE})
+  SUGGESTION=$(echo "${NUMNODES_LO2} ${NUMNODES_LO1} ${NUMNODES_HI1} ${NUMNODES_HI2}" \
+    | ${TR} " " "\n" | ${SORT} -u \
+    | ${GREP} -vw "${TOTALNUMNODES}" \
+    | ${TR} "\n" " ")
+  echo "Try also the following node counts: ${SUGGESTION}"
 else
   echo "Error: missing prerequisites!"
   exit 1
