@@ -80,7 +80,11 @@ function suggest {
 
 if [ "" != "${SORT}" ] && [ "" != "${HEAD}" ] && [ "" != "${SEQ}" ] && [ "" != "${CUT}" ];
 then
-  if [ "" != "$1" ]; then
+  HELP=0
+  if [ "--help" = "$1" ] || [ "-help" = "$1" ] || [ "-h" = "$1" ]; then
+    HELP=1
+	shift
+  elif [ "" != "$1" ]; then
     TOTALNUMNODES=$1
     shift
   fi
@@ -136,6 +140,18 @@ then
     NPROCSPERNODE=$1
     OUTPUT=1
     shift
+  fi
+  if [ "0" != "${HELP}" ]; then
+    echo "Run: $0 [num-nodes [ncores-per-node [nthreads-per-core [nsockets-per-node]]]]"
+    echo
+    echo "Defaults: [num-nodes] ${TOTALNUMNODES}"
+    echo "    [ncores-per-node] ${NCORESPERNODE}"
+    echo "  [nthreads-per-core] ${NTHREADSPERCORE}"
+    echo "  [nsockets-per-node] ${NPROCSPERNODE}"
+    echo
+    echo "Settings (except num-nodes) may be setup once and are persistent (run to run)."
+    echo "Default of the first run are adopted from the system running $0."
+    exit 0
   fi
   # min. number of ranks per node
   MIN_NRANKS=$((PENALTY_MIN*NPROCSPERNODE))
