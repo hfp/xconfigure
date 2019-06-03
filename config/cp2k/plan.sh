@@ -235,7 +235,7 @@ then
   NUMNODES_LO2=$(suggest ${NSQR_MAX} ${NCORESPERNODE})
   NUMNODES_HI2=$(suggest $((NSQR_MAX*TOTALNUMNODES/NUMNODES_LO2)) ${NCORESPERNODE})
   SUGGESTION=$(echo "${NUMNODES_LO2} ${NUMNODES_LO1} ${NUMNODES_HI1} ${NUMNODES_HI2}" \
-    | ${TR} " " "\n" | ${SORT} -u \
+    | ${TR} " " "\n" | ${SORT} -un \
     | ${GREP} -vw "${TOTALNUMNODES}" \
     | ${TR} "\n" " ")
   echo "Try also the following node counts: ${SUGGESTION}"
