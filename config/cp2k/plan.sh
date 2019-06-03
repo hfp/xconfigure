@@ -202,7 +202,9 @@ then
       if [ "0" != "$((MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
       then
-        echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY_TOP}% penalty)"
+        PENALTY_MIN=$(((100*(NCORESTOTAL-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK)+NCORESTOTAL-1)/NCORESTOTAL))
+        PENALTY=$((PENALTY_MIN < PENALTY_TOP ? PENALTY_TOP : PENALTY_MIN))
+        echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty)"
         OUTPUT_POT=$((OUTPUT_POT+1))
       fi
     fi
