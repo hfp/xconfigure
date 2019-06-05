@@ -1,6 +1,6 @@
 # TensorFlow Serving with LIBXSMM
 
-The TensorFlow Serving framework uses TensorFlow underneath and adds a web-based client/server infrastructure, which can serve requests for inference on an already trained model. The [TensorFlow Serving repository](https://github.com/hfp/tensorflow-serving) (as cloned below) is tracking the master revision of the [original Serving framework](https://github.com/tensorflow/serving) and it is modified to use a [fork of TensorFlow](https://github.com/hfp/tensorflow) which by itself uses a recent revision of LIBXSMM and the Eigen library (see [here](tensorflow.md)).
+The TensorFlow Serving framework uses TensorFlow underneath and adds a web-based client/server infrastructure, which can serve requests for inference on an already trained model. The [TensorFlow Serving repository](https://github.com/hfp/tensorflow-serving) (as cloned below) is tracking the master revision of the [original Serving framework](https://github.com/tensorflow/serving) and it is modified to use a [fork of TensorFlow](https://github.com/hfp/tensorflow) which by itself uses a recent revision of LIBXSMM and the Eigen library (see [here](README.md)).
 
 ```bash
 git clone https://github.com/hfp/tensorflow-serving.git
