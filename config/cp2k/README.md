@@ -1,21 +1,24 @@
 # CP2K<a name="cp2k-open-source-molecular-dynamics"></a>
 
-<a name="getting-the-source-code"></a>This document focuses on building and running the [Intel fork of CP2K](https://github.com/hfp/cp2k.git). The fork was formerly a branch of CP2K's Git-mirror; CP2K is meanwhile natively hosted at GitHub. This work is supposed to track the master version of CP2K in a timely fashion. The LIBXSMM library is highly recommended and can be found at [https://github.com/hfp/libxsmm](https://libxsmm.readthedocs.io). In terms of functionality (and performance) it is beneficial to rely on [LIBINT](../libint/README.md#libint) and [LIBXC](../libxc/README.md#libxc), whereas [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) eventually improves the performance. For high performance, [LIBXSMM](../libxsmm/README.md#libxsmm) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) (and intends to substitute CP2K's "libsmm" library).
+This document describes building CP2K with several (optional) libraries, which may be beneficial in terms of functionality and performance.
 
-<a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests (it is possible to combine components from different versions):
+* Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
+    * LAPACK/BLAS and ScaLAPACK library
+    * FFTw library
+* [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
+* [LIBINT](../libint/README.md#libint) (version 1.1.5 or 1.1.6)
+* [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
+* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
 
-* Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
-    * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
-      source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
-* Intel Compiler&#160;2017 Update&#160;4, and any later update of the 2017 suite (u4, u5, u6, u7)
-    * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2018 (u3, u4, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
-    * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
-    * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
-* Intel MPI; usually any version is fine
+The ELPA library eventually improves the performance (must be currently enabled for each input file even if CP2K was built with ELPA). There is also the option to auto-tune additional routines in CP2K (integrate/collocate) and to collect the generated code into an archive referred as LIBGRID.
 
-There are no configuration wrapper scripts provided for CP2K, please follow below recipe. However, attempting to run below command yields an [info-script](#performance):
+For high performance, [LIBXSMM](../libxsmm/README.md#libxsmm) (see also [https://libxsmm.readthedocs.io](https://libxsmm.readthedocs.io)) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history). When CP2K is built with LIBXSMM, CP2K's "libsmm" library is not used and hence libsmm does not need to be built and linked with CP2K.
+
+## Getting Started<a name="build-and-run-instructions"></a>
+
+There are no configuration wrapper scripts provided for CP2K since a configure-step is usually not required, and the application can be built right away. CP2K's `install_cp2k_toolchain.sh` (under `tools/toolchain`) is out of scope in this document (it builds the entire tool chain from source including the compiler).
+
+Although there are no configuration wrapper scripts for CP2K, below command delivers e.g., an [info-script](#performance) and a script for [planning](#plan-script) CP2K execution:
 
 ```bash
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -23,139 +26,27 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-<a name="info-script"></a>Of course, the above can be simplified:
+<a name="info-script"></a>Of course, the scripts can be also download manually:
 
 ```bash
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/info.sh
 chmod +x info.sh
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/plan.sh
+chmod +x plan.sh
 ```
 
-## Build Instructions<a name="build-and-run-instructions"></a>
+## Step-by-step Guide<a name="build-an-official-release"></a>
 
-### Build the Intel-fork of CP2K<a name="build-the-cp2kintel-branch"></a>
+<a name="getting-the-source-code"></a>This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K using the GNU Compiler Collection, Intel MPI, Intel MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
-To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
-
-```bash
-source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
-```
-
-LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
-
-```bash
-git clone https://github.com/hfp/libxsmm.git
-git clone https://github.com/hfp/cp2k.git
-cd cp2k; rm -rf exe lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
-```
-
-Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel MPI and Intel MKL, one can rely on the GNU-key (`GNU=1`):
-
-```bash
-git clone https://github.com/hfp/libxsmm.git
-git clone https://github.com/hfp/cp2k.git
-cd cp2k; rm -rf exe lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1
-```
-
-Using the GNU tool-chain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.g., `configure-elpa-skx-gnu-omp.sh` instead of `configure-elpa-skx-omp.sh`). To further adjust CP2K at build time, additional key-value pairs can be passed at Make's command line (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`).
-
-* **SYM**: set `SYM=1` to include debug symbols into the executable e.g., helpful with performance profiling.
-* **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.
-
-To further improve performance and versatility, one should supply LIBINTROOT, LIBXCROOT, and ELPAROOT. These keys are valid when relying on CP2K/Intel's ARCH files (see later sections about these libraries).
-
-### Build an Official Release
-
-Here are two ways to build an [official release of CP2K](https://github.com/cp2k/cp2k/releases) using an Intel tool chain:
-
-* Use the ARCH files from CP2K/intel fork.
-* Write an own ARCH file.
-
-**NOTE**: the [step-by-step guide](#step-by-step-guide) builds CP2K&#160;6.1.0 with LIBXSMM, ELPA, LIBXC, and LIBINT.
-
-LIBXSMM is supported since [CP2K&#160;3.0](https://www.cp2k.org/version_history). CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance critical code is often located in libraries (hence `-O2` optimizations for CP2K's source code are sufficient in almost all cases), more important for performance are target-flags such as `-march=native` (`-xHost`) or `-mavx2 -mfma`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) are key for passing CP2K's regression tests. Please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble. If an own ARCH file is used or prepared, the LIBXSMM library needs to be built separately. Building LIBXSMM is rather simple; to build the master revision:
-
-```bash
-git clone https://github.com/hfp/libxsmm.git
-cd libxsmm ; make
-```
-
-To build an official [release](https://github.com/hfp/libxsmm/releases):
-
-```bash
-wget https://github.com/hfp/libxsmm/archive/1.9.tar.gz
-tar xvf 1.9.tar.gz
-cd libxsmm-1.9 ; make
-```
-
-Taking the ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on Make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
-
-```bash
-git clone https://github.com/hfp/libxsmm.git
-wget https://github.com/cp2k/cp2k/archive/v6.1.0.tar.gz
-tar xvf v6.1.0.tar.gz
-```
-
-To download the ARCH files from the Intel-fork, simply run the following:
-
-```bash
-cd cp2k-6.1.0
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
-chmod +x configure-get.sh
-./configure-get.sh cp2k
-```
-
-<a name="get-the-arch-files"></a>Alternatively, one can download the afore mentioned ARCH-files manually:
-
-```bash
-cd cp2k-6.1.0/arch
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
-```
-
-To build the official CP2K sources/release now works the same way as for the Intel-fork:
-
-```bash
-source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
-cd cp2k-6.1/makefiles; make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=2
-```
-
-To further improve performance and versatility, one may supply LIBINTROOT, LIBXCROOT, and ELPAROOT when relying on CP2K/Intel's ARCH files (see the following section about these libraries).
-
-### LIBINT, LIBXC<a name="libint-and-libxc-dependencies"></a>, and ELPA<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>
-
-To configure, build, and install LIBINT (version&#160;1.1.5 and 1.1.6 have been tested), one can proceed with [https://xconfigure.readthedocs.io/libint/](../libint/README.md#libint). Also note there is no straightforward way to cross-compile LIBINT&#160;1.1.x for an instruction set extension that is not supported by the compiler host. To incorporate LIBINT into CP2K, the key `LIBINTROOT=/path/to/libint` needs to be supplied when using CP2K/Intel's ARCH files (make).
-
-To configure, build, and install LIBXC (version&#160;3.0.0 has been tested), and one can proceed with [https://xconfigure.readthedocs.io/libxc/](../libxc/README.md#libxc). To incorporate LIBXC into CP2K, the key `LIBXCROOT=/path/to/libxc` needs to be supplied when using CP2K/Intel's ARCH files (make). After CP2K&#160;5.1, only the latest major release of LIBXC (by the time of the CP2K-release) will be supported (e.g., LIBXC&#160;4.x by the time of CP2K&#160;6.1).
-
-To configure, build, and install the Eigenvalue SoLvers for Petaflop-Applications (ELPA), one can proceed with [https://xconfigure.readthedocs.io/libint/](../elpa/). To incorporate ELPA into CP2K, the key `ELPAROOT=/path/to/elpa` needs to be supplied when using CP2K/Intel's ARCH files (make). The Intel-fork defaults to ELPA-2017.11 (earlier versions can rely on the ELPA key-value pair e.g., `ELPA=201611`).
-
-```bash
-make ARCH=Linux-x86-64-intelx VERSION=psmp ELPAROOT=/path/to/elpa/default-arch
-```
-
-At runtime, a build of the Intel-fork supports an environment variable CP2K_ELPA:
-
-* **CP2K_ELPA=-1**: requests ELPA to be enabled; the actual kernel type depends on the ELPA configuration.
-* **CP2K_ELPA=0**: ELPA is not enabled by default (only on request via input file); same as non-Intel fork.
-* **CP2K_ELPA**=&lt;not-defined&gt;: requests ELPA-kernel according to CPUID (default with CP2K/Intel-fork).
-
-### Step-by-step Guide
-
-This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K using the GNU Compiler Collection, Intel MPI, Intel MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
-
-As the step-by-step guide uses GNU Fortran, only Intel MPI and Intel MKL are sourced (sourcing all Intel development tools does not harm). Regarding GNU Fortran, version 7.x or 8.x is recommended (older versions may not be sufficient).
+As the step-by-step guide uses GNU Fortran (version 7.x or 8.x is recommended), only Intel MKL (2019.x recommended) and Intel MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm).
 
 ```bash
 source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpivars.sh
 source /opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/bin/mklvars.sh intel64
 ```
 
-The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
+<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
 
 ```bash
 cd $HOME
@@ -171,7 +62,7 @@ make install
 make clean
 ```
 
-The second step builds LIBINT, which should not be cross-compiled. Simply compile on the real target-architecture.
+<a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (1.1.6 recommended, newer version cannot be used). This library does not compile on an architecture with less CPU-features than the target (e.g., `configure-libint-skx-gnu.sh` implies to build on Skylake or Cascadelake server).
 
 ```bash
 cd $HOME
@@ -187,7 +78,7 @@ make install
 make distclean
 ```
 
-The third step builds LIBXC.
+The third step builds LIBXC (any version of the 4.x series can be used).
 
 ```bash
 cd $HOME
@@ -207,11 +98,11 @@ The fourth step makes LIBXSMM available, which is compiled as part of the next s
 
 ```bash
 cd $HOME
-wget https://github.com/hfp/libxsmm/archive/master.tar.gz
-tar xvf libxsmm-master.tar.gz
+wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.12.1.tar.gz
+tar xvf 1.12.1.tar.gz
 ```
 
-This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (do not reuse older/outdated files).
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files).
 
 ```bash
 cd $HOME
@@ -232,17 +123,45 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 AVX=3 MIC=0 \
 
 The CP2K executable should be now ready (`exe/Linux-x86-64-intelx/cp2k.psmp`).
 
-### Memory Allocation
+## Intel Compiler<a name="build-instructions"></a>
 
-Dynamic allocation of heap memory usually requires global book keeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
+<a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests:
 
-To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K (default: `TBBMALLOC=0`). Usually, Intel TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
+* Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
+    * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
+      source /opt/intel/compilers_and_libraries_2017.0.098/linux/mkl/bin/mklvars.sh intel64
+* Intel Compiler&#160;2017 Update&#160;4, and any later update of the 2017 suite (u4, u5, u6, u7)
+    * source /opt/intel/compilers_and_libraries_2017.[*u4-u7*]/linux/bin/compilervars.sh intel64
+* Intel Compiler&#160;2018 (u3, u4, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
+    * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+    * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
+* Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
+* Intel MPI; usually any version is fine: Intel MPI 2018 is recommended
+
+Please note, with respect to component versions it is possible to source from different Intel suites.
+
+## ARCH Files
+
+CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance critical code is often located in libraries (hence `-O2` optimizations for CP2K's source code are sufficient in almost all cases), more important for performance are target-flags such as `-march=native` (`-xHost`) or `-mavx2 -mfma`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) were key for passing CP2K's regression tests. If an own ARCH file is used or prepared, all libraries including LIBXSMM need to be built separately and referred in the link-line of the ARCH-file. In addition, CP2K may need to be informed and certain preprocessor symbols need to be given during compilation (`-D` compile flag). For further information, please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble.
+
+Taking the ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. Similarly, LIBXSMMROOT (which can be supplied on Make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory (as demonstrated below).
+
+<a name="get-the-arch-files"></a>Alternatively, one can download the afore mentioned ARCH-files manually:
+
+```bash
+cd cp2k-6.1.0/arch
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
+wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
+```
 
 ## Run Instructions<a name="running-the-application"></a>
 
-Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several scheme available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
+Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
 
-<a name="plan-script"></a>Because of the above mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could execute 16 ranks with 6 threads per rank (`16x6`):
+<a name="plan-script"></a>Because of the above-mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could execute 16 ranks with 6 threads per rank (`16x6`):
 
 ```bash
 mpirun -np 16 \
@@ -319,6 +238,41 @@ cp2k-h2o64-4x16x2 4      16   8     872  99.962
 ```
 
 Please note that the number of cases per day (Cases/d) are currently calculated with integer arithmetic and eventually lower than just rounding down (based on 86400 seconds per day). The number of seconds taken are end-to-end (wall time), i.e. total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
+
+## Development<a name="build-the-cp2kintel-branch"></a>
+
+<a name="build-the-intel-fork-of-cp2k"></a>The [Intel fork of CP2K](https://github.com/hfp/cp2k.git) was formerly a branch of CP2K's Git-mirror. CP2K is meanwhile natively hosted at GitHub. Ongoing work in the Intel branch was supposed to tightly track the master version of CP2K, which is also true for the fork. In addition, valuable topics may be upstreamed in a more timely fashion. To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source for experimental purpose, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
+
+```bash
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+```
+
+LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
+
+```bash
+git clone https://github.com/hfp/libxsmm.git
+git clone https://github.com/hfp/cp2k.git
+cd cp2k; rm -rf exe lib obj
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
+```
+
+Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel MPI and Intel MKL, one can rely on the GNU-key (`GNU=1`):
+
+```bash
+git clone https://github.com/hfp/libxsmm.git
+git clone https://github.com/hfp/cp2k.git
+cd cp2k; rm -rf exe lib obj
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1
+```
+
+Using the GNU tool-chain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.g., `configure-elpa-skx-gnu-omp.sh` instead of `configure-elpa-skx-omp.sh`). To further adjust CP2K at build time, additional key-value pairs (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`) can be passed at Make's command line when relying on CP2K/Intel's ARCH files.
+
+* **SYM**: set `SYM=1` to include debug symbols into the executable e.g., helpful with performance profiling.
+* **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.
+
+<a name="memory-allocation"></a>Dynamic allocation of heap memory usually requires global book keeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
+
+To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K (default: `TBBMALLOC=0`). Usually, Intel TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
 
 ## References
 
