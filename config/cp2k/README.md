@@ -46,14 +46,14 @@ source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpiva
 source /opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/bin/mklvars.sh intel64
 ```
 
-To install Intel Math Kernel Library and Intel MPI from a public repository depends on the Linux distribution's package manager. For newer distributions, both libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document). For example, with `yum` installation looks like:
+To install Intel Math Kernel Library and Intel MPI from a public repository depends on the Linux distribution's package manager. For newer distributions, both libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document). For example, installing with `yum` looks like:
 
 ```bash
 sudo yum install intel-mkl-2019.4-070.x86_64
 sudo yum install intel-mpi-2018.3-051.x86_64
 ```
 
-Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). If below checks fails, the MPI's bin-folder must added to the path:
+Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). If below checks fails, the MPI's bin-folder must be added to the path:
 
 ```text
 $ mpif90 --version
@@ -138,7 +138,16 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 AVX=3 MIC=0 \
   ELPAROOT=$HOME/elpa/gnu-skx-omp -j
 ```
 
-The CP2K executable should be now ready (`exe/Linux-x86-64-intelx/cp2k.psmp`).
+The CP2K executable should be now ready (`exe/Linux-x86-64-intelx/cp2k.psmp`). A quick check may look like:
+
+```text
+$ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
+  [...]
+  LIBXSMM_VERSION: release-1.12.1 (23085056)
+  LIBXSMM_TARGET: skx
+```
+
+Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI processes (and OpenMP threads), and to try a first workload.
 
 ## Intel Compiler<a name="build-instructions"></a>
 
