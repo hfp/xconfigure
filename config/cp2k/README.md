@@ -46,6 +46,23 @@ source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpiva
 source /opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/bin/mklvars.sh intel64
 ```
 
+To install Intel Math Kernel Library and Intel MPI from a public repository depends on the Linux distribution's package manager. For newer distributions, both libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document). For example, with `yum` installation looks like:
+
+```bash
+sudo yum install intel-mkl-2019.4-070.x86_64
+sudo yum install intel-mpi-2018.3-051.x86_64
+```
+
+Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). If below checks fails, the MPI's bin-folder must added to the path:
+
+```text
+$ mpif90 --version
+  GNU Fortran (GCC) 8.2.0
+  Copyright (C) 2018 Free Software Foundation, Inc.
+  This is free software; see the source for copying conditions.  There is NO
+  warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
 <a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
 
 ```bash
@@ -102,7 +119,7 @@ wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.12.1.tar.gz
 tar xvf 1.12.1.tar.gz
 ```
 
-This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files).
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi` (experimental).
 
 ```bash
 cd $HOME
@@ -140,7 +157,7 @@ The CP2K executable should be now ready (`exe/Linux-x86-64-intelx/cp2k.psmp`).
 
 Please note, with respect to component versions it is possible to source from different Intel suites.
 
-## ARCH Files
+## Intel ARCH File
 
 CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance critical code is often located in libraries (hence `-O2` optimizations for CP2K's source code are sufficient in almost all cases), more important for performance are target-flags such as `-march=native` (`-xHost`) or `-mavx2 -mfma`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) were key for passing CP2K's regression tests. If an own ARCH file is used or prepared, all libraries including LIBXSMM need to be built separately and referred in the link-line of the ARCH-file. In addition, CP2K may need to be informed and certain preprocessor symbols need to be given during compilation (`-D` compile flag). For further information, please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble.
 
@@ -157,9 +174,9 @@ wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
 wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
 ```
 
-## Run Instructions<a name="running-the-application"></a>
+## Running CP2K<a name="run-instructions"></a>
 
-Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
+<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
 
 <a name="plan-script"></a>Because of the above-mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could execute 16 ranks with 6 threads per rank (`16x6`):
 
