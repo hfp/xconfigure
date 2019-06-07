@@ -224,7 +224,7 @@ then
     # criterion to add penalty in case of unbalanced load
     if [[ ("0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" || \
            "0" = "$((NRANKSPERNODE%NPROCSPERNODE))") \
-       && ("0" != "$((PENALTY <= PENALTY_TOP))" || 1) ]];
+       && ("0" != "$((PENALTY <= PENALTY_TOP))") ]];
     then
       if [ "0" != "$((MIN_NRANKS*REST <= NCORESPERNODE))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
