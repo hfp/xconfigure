@@ -188,7 +188,7 @@ then
       if [ "0" != "$((MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
       then
-        PENALTY=$(((100*(NCORESTOTAL-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK)+NCORESTOTAL-1)/NCORESTOTAL))
+        PENALTY=$(((100*(NCORESTOTAL-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK/NTHREADSPERCORE)+NCORESTOTAL-1)/NCORESTOTAL))
         echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty)"
         if [ "0" != "$((PENALTY_TOP < PENALTY))" ]; then PENALTY_TOP=${PENALTY}; fi
         OUTPUT_POT=$((OUTPUT_POT+1))
@@ -218,13 +218,11 @@ then
     echo "--------------------------------------------------------------------------------"
   fi
   for NRANKSPERNODE in $(${SEQ} ${MIN_NRANKS} ${NCORESPERNODE}); do
-    NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
     REST=$((NCORESPERNODE%NRANKSPERNODE))
     PENALTY=$(((100*REST+NCORESPERNODE-1)/NCORESPERNODE))
     # criterion to add penalty in case of unbalanced load
-    if [[ ("0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" || \
-           "0" = "$((NRANKSPERNODE%NPROCSPERNODE))") \
-       && ("0" != "$((PENALTY <= PENALTY_TOP))") ]];
+    if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" ] || \
+       [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
     then
       if [ "0" != "$((MIN_NRANKS*REST <= NCORESPERNODE))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
@@ -259,7 +257,11 @@ then
   SUGGEST_HI=$(echo -e "${SUGGEST_HI}" \
     | ${GREP} -vw "${TOTALNUMNODES}" \
     | ${SORT} -n | ${GREP} -v "^$" -m1)
-  echo "Try also the following node counts: ${SUGGEST_LO} ${SUGGEST_HI}"
+  if [ "0" != "${SUGGEST_LO}" ]; then
+    echo "Try also the following node counts: ${SUGGEST_LO} ${SUGGEST_HI}"
+  else
+    echo "Try also the following node counts: ${SUGGEST_HI}"
+  fi
 else
   echo "Error: missing prerequisites!"
   exit 1
