@@ -158,14 +158,13 @@ then
     NRANKSPERNODE=$((NSQR/TOTALNUMNODES))
     if [ "${NSQR}" = "$((TOTALNUMNODES*NRANKSPERNODE))" ]; then
       REST=$((NCORESPERNODE%NRANKSPERNODE))
+      ODD=$(((NRANKSPERNODE%NPROCSPERNODE)!=0))
       # criterion to add penalty in case of unbalanced load
-      if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" ] || \
-         [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
-      then
+      if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" ] || [ "0" = "${ODD}" ]; then
         if [ "0" != "$((MIN_NRANKS*REST <= NCORESPERNODE))" ] && \
            [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
         then
-          PENALTY=$(((100*REST+NCORESPERNODE-1)/NCORESPERNODE))
+          PENALTY=$(((100*REST+ODD*PENALTY_ODD+NCORESPERNODE-1)/NCORESPERNODE))
           RESULTS+="${NRANKSPERNODE};${PENALTY};${NSQRT}\n"
         fi
       fi
@@ -181,14 +180,13 @@ then
   OUTPUT_POT=0
   while [ "0" != "$((NRANKSPERNODE_TOP < NRANKSPERNODE))" ]; do
     # criterion to add penalty in case of unbalanced load
-    if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] || \
-       [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
-    then
+    ODD=$(((NRANKSPERNODE%NPROCSPERNODE)!=0))
+    if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] || [ "0" = "${ODD}" ]; then
       NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
       if [ "0" != "$((MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
       then
-        PENALTY=$(((100*(NCORESTOTAL-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK/NTHREADSPERCORE)+NCORESTOTAL-1)/NCORESTOTAL))
+        PENALTY=$(((100*(NCORESTOTAL+ODD*PENALTY_ODD-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK/NTHREADSPERCORE)+NCORESTOTAL-1)/NCORESTOTAL))
         echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty)"
         if [ "0" != "$((PENALTY_TOP < PENALTY))" ]; then PENALTY_TOP=${PENALTY}; fi
         OUTPUT_POT=$((OUTPUT_POT+1))
@@ -221,8 +219,8 @@ then
     REST=$((NCORESPERNODE%NRANKSPERNODE))
     PENALTY=$(((100*REST+NCORESPERNODE-1)/NCORESPERNODE))
     # criterion to add penalty in case of unbalanced load
-    if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" ] || \
-       [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
+    ODD=$(((NRANKSPERNODE%NPROCSPERNODE)!=0))
+    if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" ] || [ "0" = "${ODD}" ];
     then
       if [ "0" != "$((MIN_NRANKS*REST <= NCORESPERNODE))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
