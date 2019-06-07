@@ -195,7 +195,9 @@ mpirun -np 16 \
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-It is recommended to set `I_MPI_DEBUG=4`, which displays/logs the pinning and thread affinization (with no performance penalty) at startup of the application. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with above mentioned 48-core systems) may look like:
+**NOTE**: it is not recommended to use `I_MPI_PIN_PROCESSOR_LIST` for hybrid codes (MPI and OpenMP).
+
+To display and log the pinning and thread affinization at the startup of an application, `I_MPI_DEBUG=4` can be used with no performance penalty. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with above mentioned 48-core systems) may look like:
 
 ```text
 ./plan.sh 8 48
@@ -270,8 +272,6 @@ export I_MPI_FABRICS=shm:dapl
 export I_MPI_RDMA_TRANSLATION_CACHE=1
 export I_MPI_CHECK_DAPL_PROVIDER_COMPATIBILITY=0
 ```
-
-**NOTE**: it is not recommended to use `I_MPI_PIN_PROCESSOR_LIST` for hybrid codes (MPI and OpenMP).
 
 As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). If for some reason the command to launch CP2K is not part of the log and the run-arguments cannot be determined otherwise, the number of nodes is eventually parsed by using the filename of the log itself (e.g., first occurrence of a number along with an optional "n" is treated as the number of nodes used for execution).
 
