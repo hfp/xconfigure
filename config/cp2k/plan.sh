@@ -69,17 +69,6 @@ function isqrt {
   echo "${y}"
 }
 
-function suggest {
-  ncoretotal=$1; ncoresnode=$2
-  while [ "${total}" != "${ncoretotal}" ] && [ "0" != "$((ncoresnode < ncoretotal))" ]; do
-    total=${ncoretotal}
-    nsqrt=$(isqrt ${ncoretotal})
-    nodes=$((nsqrt*nsqrt/ncoresnode))
-    ncoretotal=$((nodes*ncoresnode))
-  done
-  echo "$(((ncoretotal+ncoresnode-1)/ncoresnode))"
-}
-
 if [ "" != "${GREP}" ] && [ "" != "${SORT}" ] && [ "" != "${HEAD}" ] && \
    [ "" != "${SEQ}" ] && [ "" != "${CUT}" ] && [ "" != "${TR}" ];
 then
@@ -167,22 +156,22 @@ then
   for NSQRT in $(${SEQ} ${NSQRT_MIN} ${NSQRT_MAX}); do
     NSQR=$((NSQRT*NSQRT))
     NRANKSPERNODE=$((NSQR/TOTALNUMNODES))
-    if [ "${NSQR}" == "$((TOTALNUMNODES*NRANKSPERNODE))" ]; then
-      PENALTY=$((NCORESPERNODE%NRANKSPERNODE))
+    if [ "${NSQR}" = "$((TOTALNUMNODES*NRANKSPERNODE))" ]; then
+      REST=$((NCORESPERNODE%NRANKSPERNODE))
       # criterion to add penalty in case of unbalanced load
-      if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*PENALTY <= NCORESPERNODE))" ] || \
+      if [ "0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" ] || \
          [ "0" = "$((NRANKSPERNODE%NPROCSPERNODE))" ];
       then
-        if [ "0" != "$((MIN_NRANKS*PENALTY <= NCORESPERNODE))" ] && \
+        if [ "0" != "$((MIN_NRANKS*REST <= NCORESPERNODE))" ] && \
            [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
         then
-          PENALTY=$(((100*PENALTY+NCORESPERNODE-1)/NCORESPERNODE))
+          PENALTY=$(((100*REST+NCORESPERNODE-1)/NCORESPERNODE))
           RESULTS+="${NRANKSPERNODE};${PENALTY};${NSQRT}\n"
         fi
       fi
     fi
   done
-  RESULTS=$(echo -e "${RESULTS}" | ${SORT} -t";" -u -k2n -k1nr)
+  RESULTS=$(echo -e "${RESULTS}" | ${GREP} -v "^$" | ${SORT} -t";" -u -k2n -k1nr)
   NRANKSPERNODE_TOP=$(echo "${RESULTS}" | ${CUT} -d";" -f1 | ${HEAD} -n1)
   NTHREADSPERNODE=$((NCORESPERNODE*NTHREADSPERCORE))
   NSQR_MAX=$((NSQRT_MAX*NSQRT_MAX))
@@ -199,9 +188,9 @@ then
       if [ "0" != "$((MIN_NRANKS*PENALTY_NCORES <= NCORESTOTAL))" ] && \
          [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
       then
-        PENALTY_MIN=$(((100*(NCORESTOTAL-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK)+NCORESTOTAL-1)/NCORESTOTAL))
-        PENALTY=$((PENALTY_MIN < PENALTY_TOP ? PENALTY_TOP : PENALTY_MIN))
+        PENALTY=$(((100*(NCORESTOTAL-TOTALNUMNODES*NRANKSPERNODE*NTHREADSPERRANK)+NCORESTOTAL-1)/NCORESTOTAL))
         echo "[${NRANKSPERNODE}x${NTHREADSPERCORE}]: ${NRANKSPERNODE} ranks per node with ${NTHREADSPERRANK} thread(s) per rank (${PENALTY}% penalty)"
+        if [ "0" != "$((PENALTY_TOP < PENALTY))" ]; then PENALTY_TOP=${PENALTY}; fi
         OUTPUT_POT=$((OUTPUT_POT+1))
       fi
     fi
@@ -228,17 +217,49 @@ then
   if [ "0" != "${OUTPUT_SQR}" ]; then
     echo "--------------------------------------------------------------------------------"
   fi
-  NUMNODES_SQRT=$(isqrt ${TOTALNUMNODES})
-  NUMNODES_SQRU=$((NUMNODES_SQRT+1))
-  NUMNODES_LO1=$((NUMNODES_SQRT*NUMNODES_SQRT))
-  NUMNODES_HI1=$((NUMNODES_SQRU*NUMNODES_SQRU))
-  NUMNODES_LO2=$(suggest ${NSQR_MAX} ${NCORESPERNODE})
-  NUMNODES_HI2=$(suggest $((NSQR_MAX*TOTALNUMNODES/NUMNODES_LO2)) ${NCORESPERNODE})
-  SUGGESTION=$(echo "${NUMNODES_LO2} ${NUMNODES_LO1} ${NUMNODES_HI1} ${NUMNODES_HI2}" \
-    | ${TR} " " "\n" | ${SORT} -un \
+  for NRANKSPERNODE in $(${SEQ} ${MIN_NRANKS} ${NCORESPERNODE}); do
+    NTHREADSPERRANK=$((NTHREADSPERNODE/NRANKSPERNODE))
+    REST=$((NCORESPERNODE%NRANKSPERNODE))
+    PENALTY=$(((100*REST+NCORESPERNODE-1)/NCORESPERNODE))
+    # criterion to add penalty in case of unbalanced load
+    if [[ ("0" != "$((PENALTY_ODD*MIN_NRANKS*REST <= NCORESPERNODE))" || \
+           "0" = "$((NRANKSPERNODE%NPROCSPERNODE))") \
+       && ("0" != "$((PENALTY <= PENALTY_TOP))" || 1) ]];
+    then
+      if [ "0" != "$((MIN_NRANKS*REST <= NCORESPERNODE))" ] && \
+         [ "0" != "$((MIN_NRANKS <= NRANKSPERNODE))" ];
+      then
+        SQRT=$(isqrt $((TOTALNUMNODES*NRANKSPERNODE)))
+        NUMCORES=$((SQRT*SQRT))
+        NUMNODES=$((NUMCORES/NRANKSPERNODE))
+        if [ "0" = "$((NUMCORES-NUMNODES*NRANKSPERNODE))" ]; then
+          SUGGEST_LO+="${NUMNODES}\n"
+        fi
+        NUMCORES=$(((SQRT-1)*(SQRT-1)))
+        NUMNODES=$((NUMCORES/NRANKSPERNODE))
+        if [ "0" = "$((NUMCORES-NUMNODES*NRANKSPERNODE))" ]; then
+          SUGGEST_LO+="${NUMNODES}\n"
+        fi
+        NUMCORES=$(((SQRT+1)*(SQRT+1)))
+        NUMNODES=$((NUMCORES/NRANKSPERNODE))
+        if [ "0" = "$((NUMCORES-NUMNODES*NRANKSPERNODE))" ]; then
+          SUGGEST_HI+="${NUMNODES}\n"
+        fi
+        NUMCORES=$(((SQRT+2)*(SQRT+2)))
+        NUMNODES=$((NUMCORES/NRANKSPERNODE))
+        if [ "0" = "$((NUMCORES-NUMNODES*NRANKSPERNODE))" ] && [ "" = "${SUGGEST_HI}" ]; then
+          SUGGEST_HI+="${NUMNODES}\n"
+        fi
+      fi
+    fi
+  done
+  SUGGEST_LO=$(echo -e "${SUGGEST_LO}" \
     | ${GREP} -vw "${TOTALNUMNODES}" \
-    | ${TR} "\n" " ")
-  echo "Try also the following node counts: ${SUGGESTION}"
+    | ${SORT} -nr | ${GREP} -v "^$" -m1)
+  SUGGEST_HI=$(echo -e "${SUGGEST_HI}" \
+    | ${GREP} -vw "${TOTALNUMNODES}" \
+    | ${SORT} -n | ${GREP} -v "^$" -m1)
+  echo "Try also the following node counts: ${SUGGEST_LO} ${SUGGEST_HI}"
 else
   echo "Error: missing prerequisites!"
   exit 1
