@@ -12,7 +12,7 @@ chmod +x configure-get.sh
 ./configure-get.sh qe hsw
 ```
 
-On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the "config" folder and follow the build recipe of the desired application.
+On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder and follow the build recipe of the desired application or library: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm), [QE](https://github.com/hfp/xconfigure/tree/master/config/qe), and [TF](https://github.com/hfp/xconfigure/tree/master/config/tf).
 
 ## Documentation
 
