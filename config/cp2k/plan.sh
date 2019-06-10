@@ -83,7 +83,7 @@ then
   if [ -e /proc/cpuinfo ] && [ "" != "$(command -v wc)" ];
   then
     NS=$(${GREP} "physical id" /proc/cpuinfo | ${SORT} -u | wc -l | ${TR} -d " ")
-    NC=$((NS*$(${GREP} "core id" /proc/cpuinfo | ${SORT} -u | wc -l | ${TR} -d " ")))
+    NC=$(${GREP} -m1 "cpu cores" /proc/cpuinfo | ${TR} -d " " | ${CUT} -d: -f2)
     NT=$(${GREP} "core id" /proc/cpuinfo | wc -l | ${TR} -d " ")
   elif [ "Darwin" = "$(uname)" ] && [ "" != "$(command -v sysctl)" ]; then
     NS=$(sysctl hw.packages | ${CUT} -d: -f2 | ${TR} -d " ")
