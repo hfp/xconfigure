@@ -124,7 +124,7 @@ This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-file
 ```bash
 cd $HOME
 wget https://github.com/cp2k/cp2k/archive/v6.1.0.tar.gz
-tar xvf cp2k-6.1.0.tar.gz
+tar xvf v6.1.0.tar.gz
 cd cp2k-6.1.0
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
