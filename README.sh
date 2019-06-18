@@ -52,13 +52,11 @@ pandoc -D latex \
   ${TMPFILE}.tex
 
 # cleanup markup and pipe into pandoc using the template
-( iconv -t utf-8 README.md \
-  ; \
-  echo -e "## Applications\n\n" \
-  ; \
-  iconv -t utf-8 config/*/README.md \
-  | sed \
-    -e 's/^#/###/' \
+( iconv -t utf-8 README.md && echo && \
+  echo -e "# Applications\n\n" && \
+  iconv -t utf-8 config/*/README.md | sed -e 's/^#/##/' && echo && \
+  echo -e "# Appendix\n\n" && \
+  iconv -t utf-8 config/cp2k/plan.md | sed -e 's/^#/##/' && echo \
 ) | sed \
   -e 's/<sub>/~/g' -e 's/<\/sub>/~/g' \
   -e 's/<sup>/^/g' -e 's/<\/sup>/^/g' \

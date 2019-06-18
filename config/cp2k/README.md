@@ -183,9 +183,9 @@ wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
 
 ## Running CP2K<a name="run-instructions"></a>
 
-<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. Most important, CP2K prefers a total rank-count to be a square-number (two-dimensional communication pattern) rather than a Power-of-Two (POT) number. This property can be as dominant as wasting cores per node is more effective than fully utilizing the entire node (sometimes a frequency upside over an "all-core turbo" emphasizes this property further). Counter-intuitively, even an unbalanced rank-count per node i.e., different rank-counts per socket can be an advantage.
+<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired.
 
-<a name="plan-script"></a>Because of the above-mentioned complexity, a script for planning MPI-execution (`plan.sh`) is available. Here is a first example for running the PSMP-binary i.e., MPI/OpenMP-hybrid CP2K on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). A first step would be to run with 48 ranks and 2 threads per core. However, a second try could execute 16 ranks with 6 threads per rank (`16x6`):
+<a name="plan-script"></a>Most important, in most cases CP2K prefers a total rank-count to be a square-number which leads to some complexity when aiming for rank/thread combinations that exhibit good performance properties. Please refer to the [documentation](plan.md) of the script for planning MPI/OpenMP-hybrid (`plan.sh`), which illustrates running CP2K's PSMP-binary on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). The single-node execution with 16 ranks and 6 threads per rank looks like (`1x16x6`):
 
 ```bash
 mpirun -np 16 \
@@ -195,57 +195,17 @@ mpirun -np 16 \
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-**NOTE**: it is not recommended to use `I_MPI_PIN_PROCESSOR_LIST` for hybrid codes (MPI and OpenMP).
-
-To display and log the pinning and thread affinization at the startup of an application, `I_MPI_DEBUG=4` can be used with no performance penalty. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets e.g., running 36 ranks on a 2x20-core system puts 2x18 ranks (instead of 20+16 ranks). To [plan](#plan-script) for running on 8 nodes (with above mentioned 48-core systems) may look like:
-
-```text
-./plan.sh 8 48
-================================================================================
-384 cores: 8 node(s) with 2x24 core(s) per node and 2 threads per core
-================================================================================
-[48x2]: 48 ranks per node with 2 thread(s) per rank (6% penalty)
-[24x2]: 24 ranks per node with 4 thread(s) per rank (6% penalty)
-[12x2]: 12 ranks per node with 8 thread(s) per rank (6% penalty)
---------------------------------------------------------------------------------
-[8x12]: 8 ranks per node with 12 thread(s) per rank (0% penalty) -> 8x8
---------------------------------------------------------------------------------
-Try also 3 and 12 nodes!
-```
-
-The script (`plan.sh <num-node> <num-cores-per-node> <num-threads-per-core> <num-sockets>`) displays MPI/OpenMP configurations sorted by increasing waste of compute due to suiting the square-number preference (except for the first group where potential communication overhead is shown). For the first setup that suits the square-number preference (`24x4`), the MPI command line may look like:
+For an MPI command line targeting 8 nodes, `plan.sh` was used to setup 8 ranks per node with 12 threads per rank (`8x8x12`):
 
 ```bash
-mpirun -perhost 24 -host node1,node2,node3,node4,node5,node6,node7,node8 \
+mpirun -perhost 8 -host node1,node2,node3,node4,node5,node6,node7,node8 \
   -genv I_MPI_PIN_DOMAIN=auto -genv I_MPI_PIN_ORDER=bunch \
   -genv OMP_PLACES=threads -genv OMP_PROC_BIND=SPREAD \
-  -genv OMP_NUM_THREADS=4 -genv I_MPI_DEBUG=4 \
+  -genv OMP_NUM_THREADS=12 -genv I_MPI_DEBUG=4 \
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-Please note that `plan.sh` stores the given arguments (except for the node-count) as default for the next plan (`$HOME/.xconfigure-cp2k-plan`). This allows to supply the system-type once, and to plan with varying node-counts in a convenient fashion.
-
-## Sanity Check
-
-There is nothing that can replace the full regression test suite. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
-
-```text
-  Step     Update method      Time    Convergence         Total energy    Change
-  ------------------------------------------------------------------------------
-     1 OT DIIS     0.15E+00    0.5     0.01337191     -1059.6804814927 -1.06E+03
-     2 OT DIIS     0.15E+00    0.3     0.00866338     -1073.3635678409 -1.37E+01
-     3 OT DIIS     0.15E+00    0.3     0.00615351     -1082.2282197787 -8.86E+00
-     4 OT DIIS     0.15E+00    0.3     0.00431587     -1088.6720379505 -6.44E+00
-     5 OT DIIS     0.15E+00    0.3     0.00329037     -1092.3459788564 -3.67E+00
-     6 OT DIIS     0.15E+00    0.3     0.00250764     -1095.1407783214 -2.79E+00
-     7 OT DIIS     0.15E+00    0.3     0.00187043     -1097.2047924571 -2.06E+00
-     8 OT DIIS     0.15E+00    0.3     0.00144439     -1098.4309205383 -1.23E+00
-     9 OT DIIS     0.15E+00    0.3     0.00112474     -1099.2105625375 -7.80E-01
-    10 OT DIIS     0.15E+00    0.3     0.00101434     -1099.5709299131 -3.60E-01
-    [...]
-```
-
-The column called "Convergence" must monotonically converge towards zero.
+**NOTE**: the [documentation](plan.md) of `plan.sh` also motivates and explains the MPI environment variables as shown in above MPI command lines.
 
 ## Performance
 
@@ -289,6 +249,28 @@ cp2k-h2o64-4x16x2 4      16   8     872  99.962
 
 Please note that the "Cases/d" metric is calculated with integer arithmetic and hence represents fully completed cases per day (based on 86400 seconds per day). The number of seconds (as shown) is end-to-end (wall time), i.e. total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
 
+## Sanity Check
+
+There is nothing that can replace the full regression test suite. However, to quickly check whether a build is sane or not, one can run for instance `tests/QS/benchmark/H2O-64.inp` and check if the SCF iteration prints like the following:
+
+```text
+  Step     Update method      Time    Convergence         Total energy    Change
+  ------------------------------------------------------------------------------
+     1 OT DIIS     0.15E+00    0.5     0.01337191     -1059.6804814927 -1.06E+03
+     2 OT DIIS     0.15E+00    0.3     0.00866338     -1073.3635678409 -1.37E+01
+     3 OT DIIS     0.15E+00    0.3     0.00615351     -1082.2282197787 -8.86E+00
+     4 OT DIIS     0.15E+00    0.3     0.00431587     -1088.6720379505 -6.44E+00
+     5 OT DIIS     0.15E+00    0.3     0.00329037     -1092.3459788564 -3.67E+00
+     6 OT DIIS     0.15E+00    0.3     0.00250764     -1095.1407783214 -2.79E+00
+     7 OT DIIS     0.15E+00    0.3     0.00187043     -1097.2047924571 -2.06E+00
+     8 OT DIIS     0.15E+00    0.3     0.00144439     -1098.4309205383 -1.23E+00
+     9 OT DIIS     0.15E+00    0.3     0.00112474     -1099.2105625375 -7.80E-01
+    10 OT DIIS     0.15E+00    0.3     0.00101434     -1099.5709299131 -3.60E-01
+    [...]
+```
+
+The column called "Convergence" must monotonically converge towards zero.
+
 ## Development<a name="build-the-cp2kintel-branch"></a>
 
 <a name="build-the-intel-fork-of-cp2k"></a>The [Intel fork of CP2K](https://github.com/hfp/cp2k.git) was formerly a branch of CP2K's Git-mirror. CP2K is meanwhile natively hosted at GitHub. Ongoing work in the Intel branch was supposed to tightly track the master version of CP2K, which is also true for the fork. In addition, valuable topics may be upstreamed in a timelier fashion. To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source for experimental purpose, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
@@ -327,5 +309,6 @@ To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely
 ## References
 
 [https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/](https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/)  
+[https://xconfigure.readthedocs.io/cp2k/plan.md](https://xconfigure.readthedocs.io/cp2k/plan.md)  
 [https://www.cp2k.org/howto:compile](https://www.cp2k.org/howto:compile)
 
