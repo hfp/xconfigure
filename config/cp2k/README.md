@@ -185,7 +185,7 @@ wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
 
 <a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired.
 
-<a name="plan-script"></a>Most important, in most cases CP2K prefers a total rank-count to be a square-number which leads to some complexity when aiming for rank/thread combinations that exhibit good performance properties. Please refer to the [documentation](plan.md) of the script for planning MPI/OpenMP-hybrid (`plan.sh`), which illustrates running CP2K's PSMP-binary on an HT-enabled dual-socket system with 24 cores per processor/socket (96 hardware threads). The single-node execution with 16 ranks and 6 threads per rank looks like (`1x16x6`):
+<a name="plan-script"></a>Most important, in most cases CP2K prefers a total rank-count to be a square-number which leads to some complexity when aiming for rank/thread combinations that exhibit good performance properties. Please refer to the [documentation](plan.md) of the script for planning MPI/OpenMP-hybrid (`plan.sh`), which illustrates running CP2K's PSMP-binary on an HT-enabled dual-socket system with 24&#160;cores per processor/socket (96&#160;hardware threads). The single-node execution with 16&#160;ranks and 6&#160;threads per rank looks like (`1x16x6`):
 
 ```bash
 mpirun -np 16 \
@@ -195,7 +195,7 @@ mpirun -np 16 \
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-For an MPI command line targeting 8 nodes, `plan.sh` was used to setup 8 ranks per node with 12 threads per rank (`8x8x12`):
+For an MPI command line targeting 8&#160;nodes, `plan.sh` was used to setup 8&#160;ranks per node with 12&#160;threads per rank (`8x8x12`):
 
 ```bash
 mpirun -perhost 8 -host node1,node2,node3,node4,node5,node6,node7,node8 \
