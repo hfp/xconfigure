@@ -18,7 +18,7 @@ mpirun -np 16 \
 
 ## Plan Script
 
-To configure the plan-script, the metric of the compute nodes can be given for future invocations so that only the node-count is required as an argument. The script's help output (`plan.sh -h` or `plan.sh --help`) initially shows the system metric of the system the script is invoked on. For a system with 48&#160;cores (organized in two sockets, SMP/HT enabled), the "system setup" looks like (`plan.sh <num-nodes> <ncores-per-node> <nthreads-per-core> <nsockets-per-node>`):
+To configure the plan-script, the metric of the compute nodes can be given for future invocations so that only the node-count is required as an argument. The script's help output (`-h` or `--help`) initially shows the "system metric" of the computer the script is invoked on. For a system with 48&#160;cores (two sockets, SMP/HT enabled), setting up the "system metric" looks like (`plan.sh <num-nodes> <ncores-per-node> <nthreads-per-core> <nsockets-per-node>`):
 
 ```bash
 ./plan.sh 1 48 2 2
@@ -30,9 +30,9 @@ The script stores the given arguments (except for the node-count) as defaults fo
 ================================================================================
 384 cores: 8 node(s) with 2x24 core(s) per node and 2 thread(s) per core
 ================================================================================
-[48x2]: 48 ranks per node with 2 thread(s) per rank (0% penalty)
-[24x2]: 24 ranks per node with 4 thread(s) per rank (0% penalty)
-[12x2]: 12 ranks per node with 8 thread(s) per rank (0% penalty)
+[48x2]: 48 ranks per node with 2 thread(s) per rank (14% penalty)
+[24x4]: 24 ranks per node with 4 thread(s) per rank (14% penalty)
+[12x8]: 12 ranks per node with 8 thread(s) per rank (33% penalty)
 --------------------------------------------------------------------------------
 [32x3]: 32 ranks per node with 3 thread(s) per rank (34% penalty) -> 16x16
 [18x5]: 18 ranks per node with 5 thread(s) per rank (25% penalty) -> 12x12
