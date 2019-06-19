@@ -309,6 +309,6 @@ To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely
 ## References
 
 [https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/](https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/)  
-[https://xconfigure.readthedocs.io/cp2k/plan.md](https://xconfigure.readthedocs.io/cp2k/plan.md)  
+[https://xconfigure.readthedocs.io/cp2k/plan/](https://xconfigure.readthedocs.io/cp2k/plan/)  
 [https://www.cp2k.org/howto:compile](https://www.cp2k.org/howto:compile)
 
