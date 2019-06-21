@@ -53,7 +53,7 @@ sudo yum install intel-mkl-2019.4-070.x86_64
 sudo yum install intel-mpi-2018.3-051.x86_64
 ```
 
-Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below checks fails, the MPI's bin-folder must be added to the path.
+Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below check fails, the MPI's bin-folder must be added to the path.
 
 ```text
 $ mpif90 --version
