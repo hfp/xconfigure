@@ -62,7 +62,10 @@ export F90=${FC}
 #aclocal
 #autoheader
 #automake -a
-autoconf
+
+if [ ! -e ${HERE}/configure ]; then
+  autoconf
+fi
 
 ./configure --prefix=${DEST} ${CONFOPTS} \
   --with-cc-optflags="${CFLAGS}" \
@@ -70,5 +73,6 @@ autoconf
   --with-libderiv-max-am1=5 \
   --with-libint-max-am=6 \
   --disable-libtool \
+  --enable-fortran \
   $*
 
