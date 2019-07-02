@@ -37,8 +37,8 @@ OPTC=-O3
 OPTF=-O2
 if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 
-if [ ! -e ${HERE}/configure ]; then
-  echo "Error: XCONFIGURE scripts must be located in application folder!"
+if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
+  echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
