@@ -103,6 +103,13 @@ if [ -e autogen.sh ]; then
   ./autogen.sh
 fi
 
+if [ ! -e ${HERE}/remove_xcompiler ]; then
+  echo "#!/bin/bash" > ${HERE}/remove_xcompiler
+  echo "remove=(-Xcompiler)" >> ${HERE}/remove_xcompiler
+  echo "\${@/${remove}}" >> ${HERE}/remove_xcompiler
+  chmod +x ${HERE}/remove_xcompiler
+fi
+
 ./configure --disable-option-checking \
   --disable-dependency-tracking \
   --prefix=${DEST} ${CONFOPTS} $*
