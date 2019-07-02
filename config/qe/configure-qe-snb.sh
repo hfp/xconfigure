@@ -37,6 +37,7 @@ OPTC=-O3
 OPTF=-O2
 if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 
+HERE=$(cd $(dirname $0); pwd -P)
 if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
@@ -60,7 +61,6 @@ fi
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 EXX_ACE="-D__EXX_ACE"
 
-HERE=$(cd $(dirname $0); pwd -P)
 export ELPAROOT="${HERE}/../elpa/${PRFX}snb"
 export MKL_OMPRTL=intel_thread
 #export MKL_OMPRTL=sequential
