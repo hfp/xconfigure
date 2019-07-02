@@ -37,6 +37,11 @@ OPTC=-O3
 OPTF=-O2
 if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
 
+if [ ! -e ${HERE}/configure ]; then
+  echo "Error: XCONFIGURE scripts must be located in application folder!"
+  exit 1
+fi
+
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
