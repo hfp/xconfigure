@@ -9,7 +9,7 @@
 **NOTE**: both 2018-versions **fail or crash in several regression tests** in CP2K (certain rank-counts produce an incorrect decomposition), and hence they should be avoided in production with CP2K or Quantum Espresso (QE).
 
 ```bash
-wget https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001/elpa-2018.05.001.tar.gz
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001/elpa-2018.05.001.tar.gz
 tar xvf elpa-2018.05.001.tar.gz
 cd elpa-2018.05.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -58,7 +58,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 **NOTE**: this version of ELPA must be used with Quantum Espresso's __ELPA_2018 interface (`-D__ELPA_2018`), which is patched into QE by default when using XCONFIGURE's up-to-date build wrapper scripts. The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed after [ELPA&#160;2017.05.003](#elpa-201705003). Also, it appears `make clean` (or similar Makefile target) for ELPA 2016.11.001 is cleaning up the entire directory including all "non-ELPA content" (the directory also remains somewhat unclean such that subsequent builds may fail)
 
 ```bash
-wget https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
 cd elpa-2017.11.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
