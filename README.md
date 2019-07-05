@@ -12,11 +12,18 @@ chmod +x configure-get.sh
 ./configure-get.sh qe hsw
 ```
 
-On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder and follow the build recipe of the desired application or library: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm), [QE](https://github.com/hfp/xconfigure/tree/master/config/qe), and [TF](https://github.com/hfp/xconfigure/tree/master/config/tf).
+On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder directly or use the [documentation](#documentation) and then follow the build recipe of the desired application or library.
 
 ## Documentation
 
 * [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search.
+    * [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k)
+    * [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa)
+    * [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint)
+    * [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc)
+    * [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm)
+    * [QE](https://github.com/hfp/xconfigure/tree/master/config/qe)
+    * [TF](https://github.com/hfp/xconfigure/tree/master/config/tf)
 * [**PDF**](https://github.com/hfp/xconfigure/raw/master/xconfigure.pdf): a single documentation file.
 
 ## Related Projects
