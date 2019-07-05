@@ -16,14 +16,7 @@ On systems without access to the Internet, one can [download](https://github.com
 
 ## Documentation
 
-* [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search.
-    * [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k)
-    * [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa)
-    * [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint)
-    * [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc)
-    * [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm)
-    * [QE](https://github.com/hfp/xconfigure/tree/master/config/qe)
-    * [TF](https://github.com/hfp/xconfigure/tree/master/config/tf)
+* [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm), [QE](https://github.com/hfp/xconfigure/tree/master/config/qe), and [TF](https://github.com/hfp/xconfigure/tree/master/config/tf).
 * [**PDF**](https://github.com/hfp/xconfigure/raw/master/xconfigure.pdf): a single documentation file.
 
 ## Related Projects
