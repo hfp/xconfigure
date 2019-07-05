@@ -12,7 +12,7 @@ chmod +x configure-get.sh
 ./configure-get.sh qe hsw
 ```
 
-On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder directly or use the [documentation](#documentation) and then follow the build recipe of the desired application or library.
+On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder directly or use the [documentation](https://xconfigure.readthedocs.io/) and then follow the build recipe of the desired application or library.
 
 ## Documentation
 

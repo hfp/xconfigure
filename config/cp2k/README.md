@@ -224,10 +224,10 @@ export I_MPI_DYNAMIC_CONNECTION=1
 export I_MPI_HARD_FINALIZE=1
 ```
 
-Intel MPI usually nicely determines the fabric settings for both Omnipath and Infiniband, and no adjustment is needed. However, people often prefer explicit settings even if it does not differ from what is determined automatically. For example, Infiniband with RDMA can be set explicitly by using `mpirun -rdma` which can be also achieved with environment variables:
+Intel MPI usually nicely determines the fabric settings for both Omnipath and InfiniBand, and no adjustment is needed. However, people often prefer explicit settings even if it does not differ from what is determined automatically. For example, InfiniBand with RDMA can be set explicitly by using `mpirun -rdma` which can be also achieved with environment variables:
 
 ```bash
-echo "'mpirun -rdma' and/or environment variables for Infiniband"
+echo "'mpirun -rdma' and/or environment variables for InfiniBand"
 export I_MPI_FABRICS=shm:dapl
 export I_MPI_RDMA_TRANSLATION_CACHE=1
 export I_MPI_CHECK_DAPL_PROVIDER_COMPATIBILITY=0
