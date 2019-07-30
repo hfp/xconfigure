@@ -37,23 +37,25 @@ chmod +x plan.sh
 
 ## Step-by-step Guide<a name="build-an-official-release"></a>
 
-<a name="getting-the-source-code"></a>This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K by using the GNU Compiler Collection, Intel MPI, Intel MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
+<a name="getting-the-source-code"></a>This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K by using the GNU Compiler Collection, Intel&#160;MPI, Intel&#160;MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
-As the step-by-step guide uses GNU Fortran (version 7.x or 8.x is recommended), only Intel MKL (2019.x recommended) and Intel MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm).
+As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm).
+
+**NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 does not pass regression tests).
 
 ```bash
 source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpivars.sh
 source /opt/intel/compilers_and_libraries_2019.3.199/linux/mkl/bin/mklvars.sh intel64
 ```
 
-To install Intel Math Kernel Library and Intel MPI from a public repository depends on the Linux distribution's package manager. For newer distributions, both libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document). For example, installing with `yum` looks like:
+To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager. For newer distributions, both libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document). For example, installing with `yum` looks like:
 
 ```bash
 sudo yum install intel-mkl-2019.4-070.x86_64
 sudo yum install intel-mpi-2018.3-051.x86_64
 ```
 
-Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below check fails, the MPI's bin-folder must be added to the path.
+Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel&#160;MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below check fails, the MPI's bin-folder must be added to the path.
 
 ```text
 $ mpif90 --version
@@ -119,7 +121,7 @@ wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.13.tar.gz
 tar xvf 1.13.tar.gz
 ```
 
-This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi` (experimental: `patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff`).
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi` (experimental: `patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff`).
 
 ```bash
 cd $HOME
@@ -222,7 +224,7 @@ mpirun -perhost 8 -host node1,node2,node3,node4,node5,node6,node7,node8 \
 
 ## Performance
 
-The [script](#plan-script) for planning MPI-execution (`plan.sh`) is highly recommend along with reading the section about [how to run CP2K](#run-instructions). For CP2K, the MPI-communication patterns can be tuned in most MPI-implementations. For Intel MPI, the following setting can be beneficial:
+The [script](#plan-script) for planning MPI-execution (`plan.sh`) is highly recommend along with reading the section about [how to run CP2K](#run-instructions). For CP2K, the MPI-communication patterns can be tuned in most MPI-implementations. For Intel&#160;MPI, the following setting can be beneficial:
 
 ```bash
 export I_MPI_COLL_INTRANODE=pt2pt
@@ -237,7 +239,7 @@ export I_MPI_DYNAMIC_CONNECTION=1
 export I_MPI_HARD_FINALIZE=1
 ```
 
-Intel MPI usually nicely determines the fabric settings for both Omnipath and InfiniBand, and no adjustment is needed. However, people often prefer explicit settings even if it does not differ from what is determined automatically. For example, InfiniBand with RDMA can be set explicitly by using `mpirun -rdma` which can be also achieved with environment variables:
+Intel&#160;MPI usually nicely determines the fabric settings for both Omnipath and InfiniBand, and no adjustment is needed. However, people often prefer explicit settings even if it does not differ from what is determined automatically. For example, InfiniBand with RDMA can be set explicitly by using `mpirun -rdma` which can be also achieved with environment variables:
 
 ```bash
 echo "'mpirun -rdma' and/or environment variables for InfiniBand"
@@ -301,7 +303,7 @@ cd cp2k; rm -rf exe lib obj
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 ```
 
-Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel MPI and Intel MKL, one can rely on the GNU-key (`GNU=1`):
+Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel&#160;MPI and Intel&#160;MKL, one can rely on the GNU-key (`GNU=1`):
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
@@ -317,7 +319,7 @@ The GNU tool-chain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.
 
 <a name="memory-allocation"></a>Dynamic allocation of heap memory usually requires global book keeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
 
-To use the malloc-proxy of the Intel Threading Building Blocks (Intel TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K (default: `TBBMALLOC=0`). Usually, Intel TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
+To use the malloc-proxy of the Intel Threading Building Blocks (Intel&#160;TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K (default: `TBBMALLOC=0`). Usually, Intel&#160;TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
 
 ## References
 
