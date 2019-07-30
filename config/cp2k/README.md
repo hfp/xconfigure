@@ -59,7 +59,7 @@ Please note, the ARCH file (used later/below to build CP2K) attempts to find Int
 
 ```text
 $ mpif90 --version
-  GNU Fortran (GCC) 8.2.0
+  GNU Fortran (GCC) 8.3.0
   Copyright (C) 2018 Free Software Foundation, Inc.
   This is free software; see the source for copying conditions.  There is NO
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -71,11 +71,13 @@ $ mpif90 --version
 cd $HOME
 wget https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
+
 cd elpa-2017.11.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ./configure-elpa-skx-gnu-omp.sh
+
 make -j
 make install
 make clean
@@ -87,11 +89,13 @@ make clean
 cd $HOME
 wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
 tar xvf release-1-1-6.tar.gz
+
 cd libint-release-1-1-6
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ./configure-libint-skx-gnu.sh
+
 make -j
 make install
 make distclean
@@ -103,11 +107,13 @@ The third step builds LIBXC (any version of the 4.x series can be used).
 cd $HOME
 wget --content-disposition https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
 tar xvf libxc-4.3.4.tar.bz2
+
 cd libxc-4.3.4
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
 ./configure-libxc-skx-gnu.sh
+
 make -j
 make install
 make distclean
