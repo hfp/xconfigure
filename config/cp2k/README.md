@@ -101,8 +101,8 @@ The third step builds LIBXC (any version of the 4.x series can be used).
 
 ```bash
 cd $HOME
-wget --content-disposition http://www.tddft.org/programs/octopus/down.php?file=libxc/4.3.4/libxc-4.3.4.tar.gz
-tar xvf libxc-4.3.4.tar.gz
+wget --content-disposition https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
+tar xvf libxc-4.3.4.tar.bz2
 cd libxc-4.3.4
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
