@@ -89,9 +89,10 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-#aclocal
+libtoolize
+aclocal
 #autoheader
-#automake -a
+automake -a
 autoconf
 
 ./configure \

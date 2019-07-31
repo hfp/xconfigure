@@ -62,9 +62,10 @@ export FC="gfortran"
 export CC="gcc"
 export CXX="g++"
 
-#aclocal
+libtoolize
+aclocal
 #autoheader
-#automake -a
+automake -a
 autoconf
 
 ./configure \
