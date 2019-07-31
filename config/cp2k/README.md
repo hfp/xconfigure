@@ -83,7 +83,7 @@ make install
 make clean
 ```
 
-<a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (1.1.6 recommended, newer version cannot be used). This library does not compile on an architecture with less CPU-features than the target (e.g., `configure-libint-skx-gnu.sh` implies to build on Skylake or Cascadelake server).
+<a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (1.1.6 recommended, newer version cannot be used). This library does not compile on an architecture with less CPU-features than the target (e.g., `configure-libint-skx-gnu.sh` implies to build on "Skylake" or "Cascadelake" server).
 
 ```bash
 cd $HOME
@@ -300,23 +300,19 @@ The column called "Convergence" must monotonically converge towards zero.
 source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
 ```
 
-LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out by using the `-xHost` target flag. For example, to explicitly target "Skylake" (SKX):
+LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out by using the `-xHost` target flag. For example, to explicitly target "Cascadelake" or "Skylake" server ("SKX"):
 
 ```bash
 git clone https://github.com/hfp/libxsmm.git
 git clone https://github.com/hfp/cp2k.git
-cd cp2k; rm -rf exe lib obj
+cd cp2k
+git submodule update --init --recursive
+
+rm -rf lib obj
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 ```
 
-Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel&#160;MPI and Intel&#160;MKL, one can rely on the GNU-key (`GNU=1`):
-
-```bash
-git clone https://github.com/hfp/libxsmm.git
-git clone https://github.com/hfp/cp2k.git
-cd cp2k; rm -rf exe lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1
-```
+**NOTE**: Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel&#160;MPI and Intel&#160;MKL, one can rely on the GNU-key (`GNU=1`).
 
 The GNU tool-chain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.g., `configure-elpa-skx-gnu-omp.sh` instead of `configure-elpa-skx-omp.sh`). To further adjust CP2K at build time, additional key-value pairs (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`) can be passed at Make's command line when relying on CP2K/Intel's ARCH files.
 
