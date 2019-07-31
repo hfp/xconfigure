@@ -76,8 +76,8 @@ cd elpa-2017.11.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
-./configure-elpa-skx-gnu-omp.sh
 
+./configure-elpa-skx-gnu-omp.sh
 make -j
 make install
 make clean
@@ -94,8 +94,8 @@ cd libint-release-1-1-6
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
-./configure-libint-skx-gnu.sh
 
+./configure-libint-skx-gnu.sh
 make -j
 make install
 make distclean
@@ -112,8 +112,8 @@ cd libxc-4.3.4
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
-./configure-libxc-skx-gnu.sh
 
+./configure-libxc-skx-gnu.sh
 make -j
 make install
 make distclean
