@@ -64,9 +64,11 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
+#libtoolize
 #aclocal
 #autoheader
 #automake -a
+#autoconf
 
 if [ ! -e ${HERE}/configure ]; then
   autoconf
