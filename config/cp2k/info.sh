@@ -100,7 +100,7 @@ for FILE in ${FILES}; do
       fi
     done
     NODERANKS=${RANKS}
-    if [ "" != "${NODES}" ] && [ "0" != "$((NODES<=NODERANKS))" ]; then
+    if [ "" != "${NODES}" ] && [ "0" != "${NODES}" ] && [ "0" != "$((NODES<=NODERANKS))" ]; then
       RANKS=$((NODERANKS/NODES))
     fi
   fi
