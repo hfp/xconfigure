@@ -2,11 +2,62 @@
 
 ## Build Instructions
 
+### ELPA 2019.05.001
+
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
+
+**NOTE**: both 2018-versions **fail or crash in several regression tests** in CP2K (certain rank-counts produce an incorrect decomposition), and hence they should be avoided in production with CP2K or Quantum Espresso (QE). It is recommended to use ELPA 2017.11.001 for QE and for CP2K&#160;6.1.
+
+```bash
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2019.05.001/elpa-2019.05.001.tar.gz
+tar xvf elpa-2019.05.001.tar.gz
+cd elpa-2019.05.001
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh elpa
+```
+
+Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
+
+```bash
+source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+```
+
+For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+
+```bash
+make clean
+./configure-elpa-skx-omp.sh
+make -j ; make install
+
+make clean
+./configure-elpa-skx.sh
+make -j ; make install
+```
+
+After building and installing the desired configuration(s), one may have a look at the installation:
+
+```bash
+[user@system elpa-2019.05.001]$ ls ../elpa
+ default-skx
+ default-skx-omp
+```
+
+For different targets (instruction set extensions) or for different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
+
+```bash
+./configure-elpa-skx-omp.sh tagname
+```
+
+As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
+
+**NOTE**: Please use ELPA 2017.11.001 for QE and for CP2K&#160;6.1. For CP2K&#160;7.1, please rely on ELPA 2019.05.001.
+
 ### ELPA 2018.05.001 and 2018.11.001
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
 
-**NOTE**: both 2018-versions **fail or crash in several regression tests** in CP2K (certain rank-counts produce an incorrect decomposition), and hence they should be avoided in production with CP2K or Quantum Espresso (QE).
+**NOTE**: both 2018-versions **fail or crash in several regression tests** in CP2K (certain rank-counts produce an incorrect decomposition), and hence they should be avoided in production with CP2K or Quantum Espresso (QE). It is recommended to use ELPA 2017.11.001 for QE and for CP2K&#160;6.1.
 
 ```bash
 wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2018.05.001/elpa-2018.05.001.tar.gz
@@ -42,14 +93,6 @@ After building and installing the desired configuration(s), one may have a look 
  default-skx
  default-skx-omp
 ```
-
-For different targets (instruction set extensions) or for different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):
-
-```bash
-./configure-elpa-skx-omp.sh tagname
-```
-
-As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the ELPA library.
 
 ### ELPA 2017.11.001 (and older)
 
