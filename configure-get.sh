@@ -33,7 +33,6 @@
 BASENAME=$(command -v basename)
 CHMOD=$(command -v chmod)
 WGET=$(command -v wget)
-ECHO=$(command -v echo)
 CAT=$(command -v cat)
 CUT=$(command -v cut)
 TR=$(command -v tr)
@@ -47,22 +46,24 @@ APPLICATION=$1
 ARCHS=$2
 KINDS=$3
 
-if [ "" = "${CHMOD}" ] || [ "" = "${WGET}" ] || [ "" = "${ECHO}" ] || \
+if [ "" = "${BASENAME}" ] || [ "" = "${CHMOD}" ] || [ "" = "${WGET}" ] || \
    [ "" = "${CAT}" ] || [ "" = "${CUT}" ] || [ "" = "${TR}" ] || \
-   [ "" = "${LS}" ] || [ "" = "${RM}" ] || [ "" = "${MV}" ] || \
-   [ "" = "${BASENAME}" ];
+   [ "" = "${LS}" ] || [ "" = "${RM}" ] || [ "" = "${MV}" ];
 then
-  ${ECHO} "Error: prerequisites not found!"
+  echo "Error: prerequisites not found!"
   exit 1
 fi
 WGET="${WGET} --no-check-certificate --no-cache"
 
 if [ "" = "${APPLICATION}" ]; then
-  ${ECHO} "Please use: $0 <application-name>"
+  echo "Please use: $0 <application-name>"
   exit 1
 fi
-if [ "0" != $(${WGET} -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null; ${ECHO} $?) ]; then
-  ${ECHO} "Error: cannot find a recipe for application \"${APPLICATION}\"!"
+
+echo "Be patient, it can take up to 30 seconds before progress is shown..."
+echo
+if [ "0" != $(${WGET} -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null; echo $?) ]; then
+  echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
 
@@ -73,45 +74,45 @@ fi
 if [ "" = "${KINDS}" ]; then
   KINDS="omp gnu gnu-omp"
   for KIND in ${KINDS} ; do
-    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
       ${CAT} ${MSGBUFFER}
     fi
   done
   for ARCH in ${ARCHS} ; do
-    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh 2>${MSGBUFFER}; echo $?)" ]; then
       ${CAT} ${MSGBUFFER}
     fi
     for KIND in ${KINDS} ; do
-      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
         ${CAT} ${MSGBUFFER}
       fi
     done
   done
-  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; echo $?)" ]; then
     ${CAT} ${MSGBUFFER}
   fi
 else
   for ARCH in ${ARCHS} ; do
     for KIND in ${KINDS} ; do
-      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
         ${CAT} ${MSGBUFFER}
       fi
     done
   done
-  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; echo $?)" ]; then
     ${CAT} ${MSGBUFFER}
   fi
 fi
 
 # attempt to get a list of non-default file names, and then download each file
-if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/.filelist 2>${MSGBUFFER}; ${ECHO} $?)" ]; then
+if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/.filelist 2>${MSGBUFFER}; echo $?)" ]; then
   ${CAT} ${MSGBUFFER}
 fi
 if [ -e .filelist ]; then
   ${CAT} .filelist | ${TR} -s " " | \
   while read LINE; do
-    FILE=$(${ECHO} "${LINE}" | ${CUT} -d" " -f1)
-    DIR=$(${ECHO} "${LINE}" | ${CUT} -d" " -f2)
+    FILE=$(echo "${LINE}" | ${CUT} -d" " -f1)
+    DIR=$(echo "${LINE}" | ${CUT} -d" " -f2)
     if [ "" != "${LINE}" ]; then # skip empty lines
       if [[ "${FILE}" =~ "://" ]]; then
         ${WGET} -N ${FILE}
@@ -134,8 +135,8 @@ ${RM} ${MSGBUFFER}
 
 if [ "" = "$(${LS} -1 configure-${APPLICATION}*.sh 2>/dev/null)" ]; then
   # display reminder about build recipe
-  ${ECHO}
-  ${ECHO} "There is no configuration needed! Please read:"
-  ${ECHO} "https://xconfigure.readthedocs.io/${APPLICATION}/"
+  echo
+  echo "There is no configuration needed! Please read:"
+  echo "https://xconfigure.readthedocs.io/${APPLICATION}/"
 fi
 
