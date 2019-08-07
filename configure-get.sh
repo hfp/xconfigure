@@ -30,16 +30,16 @@
 # Hans Pabst (Intel Corp.)
 #############################################################################
 
-BASENAME=$(which basename 2>/dev/null)
-CHMOD=$(which chmod 2>/dev/null)
-WGET=$(which wget 2>/dev/null)
-ECHO=$(which echo 2>/dev/null)
-CAT=$(which cat 2>/dev/null)
-CUT=$(which cut 2>/dev/null)
-TR=$(which tr 2>/dev/null)
-LS=$(which ls 2>/dev/null)
-RM=$(which rm 2>/dev/null)
-MV=$(which mv 2>/dev/null)
+BASENAME=$(command -v basename)
+CHMOD=$(command -v chmod)
+WGET=$(command -v wget)
+ECHO=$(command -v echo)
+CAT=$(command -v cat)
+CUT=$(command -v cut)
+TR=$(command -v tr)
+LS=$(command -v ls)
+RM=$(command -v rm)
+MV=$(command -v mv)
 
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 ERROR_NOTFOUND=8
@@ -55,7 +55,7 @@ then
   ${ECHO} "Error: prerequisites not found!"
   exit 1
 fi
-WGET="${WGET} --no-check-certificate"
+WGET="${WGET} --no-check-certificate --no-cache"
 
 if [ "" = "${APPLICATION}" ]; then
   ${ECHO} "Please use: $0 <application-name>"
