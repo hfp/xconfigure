@@ -67,8 +67,11 @@ export F90=${FC}
 if [ -e ${HERE}/fortran/Makefile.in ]; then
   sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile.in
 fi
+# broken build system incl. "make -f ${HERE}/fortran/Makefile distclean"
 if [ -e ${HERE}/fortran/Makefile ]; then
-  make -f ${HERE}/fortran/Makefile distclean
+  cd ${HERE}/fortran
+  make distclean
+  cd ${HERE}
 fi
 
 #libtoolize
