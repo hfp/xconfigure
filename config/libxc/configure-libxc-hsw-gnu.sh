@@ -64,7 +64,7 @@ export CXX="g++"
 
 libtoolize
 aclocal
-#autoheader
+autoheader
 automake -a
 autoconf
 

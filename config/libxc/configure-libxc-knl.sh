@@ -89,7 +89,7 @@ fi
 
 libtoolize
 aclocal
-#autoheader
+autoheader
 automake -a
 autoconf
 
