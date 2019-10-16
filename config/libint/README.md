@@ -24,21 +24,21 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | sed "s/..*: \"\(..*[^\"]\)\".*/\1/"
 ```
 
-To download the lmax6-version right away and to unpack the archive, run the following command:
+To download the lmax6-version right away, run the following command:
 
 ```bash
 curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | grep "browser_download_url" | grep "lmax-6" \
 | sed "s/..*: \"\(..*[^\"]\)\".*/url \1/" \
 | curl -LOK-
-
-tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 ```
 
-To download the configure wrapper scripts (for the directory, the lmax6-version is assumed):
+To unpack the archive and to download the configure wrapper (lmax6-version is assumed):
 
 ```bash
+tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 cd libint-v2.6.0-cp2k-lmax-6
+
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
