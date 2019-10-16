@@ -52,7 +52,7 @@ make distclean
 make -j; make install
 ```
 
-Further, for different targets (instruction set extensions) or different compilers, the configure-wrapper scripts support an additional argument ("default" is the default tagname):
+Make sure to run `make distclean` before reconfiguring a different variant e.g., GNU and Intel variant. Further, for different targets (instruction set extensions) or different compilers, the configure-wrapper scripts support an additional argument ("default" is the default tagname):
 
 ```bash
 ./configure-libint-hsw.sh tagname
