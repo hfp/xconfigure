@@ -92,6 +92,9 @@ fi
 if [ -e ${HERE}/fortran/Makefile.in ]; then
   sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile.in
 fi
+if [ -e ${HERE}/fortran/Makefile ]; then
+  make -f ${HERE}/fortran/Makefile distclean
+fi
 
 #libtoolize
 #aclocal

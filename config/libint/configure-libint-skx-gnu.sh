@@ -64,6 +64,13 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
+if [ -e ${HERE}/fortran/Makefile.in ]; then
+  sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile.in
+fi
+if [ -e ${HERE}/fortran/Makefile ]; then
+  make -f ${HERE}/fortran/Makefile distclean
+fi
+
 #libtoolize
 #aclocal
 #autoheader
