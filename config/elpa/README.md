@@ -2,16 +2,16 @@
 
 ## Build Instructions
 
-### ELPA 2019.05.001
+### ELPA 2019.05.002
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
 
 **NOTE**: both 2018-versions **fail or crash in several regression tests** in CP2K (certain rank-counts produce an incorrect decomposition), and hence they should be avoided in production with CP2K or Quantum Espresso (QE). It is recommended to use ELPA 2017.11.001 for QE and for CP2K&#160;6.1.
 
 ```bash
-wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2019.05.001/elpa-2019.05.001.tar.gz
-tar xvf elpa-2019.05.001.tar.gz
-cd elpa-2019.05.001
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2019.05.002/elpa-2019.05.002.tar.gz
+tar xvf elpa-2019.05.002.tar.gz
+cd elpa-2019.05.002
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -35,7 +35,7 @@ make clean
 make -j ; make install
 ```
 
-After building and installing the desired configuration(s), one may have a look at the installation:
+Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format"). After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
 [user@system elpa-2019.05.001]$ ls ../elpa
@@ -86,7 +86,7 @@ make clean
 make -j ; make install
 ```
 
-After building and installing the desired configuration(s), one may have a look at the installation:
+Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format"). After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
 [user@system elpa-2018.05.001]$ ls ../elpa
@@ -126,6 +126,8 @@ make clean
 ./configure-elpa-skx.sh
 make -j ; make install
 ```
+
+Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format").
 
 ### ELPA Development
 
