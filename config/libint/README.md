@@ -16,7 +16,7 @@ source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh i
 
 For CP2K&#160;7.x and onwards, LIBINT&#160;2.5 (or later) is needed. LIBINT generates code according to the requested configuration. The preconfigured downloads from [LIBINT's home page](https://github.com/evaleev/libint) cannot be used. Please [download](https://github.com/cp2k/libint-cp2k/releases/latest) (take "lmax-6" if unsure), unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
 
-To determine the download-URL of the latest version (a suitable variant can be "lmax-6"):
+To just determine the download-URL of the latest version (a suitable variant can be "lmax-6"):
 
 ```bash
 curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
@@ -24,7 +24,7 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | sed "s/..*: \"\(..*[^\"]\)\".*/\1/"
 ```
 
-To download the lmax6-version and the configure wrapper scripts, run the following command:
+To download the lmax6-version right away and to unpack the archive, run the following command:
 
 ```bash
 curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
@@ -32,6 +32,13 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | sed "s/..*: \"\(..*[^\"]\)\".*/url \1/" \
 | curl -LOK-
 
+tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
+```
+
+To download the configure wrapper scripts (for the directory, the lmax6-version is assumed):
+
+```bash
+cd libint-v2.6.0-cp2k-lmax-6
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
@@ -41,7 +48,7 @@ For example, to configure and make for an Intel Xeon Scalable processor such as 
 
 ```bash
 make distclean
-./configure-libxc-skx.sh
+./configure-libint-skx.sh
 make -j; make install
 ```
 
