@@ -89,10 +89,8 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-FCDIR=$(dirname $(command -v ${FC}))
-MAINDIR=$(cd ${FCDIR}/../../compiler/lib/intel64; pwd -P)
-if [ -e ${MAINDIR}/for_main.o ]; then
-  export LDFLAGS="${LDFLAGS} ${MAINDIR}/for_main.o"
+if [ -e ${HERE}/fortran/Makefile.in ]; then
+  sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile.in
 fi
 
 #libtoolize
