@@ -55,7 +55,7 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
-export LIBS=""
+export LIBS="-lstdc++"
 
 export AR="gcc-ar"
 export FC="gfortran"

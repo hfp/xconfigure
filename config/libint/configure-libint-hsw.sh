@@ -59,7 +59,7 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
-export LIBS=""
+export LIBS="-lstdc++"
 
 export AR="xiar"
 export FC="ifort"
