@@ -64,8 +64,8 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
-if [ -e ${HERE}/fortran/Makefile.in ]; then
-  sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile.in
+if [ -e ${HERE}/fortran/Makefile ] || [ -e ${HERE}/fortran/Makefile.in ]; then
+  sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile*
 fi
 # broken build system incl. "make -f ${HERE}/fortran/Makefile distclean"
 if [ -e ${HERE}/fortran/Makefile ]; then
