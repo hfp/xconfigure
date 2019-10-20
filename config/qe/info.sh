@@ -132,7 +132,13 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
     else
       NDIAG=$((NDIAG))
     fi
-    NTG=$(grep "fft and procs/group =" ${FILE} | tail -n1 | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
+    NTGSTR=$(grep -m1 "fft and procs/group =" ${FILE})
+    if [ "" = "${NTGSTR}" ]; then
+      NTGSTR=$(grep -m1 "#TG[[:space:]][[:space:]]*x Z-proc =" ${FILE})
+    fi
+    if [ "" != "${NTGSTR}" ]; then
+      NTG=$(echo "${NTGSTR}" | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
+    fi
     if [ "0" != "${TWALL}" ]; then
       echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t$(printf %-7.7s ${TWALL}${FSCDS})"
