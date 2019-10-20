@@ -2,7 +2,7 @@
 
 ## Build Instructions
 
-[Download](https://gitlab.com/QEF/q-e/tags), unpack [Quantum Espresso](http://www.quantum-espresso.org/) and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
+[Download](https://gitlab.com/QEF/q-e/tags), unpack [Quantum Espresso](https://www.quantum-espresso.org/) and make the configure wrapper scripts available in QE's root folder. Please note that the configure wrapper scripts support QE&#160;6.x (prior support for 5.x is dropped). Before building QE, one needs to complete the recipe for [ELPA](../elpa/README.md).
 
 <a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp").
 
@@ -38,7 +38,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 
 ## Run Instructions
 
-To run Quantum Espresso in an optimal fashion depends on the workload and on the "parallelization levels", which can be exploited by the workload in question. These parallelization levels apply to execution phases (or major algorithms) rather than staying in a hierarchical relationship (levels). It is recommended to read some of the [primary references](http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html) explaining these parallelization levels (a number of them can be found in the Internet including some presentation slides). Time to solution may *vary by factors* depending on whether these levels are orchestrated or not. To specify these levels, one uses command line arguments along with the QE executable(s):
+To run Quantum Espresso in an optimal fashion depends on the workload and on the "parallelization levels", which can be exploited by the workload in question. These parallelization levels apply to execution phases (or major algorithms) rather than staying in a hierarchical relationship (levels). It is recommended to read some of the [primary references](https://www.quantum-espresso.org/Doc/user_guide/node18.html) explaining these parallelization levels (a number of them can be found in the Internet including some presentation slides). Time to solution may *vary by factors* depending on whether these levels are orchestrated or not. To specify these levels, one uses command line arguments along with the QE executable(s):
 
 * **`-npool`**: try to maximize the number of pools. The number depends on the workload e.g., if the number of k-points can be distributed among independent pools. Indeed, per trial-and-error it is rather quick to check if a workload fails to pass the initialization phase. One may use prime numbers: *2*, *3*, *5*, etc. (default is *1*). For example, when *npool=2* worked it might be worth trying *npool=4*. On the other hand, increasing the number pools duplicates the memory consumption accordingly (larger numbers are increasingly unlikely to work).
 * **`-ndiag`**: this number determines the number of ranks per pool used for dense linear algebra operations (DGEMM and ZGEMM). For example, if *64* ranks are used in total per node and *npool=2*, then put *ndiag=32* (QE selects the next square number which is less-equal than the given number e.g., *ndiag=25* in the previous example).
@@ -76,5 +76,5 @@ Please note that the number of cases per day (Cases/d) are currently calculated 
 ## References
 
 [https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)  
-[http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html](http://www.quantum-espresso.org/wp-content/uploads/Doc/user_guide/node18.html)
+[https://www.quantum-espresso.org/Doc/user_guide/node1.html](https://www.quantum-espresso.org/Doc/user_guide/node1.html)
 
