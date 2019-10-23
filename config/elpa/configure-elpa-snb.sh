@@ -47,11 +47,6 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-if [ ! -e ${HERE}/Makefile ]; then
-  echo "Missing files (make distclean?). Please reget ELPA sources!"
-  exit 1
-fi
-
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
