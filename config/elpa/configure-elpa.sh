@@ -47,6 +47,11 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
+if [ ! -e ${HERE}/Makefile ]; then
+  echo "Missing files (make distclean?). Please reget ELPA sources!"
+  exit 1
+fi
+
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
@@ -104,7 +109,7 @@ then
 fi
 
 # Development versions may require autotools mechanics
-if [ -e autogen.sh ]; then
+if [ -e ${HERE}/autogen.sh ]; then
   ./autogen.sh
 fi
 
@@ -124,7 +129,7 @@ sed -i \
   -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
   Makefile
 
-if [ -e config.h ]; then
+if [ -e ${HERE}/config.h ]; then
   VERSION=$(grep ' VERSION ' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')
   if [ "" != "${VERSION}" ]; then
     if [ "1" = "$(grep ' WITH_OPENMP ' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')" ]; then
