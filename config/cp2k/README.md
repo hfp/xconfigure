@@ -6,9 +6,9 @@ This document describes building CP2K with several (optional) libraries, which m
     * LAPACK/BLAS and ScaLAPACK library
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
-* [LIBINT](../libint/README.md#libint) (version 1.1.5 or 1.1.6)
+* [LIBINT](../libint/README.md#libint) (depends on CP2K version)
 * [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
-* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
+* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (depends on CP2K version)
 
 The ELPA library eventually improves the performance (must be currently enabled for each input file even if CP2K was built with ELPA). There is also the option to auto-tune additional routines in CP2K (integrate/collocate) and to collect the generated code into an archive referred as LIBGRID.
 
@@ -39,7 +39,35 @@ chmod +x plan.sh
 
 <a name="getting-the-source-code"></a>This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K by using the GNU Compiler Collection, Intel&#160;MPI, Intel&#160;MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
-As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm).
+There are step-by-step guides for the [current](#current-release) release (v7.1) and the [previous](#previous-release) release (v6.1).
+
+**Current Release**<a name="current-release"></a>
+
+As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
+
+* Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
+    * LAPACK/BLAS and ScaLAPACK library
+    * FFTw library
+* [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
+* [LIBINT](../libint/README.md#libint) (version 2.x)
+* [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
+* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2019.11.001)
+
+**NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 does not pass regression tests).
+
+> **UNDER CONSTRUCTION**: step-by-step guide will be released in the 2nd week of 2020.
+
+**Previous Release**<a name="previous-release"></a>
+
+As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
+
+* Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
+    * LAPACK/BLAS and ScaLAPACK library
+    * FFTw library
+* [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
+* [LIBINT](../libint/README.md#libint) (version 1.1.5 or 1.1.6)
+* [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
+* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
 
 **NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 does not pass regression tests).
 
@@ -172,7 +200,7 @@ Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI pro
 
 ## Intel Compiler<a name="build-instructions"></a>
 
-<a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests:
+<a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests. It is also possible to mix and match different component versions by sourcing from different Intel suites.
 
 * Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
     * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
@@ -185,7 +213,7 @@ Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI pro
 * Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
 * Intel MPI; usually any version is fine: Intel MPI 2018 is recommended
 
-Please note, with respect to component versions it is possible to source from different Intel suites.
+**NOTE**: Intel Compiler&#160;2019 (and likely also any later version) is not recommended for CP2K&#160;6.1 (and earlier).
 
 ## Intel ARCH File
 
