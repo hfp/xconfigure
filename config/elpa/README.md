@@ -6,7 +6,7 @@
 
 [Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
 
-**NOTE**: Please use ELPA 2017.11.001 for CP2K&#160;6.1.
+**NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
 wget --no-check-certificate http://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
