@@ -1,6 +1,6 @@
 site_name: XCONFIGURE
 site_author: Hans Pabst
-copyright: Copyright (c) 2013-2019, XCONFIGURE <a href="https://xconfigure.readthedocs.io/LICENSE/">Contributors</a>.
+copyright: Copyright (c) 2013-2020, XCONFIGURE <a href="https://xconfigure.readthedocs.io/LICENSE/">Contributors</a>.
 site_description: High-Performance configuration patterns and recipes.
 repo_url: https://github.com/hfp/xconfigure
 edit_uri: edit/master/config
