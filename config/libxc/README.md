@@ -3,8 +3,8 @@
 To [download](https://gitlab.com/libxc/libxc/-/releases), configure, build, and install [LIBXC](http://www.tddft.org/programs/libxc) 2.x, 3.x, or 4.x, one may proceed as shown below. Please note that CP2K&#160;5.1 (and earlier) is only compatible with LIBXC&#160;3.0 (or earlier, see also [How to compile the CP2K code](https://www.cp2k.org/howto:compile#k_libxc_optional_wider_choice_of_xc_functionals)). Post-5.1, only the latest major release of LIBXC (by the time of the CP2K-release) is supported (e.g., LIBXC&#160;4.x).
 
 ```bash
-wget --content-disposition https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
-tar xvf libxc-4.3.4.tar.bz2
+wget --content-disposition http://www.tddft.org/programs/libxc/down.php?file=4.3.4/libxc-4.3.4.tar.gz
+tar xvf libxc-4.3.4.tar.gz
 cd libxc-4.3.4
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
@@ -24,4 +24,6 @@ make distclean
 ./configure-libxc-skx.sh
 make -j; make install
 ```
+
+**NOTE**: Please disregard messages during configuration suggesting `libtoolize --force`.
 
