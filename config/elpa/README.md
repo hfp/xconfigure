@@ -90,16 +90,6 @@ make -j ; make install
 
 Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format").
 
-### ELPA Development
-
-To rely on experimental functionality, one may git-clone ELPA's master branch instead of downloading a regular version.
-
-```bash
-git clone --branch ELPA_KNL https://gitlab.mpcdf.mpg.de/elpa/elpa.git
-```
-
-To build ELPA, the instructions for building the latest release should apply as well.
-
 ## References
 
 [https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)
