@@ -7,7 +7,7 @@ This document describes building CP2K with several (optional) libraries, which m
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (depends on CP2K version)
-* [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
+* [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (depends on CP2K version)
 
 The ELPA library eventually improves the performance (must be currently enabled for each input file even if CP2K was built with ELPA). There is also the option to auto-tune additional routines in CP2K (integrate/collocate) and to collect the generated code into an archive referred as LIBGRID.
@@ -35,7 +35,7 @@ wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/
 chmod +x plan.sh
 ```
 
-## Step-by-step Guide<a name="build-an-official-release"></a>
+## Step-by-step Guide<a name="build-instructions"></a><a name="build-an-official-release"></a>
 
 <a name="getting-the-source-code"></a>This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K by using the GNU Compiler Collection, Intel&#160;MPI, Intel&#160;MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
@@ -43,19 +43,203 @@ There are step-by-step guides for the [current](#current-release) release (v7.1)
 
 **Current Release**<a name="current-release"></a>
 
-As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
+This step-by-step guide uses GNU Fortran (version 8.3 is recommended, 9.x is not recommended) or Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
-* [LIBINT](../libint/README.md#libint) (version 2.x)
-* [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
+* [LIBINT](../libint/README.md#libint) (2.x from CP2K.org!)
+* [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2019.11.001)
 
-**NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 does not pass regression tests).
+To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
 
-> **UNDER CONSTRUCTION**: step-by-step guide will be released in the 2nd week of 2020.
+```bash
+source /opt/intel/compilers_and_libraries_2020.0.166/linux/mpi/intel64/bin/mpivars.sh
+source /opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/bin/mklvars.sh intel64
+```
+
+If Intel Compiler is used, the following (or similar) makes the compiler and all necessary libraries available.
+
+```bash
+source /opt/intel/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64
+```
+
+Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel&#160;MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below check fails (GNU&#160;GCC only), the MPI's bin-folder must be added to the path.
+
+```text
+$ mpif90 --version
+  GNU Fortran (GCC) 8.3.0
+  Copyright (C) 2018 Free Software Foundation, Inc.
+  This is free software; see the source for copying conditions.  There is NO
+  warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2019 (and likely later version).
+
+```bash
+cd $HOME
+wget http://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
+tar xvf elpa-2019.11.001.tar.gz
+
+cd elpa-2019.11.001
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh elpa
+```
+
+GNU&#160;GCC:
+
+```bash
+./configure-elpa-skx-gnu-omp.sh
+```
+
+Intel Compiler:
+
+```bash
+./configure-elpa-skx-gnu.sh
+```
+
+Build and install ELPA:
+
+```bash
+make -j
+make install
+make clean
+```
+
+<a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (preconfigured 2.x from CP2K.org).
+
+```bash
+cd $HOME
+curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
+| grep "browser_download_url" | grep "lmax-6" \
+| sed "s/..*: \"\(..*[^\"]\)\".*/url \1/" \
+| curl -LOK-
+tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
+
+cd libint-v2.6.0-cp2k-lmax-6
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh libint
+```
+
+GNU&#160;GCC:
+
+```bash
+./configure-libint-skx-gnu.sh
+```
+
+Intel Compiler:
+
+```bash
+./configure-libint-skx.sh
+```
+
+Build and install LIBINT:
+
+```bash
+make -j
+make install
+make distclean
+```
+
+The third step builds LIBXC.
+
+```bash
+cd $HOME
+wget --content-disposition https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
+tar xvf libxc-4.3.4.tar.bz2
+
+cd libxc-4.3.4
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh libxc
+```
+
+GNU&#160;GCC:
+
+```bash
+./configure-libxc-skx-gnu.sh
+```
+
+Intel Compiler:
+
+```bash
+./configure-libxc-skx.sh
+```
+
+Build and install LIBXC:
+
+```bash
+make -j
+make install
+make distclean
+```
+
+The fourth step makes LIBXSMM available, which is compiled as part of the next step.
+
+```bash
+cd $HOME
+wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.14.tar.gz
+tar xvf 1.14.tar.gz
+```
+
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi`.
+
+```bash
+cd $HOME
+wget https://github.com/cp2k/cp2k/archive/v7.1.0.tar.gz
+tar xvf v7.1.0.tar.gz
+
+cd cp2k-7.1.0
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh cp2k
+```
+
+GNU&#160;GCC:
+
+```bash
+rm -rf exe lib obj
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
+  LIBINTROOT=$HOME/libint/gnu-skx \
+  LIBXCROOT=$HOME/libxc/gnu-skx \
+  ELPAROOT=$HOME/elpa/gnu-skx-omp -j
+```
+
+Intel Compiler:
+
+```bash
+rm -rf exe lib obj
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 \
+  LIBINTROOT=$HOME/libint/default-skx \
+  LIBXCROOT=$HOME/libxc/default-skx \
+  ELPAROOT=$HOME/elpa/default-skx-omp -j
+```
+
+If no LIBXSMMMROOT was given ([auto detection](#libxsmmroot)), the initial output of the build looks like:
+
+```text
+Discovering programs ...
+================================================================================
+Automatically enabled LIBXSMM (LIBXSMMROOT=/path/to/libxsmm)
+================================================================================
+LIBXSMM release-1.14 (Linux)
+--------------------------------------------------------------------------------
+```
+
+Once the build completed, the CP2K executable should be ready (`exe/Linux-x86-64-intelx/cp2k.psmp`):
+
+```text
+$ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
+  [...]
+  LIBXSMM_VERSION: release-1.14
+  LIBXSMM_TARGET: clx
+```
+
+Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI processes (and OpenMP threads), and to try a first workload.
 
 **Previous Release**<a name="previous-release"></a>
 
@@ -66,10 +250,10 @@ As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only In
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (version 1.1.5 or 1.1.6)
-* [LIBXC](../libxc/README.md#libxc) (version 4.3 or any 4.x)
+* [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
 
-**NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 does not pass regression tests).
+**NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 or 9.2 may not pass regression tests).
 
 ```bash
 source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpivars.sh
@@ -93,7 +277,7 @@ $ mpif90 --version
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
+The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
 
 ```bash
 cd $HOME
@@ -111,7 +295,7 @@ make install
 make clean
 ```
 
-<a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (1.1.6 recommended, newer version cannot be used). This library does not compile on an architecture with less CPU-features than the target (e.g., `configure-libint-skx-gnu.sh` implies to build on "Skylake" or "Cascadelake" server).
+The second step builds LIBINT (1.1.6 recommended, newer version cannot be used). This library does not compile on an architecture with less CPU-features than the target (e.g., `configure-libint-skx-gnu.sh` implies to build on "Skylake" or "Cascadelake" server).
 
 ```bash
 cd $HOME
@@ -129,7 +313,7 @@ make install
 make distclean
 ```
 
-The third step builds LIBXC (any version of the 4.x series can be used).
+The third step builds LIBXC.
 
 ```bash
 cd $HOME
@@ -170,7 +354,7 @@ patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
 
 rm -rf exe lib obj
 cd makefiles
-make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 AVX=3 MIC=0 \
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
   LIBINTROOT=$HOME/libint/gnu-skx \
   LIBXCROOT=$HOME/libxc/gnu-skx \
   ELPAROOT=$HOME/elpa/gnu-skx-omp -j
@@ -198,9 +382,9 @@ $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
 
 Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI processes (and OpenMP threads), and to try a first workload.
 
-## Intel Compiler<a name="build-instructions"></a>
+## Intel Compiler<a name="recommended-intel-compiler"></a>
 
-<a name="recommended-intel-compiler"></a>Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests. It is also possible to mix and match different component versions by sourcing from different Intel suites.
+Below are the releases of the Intel Compiler, which are known to reproduce correct results according to the regression tests. It is also possible to mix and match different component versions by sourcing from different Intel suites.
 
 * Intel Compiler&#160;2017 (u0, u1, u2, u3), *and* the **initial** release of MKL&#160;2017 (u0)
     * source /opt/intel/compilers_and_libraries_2017.[*u0-u3*]/linux/bin/compilervars.sh intel64  
@@ -210,10 +394,12 @@ Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI pro
 * Intel Compiler&#160;2018 (u3, u4, u5): only with CP2K/development (not with CP2K&#160;6.1 or earlier)
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
     * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
-* Intel Compiler&#160;2019 (u1, u2, u3): failure at runtime
-* Intel MPI; usually any version is fine: Intel MPI 2018 is recommended
+* Intel Compiler&#160;2019 and 2020: only suitable for CP2K&#160;7.1 (and later)
+    * source /opt/intel/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64
+    * Avoid 2019u1, 2019u2, 2019u3
+* Intel MPI; usually any version is fine: Intel MPI 2018 and 2020 are recommended
 
-**NOTE**: Intel Compiler&#160;2019 (and likely also any later version) is not recommended for CP2K&#160;6.1 (and earlier).
+**NOTE**: Intel Compiler&#160;2019 (and likely later) is not recommended for CP2K&#160;6.1 (and earlier).
 
 ## Intel ARCH File
 
