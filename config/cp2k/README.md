@@ -35,11 +35,11 @@ wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/
 chmod +x plan.sh
 ```
 
-## Step-by-step Guide<a name="build-instructions"></a><a name="build-an-official-release"></a>
+## Step-by-step Guide<a name="build-instructions"></a>
 
 <a name="getting-the-source-code"></a>This step-by-step guide aims to build an MPI/OpenMP-hybrid version of the official release of CP2K by using the GNU Compiler Collection, Intel&#160;MPI, Intel&#160;MKL, LIBXSMM, ELPA, LIBXC, and LIBINT. Internet connectivity is assumed on the build-system. Please note that such limitations can be worked around or avoided with additional steps. However, this simple step-by-step guide aims to make some reasonable assumptions.
 
-There are step-by-step guides for the [current](#current-release) release (v7.1) and the [previous](#previous-release) release (v6.1).
+<a name="build-an-official-release"></a>There are step-by-step guides for the [current](#current-release) release (v7.1) and the [previous](#previous-release) release (v6.1).
 
 **Current Release**<a name="current-release"></a>
 
