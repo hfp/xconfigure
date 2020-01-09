@@ -76,7 +76,7 @@ $ mpif90 --version
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-**1**) <a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2019 (and likely later version).
+**1**) <a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2019.
 
 ```bash
 cd $HOME
