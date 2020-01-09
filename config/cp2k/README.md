@@ -41,9 +41,9 @@ chmod +x plan.sh
 
 <a name="build-an-official-release"></a>There are step-by-step guides for the [current](#current-release) release (v7.1) and the [previous](#previous-release) release (v6.1).
 
-**Current Release**<a name="current-release"></a>
+### Current Release
 
-This step-by-step guide uses GNU Fortran (version 8.3 is recommended, 9.x is not recommended) or Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
+This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3 is recommended, 9.x is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
@@ -56,8 +56,8 @@ This step-by-step guide uses GNU Fortran (version 8.3 is recommended, 9.x is not
 To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.0.166/linux/mpi/intel64/bin/mpivars.sh
-source /opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/bin/mklvars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.0.166/linux/mpi/intel64/bin/mpivars.sh`
+source /opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/bin/mklvars.sh intel64`
 ```
 
 If Intel Compiler is used, the following (or similar) makes the compiler and all necessary libraries available.
@@ -76,7 +76,7 @@ $ mpif90 --version
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-<a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2019 (and likely later version).
+**1**) <a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2019 (and likely later version).
 
 ```bash
 cd $HOME
@@ -89,13 +89,13 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
-GNU&#160;GCC:
+a) GNU&#160;GCC
 
 ```bash
 ./configure-elpa-skx-gnu-omp.sh
 ```
 
-Intel Compiler:
+b) Intel Compiler
 
 ```bash
 ./configure-elpa-skx-gnu.sh
@@ -109,7 +109,7 @@ make install
 make clean
 ```
 
-<a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (preconfigured 2.x from CP2K.org).
+**2**) <a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (preconfigured 2.x from CP2K.org).
 
 ```bash
 cd $HOME
@@ -125,13 +125,13 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-GNU&#160;GCC:
+a) GNU&#160;GCC
 
 ```bash
 ./configure-libint-skx-gnu.sh
 ```
 
-Intel Compiler:
+b) Intel Compiler
 
 ```bash
 ./configure-libint-skx.sh
@@ -145,7 +145,7 @@ make install
 make distclean
 ```
 
-The third step builds LIBXC.
+**3**) The third step builds LIBXC.
 
 ```bash
 cd $HOME
@@ -158,13 +158,13 @@ chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```
 
-GNU&#160;GCC:
+a) GNU&#160;GCC
 
 ```bash
 ./configure-libxc-skx-gnu.sh
 ```
 
-Intel Compiler:
+b) Intel Compiler
 
 ```bash
 ./configure-libxc-skx.sh
@@ -178,7 +178,7 @@ make install
 make distclean
 ```
 
-The fourth step makes LIBXSMM available, which is compiled as part of the next step.
+**4**) The fourth step makes LIBXSMM available, which is compiled as part of the next step.
 
 ```bash
 cd $HOME
@@ -186,7 +186,7 @@ wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.14.tar.gz
 tar xvf 1.14.tar.gz
 ```
 
-This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi`.
+**5**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi`.
 
 ```bash
 cd $HOME
@@ -203,7 +203,7 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-GNU&#160;GCC:
+a) GNU&#160;GCC
 
 ```bash
 rm -rf exe lib obj
@@ -213,7 +213,7 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
   ELPAROOT=$HOME/elpa/gnu-skx-omp -j
 ```
 
-Intel Compiler:
+b) Intel Compiler
 
 ```bash
 rm -rf exe lib obj
@@ -245,7 +245,7 @@ $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
 
 Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI processes (and OpenMP threads), and to try a first workload.
 
-**Previous Release**<a name="previous-release"></a>
+### Previous Release
 
 As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
 

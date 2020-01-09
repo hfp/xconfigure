@@ -9,6 +9,7 @@ docs_dir: config
 markdown_extensions:
 - toc:
     permalink: True
+    toc_depth: 2
     title: None
 extra_css:
 - style.css
