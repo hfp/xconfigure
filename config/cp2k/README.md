@@ -460,7 +460,6 @@ For large-scale runs, the startup can be tuned, but typically this is not necess
 
 ```bash
 export I_MPI_DYNAMIC_CONNECTION=1
-export I_MPI_HARD_FINALIZE=1
 ```
 
 Intel&#160;MPI usually nicely determines the fabric settings for both Omnipath and InfiniBand, and no adjustment is needed. However, people often prefer explicit settings even if it does not differ from what is determined automatically. For example, InfiniBand with RDMA can be set explicitly by using `mpirun -rdma` which can be also achieved with environment variables:
@@ -468,8 +467,6 @@ Intel&#160;MPI usually nicely determines the fabric settings for both Omnipath a
 ```bash
 echo "'mpirun -rdma' and/or environment variables for InfiniBand"
 export I_MPI_FABRICS=shm:dapl
-export I_MPI_RDMA_TRANSLATION_CACHE=1
-export I_MPI_CHECK_DAPL_PROVIDER_COMPATIBILITY=0
 ```
 
 As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is [available](#info-script) attempting to present a table (summary of all results), which is generated from log files (use `tee`, or rely on the output of the job scheduler). There are only certain file extensions supported (`.txt`, `.log`). If no file matches, then all files (independent of the file extension) are attempted to be parsed (which will go wrong eventually). If for some reason the command to launch CP2K is not part of the log and the run-arguments cannot be determined otherwise, the number of nodes is eventually parsed by using the filename of the log itself (e.g., first occurrence of a number along with an optional "n" is treated as the number of nodes used for execution).
