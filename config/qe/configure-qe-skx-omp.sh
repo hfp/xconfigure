@@ -23,6 +23,20 @@ if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
   exit 1
 fi
 
+export ELPAROOT="${HERE}/../elpa/${PRFX}skx-omp"
+export OPENMP="--enable-openmp"
+export LD_LIBS="-Wl,--as-needed -liomp5 -lirc -Wl,--no-as-needed"
+
+export MKL_OMPRTL=intel_thread
+#export MKL_OMPRTL=sequential
+export MKL_FCRTL=intel
+export MPIF90=mpiifort
+export F90=ifort
+export FC=ifort
+export CC=mpiicc
+export AR=xiar
+export dir=none
+
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
@@ -40,19 +54,6 @@ fi
 # consider more accurate -fp-model (C/C++: precise, Fortran: source)
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 EXX_ACE="-D__EXX_ACE"
-
-export ELPAROOT="${HERE}/../elpa/${PRFX}skx-omp"
-export MKL_OMPRTL=intel_thread
-#export MKL_OMPRTL=sequential
-export MKL_FCRTL=intel
-export OPENMP="--enable-openmp"
-export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
-export MPIF90=mpiifort
-export F90=ifort
-export FC=ifort
-export CC=mpiicc
-export AR=xiar
-export dir=none
 
 CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
