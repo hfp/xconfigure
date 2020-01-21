@@ -13,6 +13,9 @@
 TARGET="-xMIC-AVX512"
 OMPFLAG="-qopenmp -qoverride_limits"
 #IPO="-ipo-separate"
+# consider more accurate -fp-model (C/C++: precise, Fortran: source)
+FPFLAGS="-fp-model fast=2 -complex-limited-range"
+EXX_ACE="-D__EXX_ACE"
 OPTC=-O3
 OPTF=-O2
 if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
@@ -25,7 +28,7 @@ fi
 
 export ELPAROOT="${HERE}/../elpa/${PRFX}knl-omp"
 export OPENMP="--enable-openmp"
-export LD_LIBS="-Wl,--as-needed -liomp5 -lirc -Wl,--no-as-needed"
+export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 
 export MKL_OMPRTL=intel_thread
 #export MKL_OMPRTL=sequential
@@ -51,9 +54,12 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-# consider more accurate -fp-model (C/C++: precise, Fortran: source)
-FPFLAGS="-fp-model fast=2 -complex-limited-range"
-EXX_ACE="-D__EXX_ACE"
+if [ "" = "${FCLIBDIR}" ]; then
+  FCLIBDIR=$(dirname $(command -v ${FC}))/../../compiler/lib/intel64
+fi
+if [ -d "${FCLIBDIR}" ]; then
+  export LD_LIBS="-L${FCLIBDIR} ${LD_LIBS} -Wl,--as-needed -lirc -Wl,--no-as-needed"
+fi
 
 CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
