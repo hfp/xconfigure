@@ -7,9 +7,9 @@
 <a name="note"></a>**NOTE**: the ELPA configuration must correspond to the desired QE configuration e.g., `configure-elpa-skx-omp.sh` and `configure-qe-skx-omp.sh` ("omp").
 
 ```bash
-wget https://gitlab.com/QEF/q-e/-/archive/qe-6.4.1/q-e-qe-6.4.1.tar.bz2
-tar xvf q-e-qe-6.4.1.tar.bz2
-cd q-e-qe-6.4.1
+wget https://gitlab.com/QEF/q-e/-/archive/qe-6.5/q-e-qe-6.5.tar.gz
+tar xvf q-e-qe-6.5.tar.gz
+cd q-e-qe-6.5
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe
@@ -18,7 +18,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler available on the command line, which may vary with the computing environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64
 ```
 
 For example, configure for an Intel Xeon&#160;Scalable Processor (applicable to CPUs previously codenamed "Skylake" and "Cascadelake" server), and build the desired application(s) e.g., "pw", "cp", or "all".
