@@ -24,7 +24,7 @@ ifneq (,$(wildcard $(LIBXSMMROOT)/lib/libxsmmext.a))
   #LDFLAGS += -Wl,--wrap=memalign,--wrap=malloc,--wrap=calloc,--wrap=realloc,--wrap=free
   LDFLAGS += -Wl,--export-dynamic
   #LD_LIBS += -lirc
-  LD_LIBS += $(LIBXSMMROOT)/lib/libxsmmext.a $(LIBXSMMROOT)/lib/libxsmm.a $(LAPACK_LIBS)
+  LD_LIBS += $(LIBXSMMROOT)/lib/libxsmm.a $(LIBXSMMROOT)/lib/libxsmmext.a $(LAPACK_LIBS)
   ifeq (,$(OPENMP))
   ifeq (sequential,$(MKL_OMPRTL))
     LD_LIBS += -liomp5
