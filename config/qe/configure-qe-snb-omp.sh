@@ -57,7 +57,7 @@ if [ "" = "${FCLIBDIR}" ]; then
   FCLIBDIR=$(dirname $(command -v ${FC}))/../../compiler/lib/intel64
 fi
 if [ -d "${FCLIBDIR}" ]; then
-  export LD_LIBS="-L${FCLIBDIR} ${LD_LIBS} -Wl,--as-needed -lirc -Wl,--no-as-needed"
+  export LD_LIBS="-L"$(cd "${FCLIBDIR}"; pwd -P)" ${LD_LIBS} -Wl,--as-needed -lirc -Wl,--no-as-needed"
 fi
 
 CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
@@ -81,7 +81,6 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-#LIBXSMM="-Wl,--wrap=sgemm_,--wrap=dgemm_ ${HOME}/libxsmm/lib/libxsmmext.a ${HOME}/libxsmm/lib/libxsmm.a"
 export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
     ${MKLROOT}/lib/intel64/libmkl_${MKL_FCRTL}_lp64.a \
     ${MKLROOT}/lib/intel64/libmkl_core.a \

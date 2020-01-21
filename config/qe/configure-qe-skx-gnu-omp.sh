@@ -38,7 +38,6 @@ export CC=mpigcc
 export AR=gcc-ar
 export dir=none
 
-#LIBXSMM="-Wl,--wrap=sgemm_,--wrap=dgemm_ ${HOME}/libxsmm/lib/libxsmmext.a ${HOME}/libxsmm/lib/libxsmm.a"
 export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
     ${MKLROOT}/lib/intel64/libmkl_${MKL_FCRTL}_lp64.a \
     ${MKLROOT}/lib/intel64/libmkl_core.a \
