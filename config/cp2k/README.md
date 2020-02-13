@@ -119,6 +119,8 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | curl -LOK-
 tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 
+**NOTE**: A rate limit applies to GitHub API requests with the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
+
 cd libint-v2.6.0-cp2k-lmax-6
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
