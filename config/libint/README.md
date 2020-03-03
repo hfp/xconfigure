@@ -2,7 +2,7 @@
 
 ## Overview
 
-For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or any later version cannot be used). [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
+For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or any later version cannot be used). For CP2K&#160;7.x and onwards, LIBINT&#160;2.5 (or later) is needed.
 
 Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
@@ -14,7 +14,7 @@ source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh i
 
 ## Version&#160;2.5 (and later)
 
-For CP2K&#160;7.x and onwards, LIBINT&#160;2.5 (or later) is needed. LIBINT generates code according to the requested configuration. The preconfigured downloads from [LIBINT's home page](https://github.com/evaleev/libint) cannot be used. Please [download](https://github.com/cp2k/libint-cp2k/releases/latest) (take "lmax-6" if unsure), unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
+LIBINT generates code according to a configuration and an extent that is often specific to the application. The preconfigured downloads from [LIBINT's home page](https://github.com/evaleev/libint) may not be sufficient for CP2K and hence cannot be used. Please [download](https://github.com/cp2k/libint-cp2k/releases/latest) (take "lmax-6" if unsure), unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
 
 To just determine the download-URL of the latest version (a suitable variant can be "lmax-6"):
 
@@ -61,6 +61,8 @@ Make sure to run `make distclean` before reconfiguring a different variant e.g.,
 As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the LIBINT library.
 
 ## Version&#160;1.x
+
+[Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
 
 ```bash
 wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
