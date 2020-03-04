@@ -98,7 +98,7 @@ a) GNU&#160;GCC
 b) Intel Compiler
 
 ```bash
-./configure-elpa-skx-gnu.sh
+./configure-elpa-skx-omp.sh
 ```
 
 Build and install ELPA:
