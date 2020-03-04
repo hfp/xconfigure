@@ -109,7 +109,7 @@ make install
 make clean
 ```
 
-**2**) <a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT (preconfigured 2.x from CP2K.org).
+**2**) <a name="libint-and-libxc-dependencies"></a>The second step builds LIBINT ([preconfigured](https://github.com/cp2k/libint-cp2k/releases) for CP2K).
 
 ```bash
 cd $HOME
@@ -118,9 +118,11 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | sed "s/..*: \"\(..*[^\"]\)\".*/url \1/" \
 | curl -LOK-
 tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
+```
 
-**NOTE**: A rate limit applies to GitHub API requests with the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
+**NOTE**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
 
+```bash
 cd libint-v2.6.0-cp2k-lmax-6
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
