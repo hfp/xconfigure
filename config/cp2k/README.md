@@ -43,7 +43,7 @@ chmod +x plan.sh
 
 ### Current Release
 
-This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3 or 9.2 are recommended, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
+This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, or 9.2 are recommended, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library

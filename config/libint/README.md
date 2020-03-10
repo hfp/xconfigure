@@ -33,6 +33,8 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | curl -LOK-
 ```
 
+**NOTE**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
+
 To unpack the archive and to download the configure wrapper (lmax6-version is assumed):
 
 ```bash
