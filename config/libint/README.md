@@ -46,7 +46,7 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX"):
+There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build sytem that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX"):
 
 ```bash
 make distclean
@@ -54,7 +54,7 @@ make distclean
 make -j; make install
 ```
 
-Make sure to run `make distclean` before reconfiguring a different variant e.g., GNU and Intel variant. Further, for different targets (instruction set extensions) or different compilers, the configure-wrapper scripts support an additional argument ("default" is the default tagname):
+Make sure to run `make distclean` before reconfiguring a different variant, e.g., GNU and Intel variant. Further, for different targets (instruction set extensions) or different compilers, the configure-wrapper scripts support an additional argument ("default" is the default tagname):
 
 ```bash
 ./configure-libint-hsw.sh tagname

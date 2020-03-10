@@ -18,7 +18,7 @@ For high performance, [LIBXSMM](../libxsmm/README.md#libxsmm) (see also [https:/
 
 There are no configuration wrapper scripts provided for CP2K since a configure-step is usually not required, and the application can be built right away. CP2K's `install_cp2k_toolchain.sh` (under `tools/toolchain`) is out of scope in this document (it builds the entire tool chain from source including the compiler).
 
-Although there are no configuration wrapper scripts for CP2K, below command delivers e.g., an [info-script](#performance) and a script for [planning](#plan-script) CP2K execution:
+Although there are no configuration wrapper scripts for CP2K, below command delivers, e.g., an [info-script](#performance) and a script for [planning](#plan-script) CP2K execution:
 
 ```bash
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
@@ -129,6 +129,8 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
+**NOTE**: There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build sytem that matches the target system.
+
 a) GNU&#160;GCC
 
 ```bash
@@ -190,7 +192,7 @@ wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.14.tar.gz
 tar xvf 1.14.tar.gz
 ```
 
-**5**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi`.
+**5**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
 
 ```bash
 cd $HOME
@@ -347,7 +349,7 @@ wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.14.tar.gz
 tar xvf 1.14.tar.gz
 ```
 
-This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try e.g., `MKL_MPIRTL=openmpi` (experimental: `patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff`).
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi` (experimental: `patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff`).
 
 ```bash
 cd $HOME
@@ -487,7 +489,7 @@ cp2k-h2o64-2x32x2 2      32   4     807 107.237
 cp2k-h2o64-4x16x2 4      16   8     872  99.962
 ```
 
-Please note that the "Cases/d" metric is calculated with integer arithmetic and hence represents fully completed cases per day (based on 86400 seconds per day). The number of seconds (as shown) is end-to-end (wall time), i.e. total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
+Please note that the "Cases/d" metric is calculated with integer arithmetic and hence represents fully completed cases per day (based on 86400 seconds per day). The number of seconds (as shown) is end-to-end (wall time), i.e., total time to solution including any (sequential) phase (initialization, etc.). Performance is higher if the workload requires more iterations (some publications present a metric based on iteration time).
 
 ## Sanity Check
 
@@ -535,7 +537,7 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
 
 The GNU tool-chain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.g., `configure-elpa-skx-gnu-omp.sh` instead of `configure-elpa-skx-omp.sh`). To further adjust CP2K at build time, additional key-value pairs (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`) can be passed at Make's command line when relying on CP2K/Intel's ARCH files.
 
-* **SYM**: set `SYM=1` to include debug symbols into the executable e.g., helpful with performance profiling.
+* **SYM**: set `SYM=1` to include debug symbols into the executable, e.g., helpful with performance profiling.
 * **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.
 
 <a name="memory-allocation"></a>Dynamic allocation of heap memory usually requires global book keeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
