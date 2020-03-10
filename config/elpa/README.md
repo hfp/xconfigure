@@ -38,9 +38,9 @@ make -j ; make install
 Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format"). After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
-[user@system elpa-2019.05.001]$ ls ../elpa
- default-skx
- default-skx-omp
+[user@system elpa-2019.11.001]$ ls ../elpa
+ intel-skx
+ intel-skx-omp
 ```
 
 For different targets (instruction set extensions) or for different versions of the Intel Compiler, the configure scripts support an additional argument ("default" is the default tagname):

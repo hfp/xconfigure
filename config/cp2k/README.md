@@ -222,9 +222,9 @@ b) Intel Compiler
 ```bash
 rm -rf exe lib obj
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 \
-  LIBINTROOT=$HOME/libint/default-skx \
-  LIBXCROOT=$HOME/libxc/default-skx \
-  ELPAROOT=$HOME/elpa/default-skx-omp -j
+  LIBINTROOT=$HOME/libint/intel-skx \
+  LIBXCROOT=$HOME/libxc/intel-skx \
+  ELPAROOT=$HOME/elpa/intel-skx-omp -j
 ```
 
 If no LIBXSMMMROOT was given ([auto detection](#libxsmmroot)), the initial output of the build looks like:

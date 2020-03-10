@@ -18,7 +18,7 @@ FPFLAGS="-fp-model fast=2 -complex-limited-range"
 EXX_ACE="-D__EXX_ACE"
 OPTC=-O3
 OPTF=-O2
-if [ "" = "$1" ]; then PRFX=default-; else PRFX=$1-; shift; fi
+if [ "" = "$1" ]; then PRFX=intel-; else PRFX=$1-; shift; fi
 
 HERE=$(cd $(dirname $0); pwd -P)
 if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
