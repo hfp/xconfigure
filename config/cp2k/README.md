@@ -164,6 +164,8 @@ chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```
 
+**NOTE**: Please disregard messages during configuration suggesting `libtoolize --force`.
+
 a) GNU&#160;GCC
 
 ```bash
