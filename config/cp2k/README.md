@@ -190,8 +190,8 @@ make distclean
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.14.tar.gz
-tar xvf 1.14.tar.gz
+wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.15.tar.gz
+tar xvf 1.15.tar.gz
 ```
 
 **5**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
@@ -238,7 +238,7 @@ Discovering programs ...
 ================================================================================
 Automatically enabled LIBXSMM (LIBXSMMROOT=/path/to/libxsmm)
 ================================================================================
-LIBXSMM release-1.14 (Linux)
+LIBXSMM release-1.15 (Linux)
 --------------------------------------------------------------------------------
 ```
 
@@ -247,7 +247,7 @@ Once the build completed, the CP2K executable should be ready (`exe/Linux-x86-64
 ```text
 $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
   [...]
-  LIBXSMM_VERSION: release-1.14
+  LIBXSMM_VERSION: release-1.15
   LIBXSMM_TARGET: clx
 ```
 
@@ -347,8 +347,8 @@ The fourth step makes LIBXSMM available, which is compiled as part of the next s
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.14.tar.gz
-tar xvf 1.14.tar.gz
+wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.15.tar.gz
+tar xvf 1.15.tar.gz
 ```
 
 This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi` (experimental: `patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff`).
@@ -379,7 +379,7 @@ Discovering programs ...
 ================================================================================
 Automatically enabled LIBXSMM (LIBXSMMROOT=/path/to/libxsmm)
 ================================================================================
-LIBXSMM release-1.14 (Linux)
+LIBXSMM release-1.15 (Linux)
 --------------------------------------------------------------------------------
 ```
 
@@ -388,7 +388,7 @@ Once the build completed, the CP2K executable should be ready (`exe/Linux-x86-64
 ```text
 $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
   [...]
-  LIBXSMM_VERSION: release-1.14
+  LIBXSMM_VERSION: release-1.15
   LIBXSMM_TARGET: clx
 ```
 
