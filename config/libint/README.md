@@ -14,7 +14,7 @@ source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh i
 
 ## Version&#160;2.5 (and later)
 
-LIBINT generates code according to a configuration and an extent that is often specific to the application. The preconfigured downloads from [LIBINT's home page](https://github.com/evaleev/libint) may not be sufficient for CP2K and hence cannot be used. Please [download](https://github.com/cp2k/libint-cp2k/releases/latest) (take "lmax-6" if unsure), unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
+LIBINT generates code according to a configuration and an extent that is often specific to the application. The downloads from [LIBINT's home page](https://github.com/evaleev/libint) are not configured for CP2K and hence cannot be used. Please [download](https://github.com/cp2k/libint-cp2k/releases/latest) (take "lmax-6" if unsure), unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
 
 To just determine the download-URL of the latest version (a suitable variant can be "lmax-6"):
 
@@ -46,7 +46,7 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build sytem that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX"):
+There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build system that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX"):
 
 ```bash
 make distclean

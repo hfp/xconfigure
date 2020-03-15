@@ -129,7 +129,7 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-**NOTE**: There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build sytem that matches the target system.
+**NOTE**: There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build system that matches the target system.
 
 a) GNU&#160;GCC
 
@@ -211,6 +211,8 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
+It is possible to supply LIBXSMMMROOT, LIBINTROOT, LIBXCROOT, and ELPAROOT (see below). However, the ARCH-file attempts to [auto-detect](#autodetectroot) these libraries.
+
 a) GNU&#160;GCC
 
 ```bash
@@ -231,12 +233,16 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 \
   ELPAROOT=$HOME/elpa/intel-skx-omp -j
 ```
 
-If no LIBXSMMMROOT was given ([auto detection](#libxsmmroot)), the initial output of the build looks like:
+The initial output of the build looks like:
 
 ```text
 Discovering programs ...
 ================================================================================
-Automatically enabled LIBXSMM (LIBXSMMROOT=/path/to/libxsmm)
+Using the following libraries:
+LIBXSMMROOT=/path/to/libxsmm
+LIBINTROOT=/path/to/libint/gnu-skx
+LIBXCROOT=/path/to/libxc/gnu-skx
+ELPAROOT=/path/to/elpa/gnu-skx-omp
 ================================================================================
 LIBXSMM release-1.15 (Linux)
 --------------------------------------------------------------------------------
@@ -363,7 +369,11 @@ wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configu
 chmod +x configure-get.sh
 ./configure-get.sh cp2k
 patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
+```
 
+It is possible to supply LIBXSMMMROOT, LIBINTROOT, LIBXCROOT, and ELPAROOT (see below). However, the ARCH-file attempts to [auto-detect](#autodetectroot) these libraries.
+
+```bash
 rm -rf exe lib obj
 cd makefiles
 make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
@@ -372,12 +382,16 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
   ELPAROOT=$HOME/elpa/gnu-skx-omp -j
 ```
 
-If no LIBXSMMMROOT was given ([auto detection](#libxsmmroot)), the initial output of the build looks like:
+The initial output of the build looks like:
 
 ```text
 Discovering programs ...
 ================================================================================
-Automatically enabled LIBXSMM (LIBXSMMROOT=/path/to/libxsmm)
+Using the following libraries:
+LIBXSMMROOT=/path/to/libxsmm
+LIBINTROOT=/path/to/libint/gnu-skx
+LIBXCROOT=/path/to/libxc/gnu-skx
+ELPAROOT=/path/to/elpa/gnu-skx-omp
 ================================================================================
 LIBXSMM release-1.15 (Linux)
 --------------------------------------------------------------------------------
@@ -417,7 +431,7 @@ Below are the releases of the Intel Compiler, which are known to reproduce corre
 
 CP2K&#160;6.1 includes `Linux-x86-64-intel.*` (`arch` directory) as a starting point for writing an own ARCH-file (note: `Linux-x86-64-intel.*` vs. `Linux-x86-64-intelx.*`). Remember, performance critical code is often located in libraries (hence `-O2` optimizations for CP2K's source code are enough in almost all cases), more important for performance are target-flags such as `-march=native` (`-xHost`) or `-mavx2 -mfma`. Prior to Intel Compiler 2018, the flag `-fp-model source` (FORTRAN) and `-fp-model precise` (C/C++) were key for passing CP2K's regression tests. If an own ARCH file is used or prepared, all libraries including LIBXSMM need to be built separately and referred in the link-line of the ARCH-file. In addition, CP2K may need to be informed and certain preprocessor symbols need to be given during compilation (`-D` compile flag). For further information, please follow the [official guide](https://www.cp2k.org/howto:compile) and consider the [CP2K Forum](https://groups.google.com/forum/#!forum/cp2k) in case of trouble.
 
-The purpose of the Intel ARCH files is to avoid writing an own ARCH-file even when GNU Compiler is used. Taking the Intel ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. <a name="libxsmmroot"></a>Similarly, LIBXSMMROOT (which can be supplied on Make's command line) is discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. The Intel ARCH files not only work with CP2K/Intel fork but even if an official release of CP2K is built (which is also encouraged). Of course, one can download the afore mentioned Intel ARCH files manually<a name="get-the-arch-files"></a>:
+The purpose of the Intel ARCH files is to avoid writing an own ARCH-file even when GNU Compiler is used. Taking the Intel ARCH files that are part of the CP2K/Intel fork automatically picks up the correct paths for Intel libraries. These paths are determined by using the environment variables setup when the Intel tools are source'd. <a name="#autodetectroot"></a>Similarly, LIBXSMMMROOT, LIBINTROOT, LIBXCROOT, and ELPAROOT (which can be supplied on Make's command line) are discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. The Intel ARCH files not only work with CP2K/Intel fork but even if an official release of CP2K is built (which is also encouraged). Of course, one can download the afore mentioned Intel ARCH files manually<a name="get-the-arch-files"></a>:
 
 ```bash
 cd cp2k-6.1.0/arch
