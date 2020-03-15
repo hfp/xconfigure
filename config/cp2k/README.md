@@ -43,7 +43,7 @@ chmod +x plan.sh
 
 ### Current Release
 
-This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, or 9.2 are recommended, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
+This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, 9.2, or 9.3 are recommended, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
@@ -211,13 +211,13 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-It is possible to supply LIBXSMMMROOT, LIBINTROOT, LIBXCROOT, and ELPAROOT (see below). However, the ARCH-file attempts to [auto-detect](#autodetectroot) these libraries.
+It is possible to supply `LIBXSMMMROOT`, `LIBINTROOT`, `LIBXCROOT`, and `ELPAROOT` (see below). However, the ARCH-file attempts to [auto-detect](#autodetectroot) these libraries.
 
 a) GNU&#160;GCC
 
 ```bash
 rm -rf exe lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 GNU=1 \
   LIBINTROOT=$HOME/libint/gnu-skx \
   LIBXCROOT=$HOME/libxc/gnu-skx \
   ELPAROOT=$HOME/elpa/gnu-skx-omp -j
@@ -227,13 +227,13 @@ b) Intel Compiler
 
 ```bash
 rm -rf exe lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 \
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 \
   LIBINTROOT=$HOME/libint/intel-skx \
   LIBXCROOT=$HOME/libxc/intel-skx \
   ELPAROOT=$HOME/elpa/intel-skx-omp -j
 ```
 
-The initial output of the build looks like:
+The above mentioned auto-detection of libraries goes further: GCC is used automatically if no Intel Compiler was sourced. Also, if cross-compilation is not necessary (`make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3`), `AVX` can be dropped as well from Make's command line (`make ARCH=Linux-x86-64-intelx VERSION=psmp`). The initial output of the build looks like:
 
 ```text
 Discovering programs ...
@@ -271,7 +271,7 @@ As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only In
 * [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
 
-**NOTE**: GNU&#160;GCC version 7.x or 8.x is highly recommended (CP2K built with GCC&#160;9.1 or 9.2 may not pass regression tests).
+**NOTE**: GNU&#160;GCC version 7.x or 8.x is recommended (CP2K built with GCC&#160;9.1 may not pass regression tests).
 
 ```bash
 source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpivars.sh
@@ -371,18 +371,18 @@ chmod +x configure-get.sh
 patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
 ```
 
-It is possible to supply LIBXSMMMROOT, LIBINTROOT, LIBXCROOT, and ELPAROOT (see below). However, the ARCH-file attempts to [auto-detect](#autodetectroot) these libraries.
+It is possible to supply `LIBXSMMMROOT`, `LIBINTROOT`, `LIBXCROOT`, and `ELPAROOT` (see below). However, the ARCH-file attempts to [auto-detect](#autodetectroot) these libraries.
 
 ```bash
 rm -rf exe lib obj
 cd makefiles
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0 GNU=1 \
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 GNU=1 \
   LIBINTROOT=$HOME/libint/gnu-skx \
   LIBXCROOT=$HOME/libxc/gnu-skx \
   ELPAROOT=$HOME/elpa/gnu-skx-omp -j
 ```
 
-The initial output of the build looks like:
+The above mentioned auto-detection of libraries goes further: GCC is used automatically if no Intel Compiler was sourced. Also, if cross-compilation is not necessary (`make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3`), `AVX` can be dropped as well from Make's command line (`make ARCH=Linux-x86-64-intelx VERSION=psmp`). The initial output of the build looks like:
 
 ```text
 Discovering programs ...
@@ -546,7 +546,7 @@ cd cp2k
 git submodule update --init --recursive
 
 rm -rf lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3 MIC=0
+make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3
 ```
 
 **NOTE**: Most if not all hot-spots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler tool-chain. To only use Intel libraries such as Intel&#160;MPI and Intel&#160;MKL, one can rely on the GNU-key (`GNU=1`).
