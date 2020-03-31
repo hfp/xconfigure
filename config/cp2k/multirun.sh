@@ -22,10 +22,11 @@ if [ "" != "$1" ] && [ "" != "${PS}" ]; then
   PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
   SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)/\1/p")
   if [ "" != "${NDEVICES}" ]; then
-    CUDA_VISIBLE_DEVICES="$((SKT%NDEVICES))" "$@"
+    export CUDA_VISIBLE_DEVICES="$((SKT%NDEVICES))"
   else
-    CUDA_VISIBLE_DEVICES="${SKT}" "$@"
+    export CUDA_VISIBLE_DEVICES="${SKT}"
   fi
+  exec  "$@"
 else
   echo "Error: missing prerequisites!"
   exit 1
