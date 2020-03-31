@@ -9,23 +9,22 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
-EXE=$(command -v $1)
 SED=$(command -v sed)
 PS=$(command -v ps)
 
-if [ ! -e "${EXE}" ]; then
+if [ "" != "$(echo "$1" | ${SED} -n "/[0-9][0-9]*/p" 2>/dev/null)" ]; then
   NDEVICES=$1
   shift
 fi
 
-if [ "" != "$1" ] && [ "" != "${SED}" ] && [ "" != "${PS}" ]; then
+if [ "" != "$1" ] && [ "" != "${PS}" ]; then
   CPU=$(${PS} --pid $$ -ho pid,psr | ${SED} -n "s/..*[[:space:]][[:space:]]*\(..*\)$/\1/p")
   PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
   SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)/\1/p")
   if [ "" != "${NDEVICES}" ]; then
-    CUDA_VISIBLE_DEVICES=$((SKT%NDEVICES)) "$@"
+    CUDA_VISIBLE_DEVICES="$((SKT%NDEVICES))" "$@"
   else
-    CUDA_VISIBLE_DEVICES=${SKT} "$@"
+    CUDA_VISIBLE_DEVICES="${SKT}" "$@"
   fi
 else
   echo "Error: missing prerequisites!"
