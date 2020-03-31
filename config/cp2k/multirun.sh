@@ -18,7 +18,7 @@ if [ ! -e "${EXE}" ]; then
   shift
 fi
 
-if [ "" != "$@" ] && [ "" != "${SED}" ] && [ "" != "${PS}" ]; then
+if [ "" != "$1" ] && [ "" != "${SED}" ] && [ "" != "${PS}" ]; then
   CPU=$(${PS} --pid $$ -ho pid,psr | ${SED} -n "s/..*[[:space:]][[:space:]]*\(..*\)$/\1/p")
   PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
   SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)/\1/p")
