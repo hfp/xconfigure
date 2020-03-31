@@ -19,8 +19,8 @@ fi
 
 if [ "" != "$1" ] && [ "" != "${PS}" ]; then
   CPU=$(${PS} --pid $$ -ho pid,psr | ${SED} -n "s/..*[[:space:]][[:space:]]*\(..*\)$/\1/p")
-  PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
-  SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)/\1/p")
+  PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}$/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
+  SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)$/\1/p")
   if [ "" != "${NDEVICES}" ]; then
     export CUDA_VISIBLE_DEVICES="$((SKT%NDEVICES))"
   else
