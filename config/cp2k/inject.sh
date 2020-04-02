@@ -16,8 +16,8 @@ if [ "$1" ] && [ "$2" ] && [ "$3" ] && [ "${SED}" ]; then
   FLAGS="$2"
   EXE="$3"
   shift 3
-  ARGS="$@"
-  if [ "${ARGS}" ] && [ "$(echo \"${ARGS}\" | ${SED} -n "/${MATCH}/p" 2>/dev/null)" ]; then
+  ARGS="$(echo "$@" | ${SED} 's/"/\\"/g')"
+  if [ "${ARGS}" ] && [ "$(echo "${ARGS}" | ${SED} -n "/${MATCH}/p" 2>/dev/null)" ]; then
     CMD="${EXE} ${FLAGS} ${ARGS}"
   elif [ "${ARGS}" ]; then
     CMD="${EXE} ${ARGS}"
