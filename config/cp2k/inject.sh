@@ -16,15 +16,13 @@ if [ "$1" ] && [ "$2" ] && [ "$3" ] && [ "${SED}" ]; then
   FLAGS="$2"
   EXE="$3"
   shift 3
-  ARGS="$(echo "$@" | ${SED} 's/"/\\"/g')"
-  if [ "${ARGS}" ] && [ "$(echo "${ARGS}" | ${SED} -n "/${MATCH}/p" 2>/dev/null)" ]; then
-    CMD="${EXE} ${FLAGS} ${ARGS}"
-  elif [ "${ARGS}" ]; then
-    CMD="${EXE} ${ARGS}"
+  if [ "$1" ] && [ "$(echo "$@" | ${SED} -n "/${MATCH}/p" 2>/dev/null)" ]; then
+    exec ${EXE} ${FLAGS} "$@"
+  elif [ "$1" ]; then
+    exec ${EXE} "$@"
   else
-    CMD="${EXE}"
+    exec ${EXE}
   fi
-  exec ${CMD}
 else
   echo "Error: missing prerequisites!"
   exit 1
