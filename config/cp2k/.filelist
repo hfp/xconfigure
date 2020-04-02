@@ -1,4 +1,5 @@
 info.sh
+inject.sh
 plan.sh
 intel-mkl.diff
 mpi-wrapper.diff
