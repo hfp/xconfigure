@@ -11,19 +11,19 @@
 ###############################################################################
 SED=$(command -v sed)
 
-if [ "" != "$1" ] && [ "" != "$2" ] && [ "" != "$3" ] && [ "" != "${SED}" ]; then
-  MATCH=$1
-  FLAGS=$2
-  EXE=$3
+if [ "$1" ] && [ "$2" ] && [ "$3" ] && [ "${SED}" ]; then
+  MATCH="$1"
+  FLAGS="$2"
+  EXE="$3"
   shift 3
-  if [ "" != "$1" ] && [ "" != "$(echo "$@" | ${SED} -n "/${MATCH}/p" 2>/dev/null)" ]; then
-    CMD="${EXE} ${FLAGS} $@"
-  elif [ "" != "$1" ]; then
-    CMD="${EXE} $@"
+  ARGS="$@"
+  if [ "${ARGS}" ] && [ "$(echo \"${ARGS}\" | ${SED} -n "/${MATCH}/p" 2>/dev/null)" ]; then
+    CMD="${EXE} ${FLAGS} ${ARGS}"
+  elif [ "${ARGS}" ]; then
+    CMD="${EXE} ${ARGS}"
   else
     CMD="${EXE}"
   fi
-  echo "Executing: \"${CMD}\""
   exec ${CMD}
 else
   echo "Error: missing prerequisites!"
