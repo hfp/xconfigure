@@ -50,7 +50,7 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, 9.2, or
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (2.x from CP2K.org!)
-* [LIBXC](../libxc/README.md#libxc) (version 4.x)
+* [LIBXC](../libxc/README.md#libxc) (version 4.x, not 5.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2019.11.001)
 
 To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
@@ -164,7 +164,7 @@ chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```
 
-**NOTE**: Please disregard messages during configuration suggesting `libtoolize --force`.
+**NOTE**: LIBXC&#160;5.x is not supported. Please also disregard messages during configuration suggesting `libtoolize --force`.
 
 a) GNU&#160;GCC
 

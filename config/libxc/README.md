@@ -1,6 +1,6 @@
 # LIBXC
 
-To [download](https://gitlab.com/libxc/libxc/-/releases), configure, build, and install [LIBXC](http://www.tddft.org/programs/libxc) 2.x, 3.x, or 4.x, one may proceed as shown below. Please note that CP2K&#160;5.1 (and earlier) is only compatible with LIBXC&#160;3.0 (or earlier, see also [How to compile the CP2K code](https://www.cp2k.org/howto:compile#k_libxc_optional_wider_choice_of_xc_functionals)). Post-5.1, only the latest major release of LIBXC (by the time of the CP2K-release) is supported (e.g., LIBXC&#160;4.x).
+To [download](https://gitlab.com/libxc/libxc/-/releases), configure, build, and install [LIBXC](http://www.tddft.org/programs/libxc)&#160;2.x, 3.x, or 4.x (CP2K requires LIBXC&#160;4.x and version 5.x is currently not supported), one may proceed as shown below. Please note that CP2K&#160;5.1 (and earlier) is only compatible with LIBXC&#160;3.0 (or earlier, see also [How to compile the CP2K code](https://www.cp2k.org/howto:compile#k_libxc_optional_wider_choice_of_xc_functionals)). Post-5.1, only the latest major release of LIBXC (by the time of the CP2K-release) is supported (e.g., LIBXC&#160;4.x).
 
 ```bash
 wget --content-disposition http://www.tddft.org/programs/libxc/down.php?file=4.3.4/libxc-4.3.4.tar.gz
