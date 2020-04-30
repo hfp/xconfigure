@@ -41,7 +41,7 @@ chmod +x plan.sh
 
 <a name="build-an-official-release"></a>There are step-by-step guides for the [current](#current-release) release (v7.1) and the [previous](#previous-release) release (v6.1).
 
-### Current Release<a name="current-release">
+### Current Release<a name="current-release"></a>
 
 This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, 9.2, or 9.3 are recommended, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
 
@@ -259,7 +259,7 @@ $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
 
 Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI processes (and OpenMP threads), and to try a first workload.
 
-### Previous Release<a name="previous-release">
+### Previous Release<a name="previous-release"></a>
 
 As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
 
