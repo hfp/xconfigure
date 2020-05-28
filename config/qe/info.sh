@@ -67,6 +67,7 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
     if [ "" = "${RANKS}" ]; then RANKS=1; GUESS=1; fi
   fi
   XTOTAL=$(grep "     MPI processes distributed on" ${FILE} | tail -n1)
+  NODES=$(echo "${XTOTAL}" | sed -n "s/..*\([0-9][0-9]*\)..*/\1/p")
   if [ "" = "${NODES}" ]; then
     for TOKEN in $(echo "${BASENAME}" | tr -s [=_=][=-=] " "); do
       NODES=$(echo "${TOKEN}" | sed -n "s/^\([0-9][0-9]*\)\(x[0-9][0-9]*\)*$/\1/p;s/^\([0-9][0-9]*\)n$/\1/p;s/^n\([0-9][0-9]*\)$/\1/p")
