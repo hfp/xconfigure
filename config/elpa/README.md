@@ -4,7 +4,7 @@
 
 ### ELPA 2019
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
+[Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
 
 **NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
@@ -57,7 +57,7 @@ Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1. For CP2K&#160;
 
 ### ELPA 2017
 
-[Download](http://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
+[Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
 **NOTE**: In Quantum Espresso, the __ELPA_2018 interface must be used for ELPA 2017.11 (`-D__ELPA_2018`). The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed in ELPA&#160;2017.11. This is already considered when using XCONFIGURE's wrapper scripts.
 
