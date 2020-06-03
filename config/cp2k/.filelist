@@ -1,8 +1,5 @@
 info.sh
 plan.sh
-.inject.sh
-intel-mkl.diff
-mpi-wrapper.diff
 https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch arch
 https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt arch
 https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp arch
