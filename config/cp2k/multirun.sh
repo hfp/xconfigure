@@ -12,20 +12,20 @@
 SED=$(command -v sed)
 PS=$(command -v ps)
 
-if [ "" != "$1" ] && [ "" != "${SED}" ] && [ "" != "${PS}" ]; then
-  if [ "" != "$(echo "$1" | ${SED} -n "/[0-9][0-9]*/p" 2>/dev/null)" ]; then
+if [ "$1" ] && [ "${SED}" ] && [ "${PS}" ]; then
+  if [ "$(echo "$1" | ${SED} -n "/[0-9][0-9]*/p" 2>/dev/null)" ]; then
     NDEVICES=$1
     shift
   fi
   CPU=$(${PS} --pid $$ -ho pid,psr | ${SED} -n "s/..*[[:space:]][[:space:]]*\(..*\)$/\1/p")
   PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}$/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
   SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)$/\1/p")
-  if [ "" != "${PMI_RANK}" ]; then
+  if [ "${PMI_RANK}" ]; then
     PID=${PMI_RANK}
   else
     PID=${SKT}
   fi
-  if [ "" != "${NDEVICES}" ]; then
+  if [ "${NDEVICES}" ] && [ "0" != "${NDEVICES}" ]; then
     export CUDA_VISIBLE_DEVICES="$((PID%NDEVICES))"
   else
     export CUDA_VISIBLE_DEVICES="${SKT}"
