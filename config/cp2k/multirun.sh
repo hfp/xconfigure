@@ -20,8 +20,8 @@ if [ "$1" ] && [ "${SED}" ] && [ "${PS}" ]; then
   CPU=$(${PS} --pid $$ -ho pid,psr | ${SED} -n "s/..*[[:space:]][[:space:]]*\(..*\)$/\1/p")
   PAT=$(${SED} -n "/^processor[[:space:]]*: ${CPU}$/,/^physical id[[:space:]]*:/p" /proc/cpuinfo)
   SKT=$(echo "${PAT}" | ${SED} -n "s/^physical id[[:space:]]*: \(..*\)$/\1/p")
-  if [ "${PMI_RANK}" ]; then
-    PID=${PMI_RANK}
+  if [ "${PMI_RANK}" ] || [ "${OMPI_COMM_WORLD_LOCAL_RANK}" ] ; then
+    PID=${PMI_RANK:-${OMPI_COMM_WORLD_LOCAL_RANK}}
   else
     PID=${SKT}
   fi
@@ -30,6 +30,7 @@ if [ "$1" ] && [ "${SED}" ] && [ "${PS}" ]; then
   else
     export CUDA_VISIBLE_DEVICES="${SKT}"
   fi
+  echo "MULTIRUN ${HOSTNAME}-${PID}: SOCKET${SKT} <-> GPU${CUDA_VISIBLE_DEVICES}"
   exec  "$@"
 else
   echo "Error: missing prerequisites!"
