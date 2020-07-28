@@ -45,7 +45,7 @@ if [ "0" != "${NUMFILES}" ]; then
   echo -e "$(printf %-23.23s ${PROJECT})\tNodes\tR/N\tT/R\tCases/d\tSeconds\tNPOOL\tNDIAG\tNTG"
 fi
 
-for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}"); do
+for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}" | grep -v "..*\.sh"); do
   BASENAME=$(basename ${FILE} | rev | cut -d. -f2- | rev)
   NODERANKS=$(grep "^mpirun" ${FILE} | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | tail -n1 | cut -d" " -f1)
   TPERR=$(grep OMP_NUM_THREADS ${FILE} | tail -n1 | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")

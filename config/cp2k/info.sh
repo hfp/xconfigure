@@ -42,7 +42,7 @@ if [ "0" = "${NUMFILES}" ]; then
   PATTERN="*"
 fi
 
-FILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}")
+FILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}" | grep -v "..*\.sh")
 FILE0=$(echo "${FILES}" | head -n1)
 PRINTFLOPS=0
 NUMFILES=0
