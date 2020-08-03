@@ -51,7 +51,7 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, 9.2, or
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (2.x from CP2K.org!)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x, not 5.x)
-* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2019.11.001)
+* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2020.05.001)
 
 To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
 
@@ -76,14 +76,14 @@ $ mpif90 --version
   warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
 
-**1**) <a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2019.
+**1**) <a name="eigenvalue-solvers-for-petaflop-applications-elpa"></a>The first step builds ELPA. Please rely on ELPA&#160;2020.
 
 ```bash
 cd $HOME
-wget http://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
-tar xvf elpa-2019.11.001.tar.gz
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.05.001/elpa-2020.05.001.tar.gz
+tar xvf elpa-2020.05.001.tar.gz
 
-cd elpa-2019.11.001
+cd elpa-2020.05.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
