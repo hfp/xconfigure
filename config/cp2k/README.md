@@ -56,14 +56,14 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, 9.2, or
 To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.0.166/linux/mpi/intel64/bin/mpivars.sh
-source /opt/intel/compilers_and_libraries_2020.0.166/linux/mkl/bin/mklvars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/mpi/intel64/bin/mpivars.sh
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/mkl/bin/mklvars.sh intel64
 ```
 
 If Intel Compiler is used, the following (or similar) makes the compiler and all necessary libraries available.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel&#160;MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below check fails (GNU&#160;GCC only), the MPI's bin-folder must be added to the path.
@@ -421,7 +421,7 @@ Below are the releases of the Intel Compiler, which are known to reproduce corre
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
     * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2019 and 2020: only suitable for CP2K&#160;7.1 (and later)
-    * source /opt/intel/compilers_and_libraries_2020.0.166/linux/bin/compilervars.sh intel64
+    * source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
     * Avoid 2019u1, 2019u2, 2019u3
 * Intel MPI; usually any version is fine: Intel MPI 2018 and 2020 are recommended
 
