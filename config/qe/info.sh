@@ -42,7 +42,7 @@ fi
 
 NUMFILES=$(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}" | wc -l)
 if [ "0" != "${NUMFILES}" ]; then
-  echo -e "$(printf %-23.23s ${PROJECT})\tNodes\tR/N\tT/R\tCases/d\tSeconds\tNPOOL\tNDIAG\tNTG"
+  echo -e "$(printf %-50.40s ${PROJECT})\tNodes\tR/N\tT/R\tCases/d\tSeconds\tNPOOL\tNDIAG\tNTG\tNMANY"
 fi
 
 for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}" | grep -v "..*\.sh"); do
@@ -119,20 +119,30 @@ for FILE in $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}" | grep -v 
     fi
     if [ "" != "${NTGSTR}" ]; then
       NTG=$(echo "${NTGSTR}" | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
+    else
+      NTG=""
+    fi
+    NMANYSTR=$(grep -m1 "Fft bands division:" ${FILE})
+    if [ "" != "${NMANYSTR}" ]; then
+      NMANY=$(echo "${NMANYSTR}" | cut -d= -f2 | tr -s " " | cut -d" " -f2 | tr -dc [:digit:])
+    else
+      NMANY=""
     fi
     if [ "0" != "${TWALL}" ]; then
-      echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
+      echo -e -n "$(printf %-50.40s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t$(printf %-7.7s ${TWALL}${FSCDS})"
       echo -e -n "\t${NPOOL}"
       echo -e -n "\t${NDIAG}"
       echo -e -n "\t${NTG}"
+      echo -e -n "\t${NMANY}"
       echo
     elif [ "0" != "${NUMFILES}" ] && [ "0" = "${BEST}" ] && [ "0" = "${GUESS=1}" ]; then
-      echo -e -n "$(printf %-23.23s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
+      echo -e -n "$(printf %-50.40s ${BASENAME})\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t0\t-"
       echo -e -n "\t${NPOOL}"
       echo -e -n "\t${NDIAG}"
       echo -e -n "\t${NTG}"
+      echo -e -n "\t${NMANY}"
       echo
     fi
   fi
