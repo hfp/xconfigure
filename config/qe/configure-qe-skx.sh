@@ -132,6 +132,10 @@ mkdir -p ${HERE}/NEB/src
 cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/NEB/src 2> /dev/null
 cp ${HERE}/PW/src/init_us_1.f90 ${HERE}/PP/src 2> /dev/null
 
+if [ ! "$(sed -n '/^DFLAGS[[:space:]]*=[[:space:]]*.*-D__DFTI/p' ${INCFILE})" ]; then
+  sed -i "s/^DFLAGS[[:space:]]*=[[:space:]]*/DFLAGS = -D__DFTI /" ${INCFILE}
+fi
+
 # extended capabilities
 echo >> ${INCFILE}
 cat configure-qe-tbbmalloc.mak >> ${INCFILE}

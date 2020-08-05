@@ -77,6 +77,10 @@ sed -i \
   -e "s/-x f95-cpp-input -fopenmp/-x f95-cpp-input/" \
   ${INCFILE}
 
+if [ ! "$(sed -n '/^DFLAGS[[:space:]]*=[[:space:]]*.*-D__DFTI/p' ${INCFILE})" ]; then
+  sed -i "s/^DFLAGS[[:space:]]*=[[:space:]]*/DFLAGS = -D__DFTI /" ${INCFILE}
+fi
+
 # extended capabilities
 echo >> ${INCFILE}
 cat configure-qe-tbbmalloc.mak >> ${INCFILE}
