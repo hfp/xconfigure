@@ -29,7 +29,7 @@ mpirun -np 16 --map-by slot:PE=3 \
 
 **NOTE**: Intel&#160;MPI's `I_MPI_PIN_ORDER=bunch` to balance the number of ranks between sockets (see above) appears hard to achieve with OpenMPI therefore an undersubscribed system may not be recommended. To display and to log the pinning and thread affinization at the startup of an application, `mpirun --report-bindings` can be used.
 
-The end of the next section continues with our example and extends execution to multiple nodes of the above mentioned system.
+The end of the next section continues with our example and extends execution to multiple nodes of the above-mentioned system.
 
 ## Plan Script
 
@@ -76,7 +76,7 @@ mpirun -npernode 8 -host node1:48,node2:48,node3:48,node4:48,node5:48,node6:48,n
   exe/Linux-x86-64-intelx/cp2k.psmp workload.inp
 ```
 
-**NOTE**: It can be still insufficient to augment the nodes with the expected number of slots (`:48`). If OpenMPI's mpirun is still complaining, it might be caused and solved by the job scheduler. For example, `qsub` (PBS) may be instructed with `-l select=8:mpiprocs=48` in the above case.
+**NOTE**: It can be still insufficient to augment the nodes with the expected number of slots (`:48`). If OpenMPI's mpirun is still complaining, it might be caused and solved by the job scheduler. For example, `qsub` (PBS) may be instructed with `-l select=8:mpiprocs=48` in the above case (`mpirun` in this job can use less than 48 ranks per node).
 
 The plan-script also suggests close-by configurations (lower and higher node-counts) that can hit the square-property ("Try also the following node counts"). The example (as exercised above) was to illustrate how the script works, however it can be very helpful when running jobs especially on CPUs with not many prime factors in the core-count. Remember, the latter can be also the case for virtualized environments that reserve some of the cores to run the Hypervisor i.e., reporting less cores to the Operating System (guest OS) when compared to the physical core-count.
 
