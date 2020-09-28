@@ -43,7 +43,7 @@ chmod +x plan.sh
 
 ### Current Release<a name="current-release"></a>
 
-This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.3, 8.4, 9.2, or 9.3 are recommended, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
+This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.x, or 9.x, 9.1 is not recommended), or (**b**)&#160;Intel Compiler (version 19.1 "2020"). In any case, Intel&#160;MKL (2018, 2019, 2020 recommended) and Intel&#160;MPI (2018, 2020 recommended) need to be sourced. The following components are used:
 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
@@ -190,7 +190,7 @@ make distclean
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.15.tar.gz
+wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.15.tar.gz
 ```
 
@@ -261,7 +261,7 @@ Have a look at [Running CP2K](#running-cp2k) to learn more about pinning MPI pro
 
 ### Previous Release<a name="previous-release"></a>
 
-As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
+As the step-by-step guide uses GNU Fortran (version 7.x, 8.x, or 9.x, 9.1 is not recommended), only Intel&#160;MKL (2019.x recommended) and Intel&#160;MPI (2018.x recommended) need to be sourced (sourcing all Intel development tools of course does not harm). The following components are used:
 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
@@ -271,7 +271,7 @@ As the step-by-step guide uses GNU Fortran (version 8.3 is recommended), only In
 * [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
 
-**NOTE**: GNU&#160;GCC version 7.x or 8.x is recommended (CP2K built with GCC&#160;9.1 may not pass regression tests).
+**NOTE**: GNU&#160;GCC version 7.x, 8.x, or 9.x is recommended (CP2K built with GCC&#160;9.1 may not pass regression tests).
 
 ```bash
 source /opt/intel/compilers_and_libraries_2018.5.274/linux/mpi/intel64/bin/mpivars.sh
@@ -353,11 +353,11 @@ The fourth step makes LIBXSMM available, which is compiled as part of the next s
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.15.tar.gz
+wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.15.tar.gz
 ```
 
-This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi` (experimental: `patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff`).
+This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
 
 ```bash
 cd $HOME
@@ -368,6 +368,10 @@ cd cp2k-6.1.0
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh cp2k
+
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/mpi-wrapper.diff
+patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/intel-mkl.diff
 patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
 ```
 
