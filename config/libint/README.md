@@ -7,7 +7,7 @@ For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or a
 Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 **NOTE**: CP2K&#160;6.1 (and earlier) depend on [LIBINT&#160;1.1.x](#version1x) and a newer version of LIBINT cannot be used! CP2K&#160;7.x (and later) rely on LIBINT&#160;2.5 (or later) and cannot use the preconfigured library as provided on [LIBINT's home page](https://github.com/evaleev/libint).

@@ -12,6 +12,7 @@
 wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.05.001/elpa-2020.05.001.tar.gz
 tar xvf elpa-2020.05.001.tar.gz
 cd elpa-2020.05.001
+
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -20,7 +21,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -61,6 +62,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 wget --no-check-certificate http://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
 tar xvf elpa-2019.11.001.tar.gz
 cd elpa-2019.11.001
+
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -69,7 +71,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -114,6 +116,7 @@ Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1. For CP2K&#160;
 wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
 cd elpa-2017.11.001
+
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -122,7 +125,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):

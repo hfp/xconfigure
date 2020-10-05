@@ -6,6 +6,7 @@ To [download](https://gitlab.com/libxc/libxc/-/releases), configure, build, and 
 wget --content-disposition http://www.tddft.org/programs/libxc/down.php?file=4.3.4/libxc-4.3.4.tar.gz
 tar xvf libxc-4.3.4.tar.gz
 cd libxc-4.3.4
+
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
@@ -14,7 +15,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):

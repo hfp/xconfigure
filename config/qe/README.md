@@ -10,6 +10,7 @@
 wget https://gitlab.com/QEF/q-e/-/archive/qe-6.6/q-e-qe-6.6.tar.bz2
 tar xvf q-e-qe-6.6.tar.bz2
 cd q-e-qe-6.6
+
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh qe
