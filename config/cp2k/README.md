@@ -191,7 +191,7 @@ make distclean
 ```bash
 cd $HOME
 wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
-tar xvf 1.15.tar.gz
+tar xvf 1.16.1.tar.gz
 ```
 
 **5**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
@@ -244,7 +244,7 @@ LIBINTROOT=/path/to/libint/gnu-skx
 LIBXCROOT=/path/to/libxc/gnu-skx
 ELPAROOT=/path/to/elpa/gnu-skx-omp
 ================================================================================
-LIBXSMM release-1.15 (Linux)
+LIBXSMM release-1.16.1 (Linux)
 --------------------------------------------------------------------------------
 ```
 
@@ -253,7 +253,7 @@ Once the build completed, the CP2K executable should be ready (`exe/Linux-x86-64
 ```text
 $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
   [...]
-  LIBXSMM_VERSION: release-1.15
+  LIBXSMM_VERSION: release-1.16.1
   LIBXSMM_TARGET: clx
 ```
 
@@ -354,7 +354,7 @@ The fourth step makes LIBXSMM available, which is compiled as part of the next s
 ```bash
 cd $HOME
 wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
-tar xvf 1.15.tar.gz
+tar xvf 1.16.1.tar.gz
 ```
 
 This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
@@ -397,7 +397,7 @@ LIBINTROOT=/path/to/libint/gnu-skx
 LIBXCROOT=/path/to/libxc/gnu-skx
 ELPAROOT=/path/to/elpa/gnu-skx-omp
 ================================================================================
-LIBXSMM release-1.15 (Linux)
+LIBXSMM release-1.16.1 (Linux)
 --------------------------------------------------------------------------------
 ```
 
@@ -406,7 +406,7 @@ Once the build completed, the CP2K executable should be ready (`exe/Linux-x86-64
 ```text
 $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
   [...]
-  LIBXSMM_VERSION: release-1.15
+  LIBXSMM_VERSION: release-1.16.1
   LIBXSMM_TARGET: clx
 ```
 
