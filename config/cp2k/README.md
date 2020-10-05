@@ -7,6 +7,7 @@ This document describes building CP2K with several (optional) libraries, which m
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (depends on CP2K version)
+* [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (depends on CP2K version)
 
@@ -50,6 +51,7 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.x, or 9.x, 9.1 
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (2.x from CP2K.org!)
+* [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x, not 5.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2020.05.001)
 
@@ -186,7 +188,40 @@ make install
 make distclean
 ```
 
-**4**) The fourth step makes LIBXSMM available, which is compiled as part of the next step.
+**4**) The fourth step builds [Plumed2](https://github.com/plumed/plumed2/releases/latest).
+
+```bash
+cd $HOME
+wget --no-check-certificate https://github.com/plumed/plumed2/archive/v2.6.1.tar.gz
+tar xvf v2.6.1.tar.gz
+
+cd plumed2-2.6.1
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh plumed
+```
+
+a) GNU&#160;GCC
+
+```bash
+./configure-plumed-skx-gnu.sh
+```
+
+b) Intel Compiler
+
+```bash
+./configure-plumed-skx.sh
+```
+
+Build and install Plumed2:
+
+```bash
+make -j
+make install
+make distclean
+```
+
+**5**) The fifth step makes LIBXSMM [available](https://github.com/hfp/libxsmm/releases/latest), which is compiled as part of the last step.
 
 ```bash
 cd $HOME
@@ -194,7 +229,7 @@ wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.16.1.tar.gz
 ```
 
-**5**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
+**6**) This last step builds the PSMP-variant of CP2K. Please re-download the ARCH-files from GitHub as mentioned below (avoid reusing older/outdated files). If Intel&#160;MKL is not found, the key `MKLROOT=/path/to/mkl` can be added to Make's command line. To select a different MPI implementation one can try, e.g., `MKL_MPIRTL=openmpi`.
 
 ```bash
 cd $HOME
@@ -268,6 +303,7 @@ As the step-by-step guide uses GNU Fortran (version 7.x, 8.x, or 9.x, 9.1 is not
     * FFTw library
 * [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (version 1.1.5 or 1.1.6)
+* [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x)
 * [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2017.11.001)
 
@@ -349,7 +385,29 @@ make install
 make distclean
 ```
 
-The fourth step makes LIBXSMM available, which is compiled as part of the next step.
+The fourth step builds [Plumed2](https://github.com/plumed/plumed2/releases/latest).
+
+```bash
+cd $HOME
+wget --no-check-certificate https://github.com/plumed/plumed2/archive/v2.6.1.tar.gz
+tar xvf v2.6.1.tar.gz
+
+cd plumed2-2.6.1
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh plumed
+./configure-plumed-skx.sh
+```
+
+Build and install Plumed2:
+
+```bash
+make -j
+make install
+make distclean
+```
+
+The fifth step makes LIBXSMM [available](https://github.com/hfp/libxsmm/releases/latest), which is compiled as part of the last step.
 
 ```bash
 cd $HOME
@@ -538,7 +596,7 @@ The column called "Convergence" must monotonically converge towards zero.
 <a name="build-the-intel-fork-of-cp2k"></a>The [Intel fork of CP2K](https://github.com/hfp/cp2k.git) was formerly a branch of CP2K's Git-mirror. CP2K is meanwhile natively hosted at GitHub. Ongoing work in the Intel branch was supposed to tightly track the master version of CP2K, which is also true for the fork. In addition, valuable topics may be upstreamed in a timelier fashion. To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source for experimental purpose, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
 
 ```bash
-source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
 ```
 
 LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out by using the `-xHost` target flag. For example, to explicitly target "Cascadelake" or "Skylake" server ("SKX"):
