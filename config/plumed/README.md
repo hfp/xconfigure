@@ -29,7 +29,7 @@ make -j; make install
 ## References
 
 [https://github.com/plumed/plumed2/releases/latest](https://github.com/plumed/plumed2/releases/latest)  
-{https://www.cp2k.org/howto:compile#o_plumed_optional_enables_various_enhanced_sampling_methods](https://www.cp2k.org/howto:compile#o_plumed_optional_enables_various_enhanced_sampling_methods)  
+[https://www.cp2k.org/howto:compile#o_plumed_optional_enables_various_enhanced_sampling_methods](https://www.cp2k.org/howto:compile#o_plumed_optional_enables_various_enhanced_sampling_methods)  
 [https://www.cp2k.org/howto:install_with_plumed](https://www.cp2k.org/howto:install_with_plumed)  
 [https://www.plumed.org/](https://www.plumed.org/)
 
