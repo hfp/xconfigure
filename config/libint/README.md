@@ -92,3 +92,9 @@ The version 1.x line of LIBINT does not support to cross-compile for an architec
 
 To speed-up compilation, "make" might be carried out in phases: after "printing the code" (c-files), the make execution continues with building the object-file where no SDE needed. The latter phase can be sped up by interrupting "make" and executing it without SDE. The root cause of the entire problem is that the driver printing the c-code is (needlessly) compiled using the architecture-flags that are not supported on the host.
 
+## References
+
+[https://www.cp2k.org/howto:compile#g_libint_optional_enables_methods_including_hf_exchange](https://www.cp2k.org/howto:compile#g_libint_optional_enables_methods_including_hf_exchange)  
+[https://github.com/evaleev/libint/releases/tag/release-1-1-6](https://github.com/evaleev/libint/releases/tag/release-1-1-6)  
+[https://github.com/cp2k/libint-cp2k/releases/latest](https://github.com/cp2k/libint-cp2k/releases/latest)
+

@@ -28,3 +28,7 @@ make -j; make install
 
 **NOTE**: Please disregard messages during configuration suggesting `libtoolize --force`.
 
+## References
+
+[https://www.cp2k.org/howto:compile#k_libxc_optional_wider_choice_of_xc_functionals](https://www.cp2k.org/howto:compile#k_libxc_optional_wider_choice_of_xc_functionals)
+

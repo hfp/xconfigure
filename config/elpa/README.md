@@ -144,5 +144,6 @@ Even if ELPA was just unpacked (and never built before), `make clean` is recomme
 
 ## References
 
-[https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)
+[https://www.cp2k.org/howto:compile#l_elpa_optional_improved_performance_for_diagonalization](https://www.cp2k.org/howto:compile#l_elpa_optional_improved_performance_for_diagonalization)  
+[https://elpa.mpcdf.mpg.de/elpa-tar-archive](https://elpa.mpcdf.mpg.de/elpa-tar-archive)
 
