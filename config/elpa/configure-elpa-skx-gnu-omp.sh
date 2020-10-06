@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ###############################################################################
 # Copyright (c) Intel Corporation - All rights reserved.                      #
 # This file is part of the XCONFIGURE project.                                #
@@ -65,7 +65,7 @@ if [ -e ${HERE}/autogen.sh ]; then
 fi
 
 if [ ! -e ${HERE}/remove_xcompiler ]; then
-  echo "#!/bin/bash" > ${HERE}/remove_xcompiler
+  echo "#!/usr/bin/env bash" > ${HERE}/remove_xcompiler
   echo "remove=(-Xcompiler)" >> ${HERE}/remove_xcompiler
   echo "\${@/\${remove}}" >> ${HERE}/remove_xcompiler
   chmod +x ${HERE}/remove_xcompiler
