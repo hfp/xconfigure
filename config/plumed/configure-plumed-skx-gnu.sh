@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ###############################################################################
 # Copyright (c) Intel Corporation - All rights reserved.                      #
 # This file is part of the XCONFIGURE project.                                #
@@ -27,20 +27,20 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--disable-shared --disable-libsearch --disable-doc --enable-asmjit"
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
 
-export FLAGS="-O3 ${TARGET}"
+export FLAGS="-O3 ${TARGET} -D__PLUMED_HAS_MPI -D__PLUMED_HAS_FFTW -D__PLUMED_HAS_ZLIB -I${MKLROOT}/include/fftw"
 export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
-export LIBS=""
+export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
 export AR="gcc-ar"
-export FC="gfortran"
-export CC="gcc"
-export CXX="g++"
+export FC="mpif90"
+export CC="mpicc"
+export CXX="mpicxx"
 export F77=${FC}
 export F90=${FC}
 

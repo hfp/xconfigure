@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--disable-shared --disable-libsearch --disable-doc --enable-asmjit"
 TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
 
 # consider more accurate FP-model
@@ -39,12 +39,12 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
-export LIBS=""
+export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
 export AR="xiar"
-export FC="ifort"
-export CC="icc"
-export CXX="icpc"
+export FC="mpiifort"
+export CC="mpiicc"
+export CXX="mpiicpc"
 export F77=${FC}
 export F90=${FC}
 
