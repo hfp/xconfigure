@@ -28,7 +28,7 @@ mv ${TMPFILE} ${TMPFILE}.tex
 pandoc -D latex \
 | sed \
   -e 's/\(\\documentclass\[..*\]{..*}\)/\1\n\\pagenumbering{gobble}\n\\RedeclareSectionCommands[beforeskip=-1pt,afterskip=1pt]{subsection,subsubsection}/' \
-  -e 's/\\usepackage{listings}/\\usepackage{listings}\\lstset{basicstyle=\\footnotesize\\ttfamily}/' > \
+  -e 's/\\usepackage{listings}/\\usepackage{listings}\\lstset{basicstyle=\\footnotesize\\ttfamily,showstringspaces=false}/' > \
   ${TMPFILE}.tex
 
 # cleanup markup and pipe into pandoc using the template
@@ -44,7 +44,7 @@ pandoc -D latex \
   -e 's/\[!\[..*\](..*)\](..*)//g' \
 | tee >( pandoc \
   --template=${TMPFILE}.tex --listings \
-  -f markdown_github+implicit_figures+all_symbols_escapable+subscript+superscript \
+  -f gfm+implicit_figures+subscript+superscript \
   -V documentclass=scrartcl \
   -V title-meta="XCONFIGURE Documentation" \
   -V author-meta="Hans Pabst" \
@@ -54,10 +54,10 @@ pandoc -D latex \
   -V urlcolor=black \
   -o ${DOCDIR}/xconfigure.pdf) \
 | tee >( pandoc \
-  -f markdown_github+implicit_figures+all_symbols_escapable+subscript+superscript \
+  -f gfm+implicit_figures+subscript+superscript \
   -o ${DOCDIR}/xconfigure.html) \
 | pandoc \
-  -f markdown_github+implicit_figures+all_symbols_escapable+subscript+superscript \
+  -f gfm+implicit_figures+subscript+superscript \
   -o ${DOCDIR}/xconfigure.docx
 
 # remove temporary file
