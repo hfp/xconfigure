@@ -7,7 +7,7 @@ For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or a
 Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 **NOTE**: CP2K&#160;6.1 (and earlier) depend on [LIBINT&#160;1.1.x](#version1x) and a newer version of LIBINT cannot be used! CP2K&#160;7.x (and later) rely on LIBINT&#160;2.5 (or later) and cannot use the preconfigured library as provided on [LIBINT's home page](https://github.com/evaleev/libint).
@@ -94,7 +94,7 @@ To speed-up compilation, "make" might be carried out in phases: after "printing 
 
 ## References
 
-[https://www.cp2k.org/howto:compile#g_libint_optional_enables_methods_including_hf_exchange](https://www.cp2k.org/howto:compile#g_libint_optional_enables_methods_including_hf_exchange)  
+[https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2g-libint-optional-enables-methods-including-hf-exchange](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2g-libint-optional-enables-methods-including-hf-exchange)  
 [https://github.com/evaleev/libint/releases/tag/release-1-1-6](https://github.com/evaleev/libint/releases/tag/release-1-1-6)  
 [https://github.com/cp2k/libint-cp2k/releases/latest](https://github.com/cp2k/libint-cp2k/releases/latest)
 

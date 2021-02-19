@@ -58,14 +58,14 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.x, or 9.x, 9.1 
 To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/mpi/intel64/bin/mpivars.sh
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/mkl/bin/mklvars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/mpi/intel64/bin/mpivars.sh
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/mkl/bin/mklvars.sh intel64
 ```
 
 If Intel Compiler is used, the following (or similar) makes the compiler and all necessary libraries available.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 Please note, the ARCH file (used later/below to build CP2K) attempts to find Intel&#160;MKL even if the `MKLROOT` environment variable is not present. The MPI library is implicitly known when using compiler wrapper scripts (no need for `I_MPI_ROOT`). Installing the proper software stack and drivers for an HPC fabric to be used by MPI is out of scope in this document. If below check fails (GNU&#160;GCC only), the MPI's bin-folder must be added to the path.
@@ -483,7 +483,7 @@ Below are the releases of the Intel Compiler, which are known to reproduce corre
     * source /opt/intel/compilers_and_libraries_2018.3.222/linux/bin/compilervars.sh intel64
     * source /opt/intel/compilers_and_libraries_2018.5.274/linux/bin/compilervars.sh intel64
 * Intel Compiler&#160;2019 and 2020: only suitable for CP2K&#160;7.1 (and later)
-    * source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+    * source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
     * Avoid 2019u1, 2019u2, 2019u3
 * Intel MPI; usually any version is fine: Intel MPI 2018 and 2020 are recommended
 
@@ -596,7 +596,7 @@ The column called "Convergence" must monotonically converge towards zero.
 <a name="build-the-intel-fork-of-cp2k"></a>The [Intel fork of CP2K](https://github.com/hfp/cp2k.git) was formerly a branch of CP2K's Git-mirror. CP2K is meanwhile natively hosted at GitHub. Ongoing work in the Intel branch was supposed to tightly track the master version of CP2K, which is also true for the fork. In addition, valuable topics may be upstreamed in a timelier fashion. To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source for experimental purpose, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out by using the `-xHost` target flag. For example, to explicitly target "Cascadelake" or "Skylake" server ("SKX"):

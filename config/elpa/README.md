@@ -9,9 +9,9 @@
 **NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
-wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.05.001/elpa-2020.05.001.tar.gz
-tar xvf elpa-2020.05.001.tar.gz
-cd elpa-2020.05.001
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.11.001/elpa-2020.11.001.tar.gz
+tar xvf elpa-2020.11.001.tar.gz
+cd elpa-2020.11.001
 
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
@@ -21,7 +21,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -39,7 +39,7 @@ make -j ; make install
 Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format"). After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
-[user@system elpa-2020.05.001]$ ls ../elpa
+[user@system elpa-2020.11.001]$ ls ../elpa
  intel-skx
  intel-skx-omp
 ```
@@ -59,7 +59,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 **NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
-wget --no-check-certificate http://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
+wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
 tar xvf elpa-2019.11.001.tar.gz
 cd elpa-2019.11.001
 
@@ -71,7 +71,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -125,7 +125,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler and Intel&#160;MKL available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
@@ -144,6 +144,6 @@ Even if ELPA was just unpacked (and never built before), `make clean` is recomme
 
 ## References
 
-[https://www.cp2k.org/howto:compile#l_elpa_optional_improved_performance_for_diagonalization](https://www.cp2k.org/howto:compile#l_elpa_optional_improved_performance_for_diagonalization)  
+[https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2l-elpa-optional-improved-performance-for-diagonalization](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2l-elpa-optional-improved-performance-for-diagonalization)  
 [https://elpa.mpcdf.mpg.de/elpa-tar-archive](https://elpa.mpcdf.mpg.de/elpa-tar-archive)
 

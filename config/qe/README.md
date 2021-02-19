@@ -19,7 +19,7 @@ chmod +x configure-get.sh
 Please make the Intel Compiler available on the command line, which may vary with the computing environment. For instance, many HPC centers rely on `module load`.
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.2.254/linux/bin/compilervars.sh intel64
+source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
 For example, configure for an Intel Xeon&#160;Scalable Processor (applicable to CPUs previously codenamed "Skylake" and "Cascadelake" server), and build the desired application(s), e.g., "pw", "cp", or "all".
