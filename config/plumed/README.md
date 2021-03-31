@@ -18,6 +18,8 @@ Please make the intended compiler available on the command line. For instance, m
 source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
+**Note**: Please make the "python" command available, which may point to Python2 or Python3. For example, create a `bin` directory at `$HOME` (`mkdir -p ${HOME}/bin`), and create a symbolic link to either Python2 or Python3 (e.g., `ln -s /usr/bin/python3 ${HOME}/bin/python`).
+
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
 
 ```bash

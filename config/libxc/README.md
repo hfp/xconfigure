@@ -26,7 +26,7 @@ make distclean
 make -j; make install
 ```
 
-**NOTE**: Please disregard messages during configuration suggesting `libtoolize --force`.
+**Note**: Please disregard messages during configuration suggesting `libtoolize --force`.
 
 ## References
 

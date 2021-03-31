@@ -10,7 +10,7 @@ Please make the Intel Compiler available on the command line. This depends on th
 source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
-**NOTE**: CP2K&#160;6.1 (and earlier) depend on [LIBINT&#160;1.1.x](#version1x) and a newer version of LIBINT cannot be used! CP2K&#160;7.x (and later) rely on LIBINT&#160;2.5 (or later) and cannot use the preconfigured library as provided on [LIBINT's home page](https://github.com/evaleev/libint).
+**Note**: CP2K&#160;6.1 (and earlier) depend on [LIBINT&#160;1.1.x](#version1x) and a newer version of LIBINT cannot be used! CP2K&#160;7.x (and later) rely on LIBINT&#160;2.5 (or later) and cannot use the preconfigured library as provided on [LIBINT's home page](https://github.com/evaleev/libint).
 
 ## Version&#160;2.5 (and later)
 
@@ -33,7 +33,7 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | curl -LOK-
 ```
 
-**NOTE**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
+**Note**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
 
 To unpack the archive and to download the configure wrapper (lmax6-version is assumed):
 

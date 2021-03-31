@@ -6,7 +6,7 @@
 
 [Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. Consider CP2K's download area (cache) as an [alternative source](https://www.cp2k.org/static/downloads) for downloading ELPA.
 
-**NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
+**Note**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
 echo "wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
@@ -57,7 +57,7 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 
 [Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
 
-**NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
+**Note**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
 wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2019.11.001/elpa-2019.11.001.tar.gz
@@ -111,7 +111,7 @@ Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1. For CP2K&#160;
 
 [Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. It is recommended to package the state (Tarball or similar), which is achieved after downloading the wrapper scripts.
 
-**NOTE**: In Quantum Espresso, the __ELPA_2018 interface must be used for ELPA 2017.11 (`-D__ELPA_2018`). The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed in ELPA&#160;2017.11. This is already considered when using XCONFIGURE's wrapper scripts.
+**Note**: In Quantum Espresso, the __ELPA_2018 interface must be used for ELPA 2017.11 (`-D__ELPA_2018`). The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed in ELPA&#160;2017.11. This is already considered when using XCONFIGURE's wrapper scripts.
 
 ```bash
 wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
