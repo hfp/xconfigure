@@ -53,7 +53,7 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.x, or 9.x, 9.1 
 * [LIBINT](../libint/README.md#libint) (2.x from CP2K.org!)
 * [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x, not 5.x)
-* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2020.05.001)
+* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) (version 2020.05.001 or 2020.11.001)
 
 To install Intel Math Kernel Library and Intel&#160;MPI from a public repository depends on the Linux distribution's package manager (mixing and matching recommended Intel components is possible). For newer distributions, Intel&#160;MKL and Intel&#160;MPI libraries are likely part of the official repositories. Otherwise a suitable repository must be added to the package manager (not subject of this document).
 
@@ -82,10 +82,11 @@ $ mpif90 --version
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.05.001/elpa-2020.05.001.tar.gz
-tar xvf elpa-2020.05.001.tar.gz
+echo "wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
+wget --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
+tar xvf elpa-2020.11.001.tar.gz
 
-cd elpa-2020.05.001
+cd elpa-2020.11.001
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
@@ -626,5 +627,6 @@ To use the malloc-proxy of the Intel Threading Building Blocks (Intel&#160;TBB),
 
 [https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/](https://nholmber.github.io/2017/04/cp2k-build-cray-xc40/)  
 [https://xconfigure.readthedocs.io/cp2k/plan/](https://xconfigure.readthedocs.io/cp2k/plan/)  
+[https://www.cp2k.org/static/downloads](https://www.cp2k.org/static/downloads)  
 [https://www.cp2k.org/howto:compile](https://www.cp2k.org/howto:compile)
 

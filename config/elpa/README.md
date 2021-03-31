@@ -4,12 +4,13 @@
 
 ### ELPA 2020
 
-[Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
+[Download](https://elpa.mpcdf.mpg.de/elpa-tar-archive) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. Consider CP2K's download area (cache) as an [alternative source](https://www.cp2k.org/static/downloads) for downloading ELPA.
 
 **NOTE**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
-wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.11.001/elpa-2020.11.001.tar.gz
+echo "wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
+wget --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
 tar xvf elpa-2020.11.001.tar.gz
 cd elpa-2020.11.001
 
@@ -145,5 +146,6 @@ Even if ELPA was just unpacked (and never built before), `make clean` is recomme
 ## References
 
 [https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2l-elpa-optional-improved-performance-for-diagonalization](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2l-elpa-optional-improved-performance-for-diagonalization)  
-[https://elpa.mpcdf.mpg.de/elpa-tar-archive](https://elpa.mpcdf.mpg.de/elpa-tar-archive)
+[https://elpa.mpcdf.mpg.de/elpa-tar-archive](https://elpa.mpcdf.mpg.de/elpa-tar-archive)  
+[https://www.cp2k.org/static/downloads](https://www.cp2k.org/static/downloads)
 
