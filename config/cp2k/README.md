@@ -82,7 +82,7 @@ $ mpif90 --version
 
 ```bash
 cd $HOME
-echo "wget --no-check-certificate https://elpa.mpcdf.mpg.de/html/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
+echo "wget --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
 wget --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
 tar xvf elpa-2020.11.001.tar.gz
 
@@ -336,7 +336,7 @@ The first step builds ELPA. Do not use an ELPA-version newer than 2017.11.001.
 
 ```bash
 cd $HOME
-wget https://elpa.mpcdf.mpg.de/html/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+wget https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
 
 cd elpa-2017.11.001
