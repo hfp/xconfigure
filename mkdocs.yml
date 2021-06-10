@@ -4,6 +4,7 @@ copyright: Copyright (c) 2013-2020, XCONFIGURE <a href="https://xconfigure.readt
 site_description: High-Performance configuration patterns and recipes.
 repo_url: https://github.com/hfp/xconfigure
 edit_uri: edit/master/config
+site_url: https://xconfigure.readthedocs.io/
 docs_dir: config
 
 markdown_extensions:
