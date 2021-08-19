@@ -12,7 +12,7 @@
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
-DEST=${HERE}/../elpa/${PRFX}gnu
+DEST=${HERE}/../elpa/${PRFX}gnu-omp
 
 if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -41,7 +41,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS="--enable-avx512"
+CONFOPTS="--enable-avx512 --enable-openmp"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-march=native"

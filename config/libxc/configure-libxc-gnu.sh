@@ -12,7 +12,7 @@
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
-DEST=${HERE}/../libxc/${PRFX}skx
+DEST=${HERE}/../libxc/${PRFX}gnu
 
 if [ ! -e ${HERE}/configure.ac ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
