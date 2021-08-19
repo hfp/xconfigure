@@ -12,7 +12,7 @@
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 HERE=$(cd $(dirname $0); pwd -P)
-DEST=${HERE}/../elpa/${PRFX}gnu-omp
+DEST=${HERE}/../elpa/${PRFX}omp
 
 if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
