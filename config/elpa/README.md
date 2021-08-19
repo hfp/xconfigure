@@ -11,7 +11,7 @@
 ```bash
 echo "wget --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2021.05.001.tar.gz"
 wget --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.05.002/elpa-2021.05.002.tar.gz
-tar xvf 2021.05.002.tar.gz
+tar xvf elpa-2021.05.002.tar.gz
 cd elpa-2021.05.002
 
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
