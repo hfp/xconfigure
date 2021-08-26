@@ -41,6 +41,8 @@ export AR="gcc-ar"
 export FC="gfortran"
 export CC="gcc"
 export CXX="g++"
+export F77=${FC}
+export F90=${FC}
 
 libtoolize
 aclocal

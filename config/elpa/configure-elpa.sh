@@ -61,6 +61,14 @@ export AR="xiar"
 export FC="mpiifort"
 export CC="mpiicc"
 export CXX="mpiicpc"
+export F77=${FC}
+export F90=${FC}
+
+export MPICC=${CC}
+export MPIFC=${FC}
+export MPIF77=${F77}
+export MPIF90=${F90}
+export MPICXX=${CXX}
 
 CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)

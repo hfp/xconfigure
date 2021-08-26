@@ -48,6 +48,12 @@ export CXX="mpiicpc"
 export F77=${FC}
 export F90=${FC}
 
+export MPICC=${CC}
+export MPIFC=${FC}
+export MPIF77=${F77}
+export MPIF90=${F90}
+export MPICXX=${CXX}
+
 libtoolize
 aclocal
 #autoheader

@@ -33,12 +33,20 @@ export LD_LIBS="-Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 export MKL_OMPRTL=intel_thread
 #export MKL_OMPRTL=sequential
 export MKL_FCRTL=intel
-export MPIF90=mpiifort
-export F90=ifort
-export FC=ifort
-export CC=mpiicc
-export AR=xiar
 export dir=none
+
+export AR="xiar"
+export FC="mpiifort"
+export CC="mpiicc"
+export CXX="mpiicpc"
+export F77=${FC}
+export F90=${FC}
+
+export MPICC=${CC}
+export MPIFC=${FC}
+export MPIF77=${F77}
+export MPIF90=${F90}
+export MPICXX=${CXX}
 
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then

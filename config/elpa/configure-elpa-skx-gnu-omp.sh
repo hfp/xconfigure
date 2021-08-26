@@ -56,8 +56,16 @@ export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
 
 export AR="gcc-ar"
 export FC="mpif90"
-export CC="mpigcc"
-export CXX="mpigxx"
+export CC="mpicc"
+export CXX="mpicxx"
+export F77=${FC}
+export F90=${FC}
+
+export MPICC=${CC}
+export MPIFC=${FC}
+export MPIF77=${F77}
+export MPIF90=${F90}
+export MPICXX=${CXX}
 
 # Development versions may require autotools mechanics
 if [ -e ${HERE}/autogen.sh ]; then

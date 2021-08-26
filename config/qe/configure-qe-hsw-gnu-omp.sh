@@ -31,12 +31,20 @@ export LD_LIBS="-Wl,--as-needed -lgomp -lm -Wl,--no-as-needed"
 #export MKL_OMPRTL=sequential
 export MKL_OMPRTL=gnu_thread
 export MKL_FCRTL=gf
-export MPIF90=mpif90
-export F90=gfortran
-export FC=gfortran
-export CC=mpigcc
-export AR=gcc-ar
 export dir=none
+
+export AR="gcc-ar"
+export FC="mpif90"
+export CC="mpicc"
+export CXX="mpicxx"
+export F77=${FC}
+export F90=${FC}
+
+export MPICC=${CC}
+export MPIFC=${FC}
+export MPIF77=${F77}
+export MPIF90=${F90}
+export MPICXX=${CXX}
 
 export BLAS_LIBS="${LIBXSMM} -Wl,--start-group \
     ${MKLROOT}/lib/intel64/libmkl_${MKL_FCRTL}_lp64.a \
