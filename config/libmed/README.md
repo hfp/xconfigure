@@ -1,4 +1,4 @@
-# Med File Library
+# Med File Library (libmed)
 
 To [download](https://salome-platform.org/downloads/), configure, build, and install libmed, one may proceed as shown below.
 
