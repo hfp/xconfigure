@@ -26,6 +26,7 @@ nav:
   - LIBXSMM: libxsmm/README.md
   - LIBINT: libint/README.md
   - PLUMED: plumed/README.md
+  - LIBMED: libmed/README.md
   - LIBXC: libxc/README.md
   - ELPA: elpa/README.md
   - TF: tf/README.md
