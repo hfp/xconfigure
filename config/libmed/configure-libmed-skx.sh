@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--disable-dependency-tracking"
 TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
 
 # consider more accurate FP-model

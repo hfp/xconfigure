@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--disable-dependency-tracking"
 TARGET="-march=native"
 
 export FLAGS="-O3 ${TARGET}"

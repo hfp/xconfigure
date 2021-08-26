@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--disable-dependency-tracking"
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
 
 export FLAGS="-O3 ${TARGET}"
