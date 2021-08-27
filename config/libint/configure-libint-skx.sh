@@ -41,6 +41,7 @@ export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 export LIBS="-lstdc++"
 
 export AR="xiar"

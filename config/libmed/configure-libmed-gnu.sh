@@ -37,6 +37,7 @@ export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 export AR="gcc-ar"
 export FC="mpif90"

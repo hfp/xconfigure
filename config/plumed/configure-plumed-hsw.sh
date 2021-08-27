@@ -41,6 +41,7 @@ export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
 export AR="xiar"

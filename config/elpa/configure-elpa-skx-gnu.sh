@@ -55,6 +55,7 @@ export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-nee
 export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 export AR="gcc-ar"
 export FC="mpif90"
