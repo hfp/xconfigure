@@ -36,7 +36,7 @@ fi
 CONFOPTS="openmp=1"
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
 
-export FLAGS="${TARGET}"
+export FLAGS="-fPIC ${TARGET}"
 export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"

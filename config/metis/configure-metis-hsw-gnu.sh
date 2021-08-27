@@ -36,7 +36,7 @@ fi
 CONFOPTS="openmp=1"
 TARGET="-march=core-avx2"
 
-export FLAGS="${TARGET}"
+export FLAGS="-fPIC ${TARGET}"
 export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"

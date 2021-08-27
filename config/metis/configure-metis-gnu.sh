@@ -36,7 +36,7 @@ fi
 CONFOPTS="openmp=1"
 TARGET="-march=native"
 
-export FLAGS="${TARGET}"
+export FLAGS="-fPIC ${TARGET}"
 export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"

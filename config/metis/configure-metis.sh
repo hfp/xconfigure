@@ -40,7 +40,7 @@ TARGET="-xHost"
 #FPCMODEL = -fp-model precise
 #FPFMODEL = -fp-model source
 
-export FLAGS="${TARGET}" #-ipo-separate
+export FLAGS="-fPIC ${TARGET}" #-ipo-separate
 export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
