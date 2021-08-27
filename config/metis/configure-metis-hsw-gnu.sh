@@ -41,6 +41,8 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
 
 export AR="gcc-ar"
 export FC="gfortran"

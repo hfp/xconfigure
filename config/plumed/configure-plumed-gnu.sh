@@ -35,6 +35,8 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
 export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
 export AR="gcc-ar"
