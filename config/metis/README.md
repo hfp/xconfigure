@@ -22,7 +22,7 @@ For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
 
 ```bash
 make distclean
-./configure-med-skx.sh
+./configure-metis-skx.sh
 make -j; make install
 ```
 
