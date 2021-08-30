@@ -30,6 +30,7 @@ nav:
   - LIBXC: libxc/README.md
   - METIS: metis/README.md
   - ELPA: elpa/README.md
+  - HDF5: hdf5/README.md
   - TF: tf/README.md
   - QE: qe/README.md
 - About:
