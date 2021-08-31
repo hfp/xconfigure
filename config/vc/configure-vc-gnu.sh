@@ -36,26 +36,10 @@ else
 fi
 
 CONFOPTS="-DBUILD_TESTING=OFF"
-TARGET="-march=native"
-
-export FLAGS="-fPIC ${TARGET}"
-export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
-
-export AR="gcc-ar"
-export FC="gfortran"
-export CC="gcc"
-export CXX="g++"
-export F77=${FC}
-export F90=${FC}
 
 rm -rf ${HERE}/build
 mkdir -p ${HERE}/build && cd ${HERE}/build
 
-cmake -DCMAKE_INSTALL_PREFIX=${DEST} ${CONFOPTS} $* ${HERE}
+cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} $* ${HERE}
+echo
 echo "Remember to \"cd build\" before \"make; make install\""

@@ -36,30 +36,10 @@ else
 fi
 
 CONFOPTS="-DBUILD_TESTING=OFF"
-TARGET="-xHost"
-
-# consider more accurate FP-model
-#FPCMODEL = -fp-model precise
-#FPFMODEL = -fp-model source
-
-export FLAGS="-fPIC ${TARGET}" #-ipo-separate
-export LDFLAGS=""
-export CFLAGS="${FLAGS} ${FPCMODEL}"
-export CXXFLAGS="${FLAGS} ${FPCMODEL}"
-export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
-
-export AR="xiar"
-export FC="ifort"
-export CC="icc"
-export CXX="icpc"
-export F77=${FC}
-export F90=${FC}
 
 rm -rf ${HERE}/build
 mkdir -p ${HERE}/build && cd ${HERE}/build
 
-cmake -DCMAKE_INSTALL_PREFIX=${DEST} ${CONFOPTS} $* ${HERE}
+cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} $* ${HERE}
+echo
 echo "Remember to \"cd build\" before \"make; make install\""
