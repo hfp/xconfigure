@@ -33,6 +33,7 @@ nav:
   - ELPA: elpa/README.md
   - TF: tf/README.md
   - QE: qe/README.md
+  - Vc: vc/README.md
 - About:
   - Contributing: CONTRIBUTING.md
   - License: LICENSE.md
