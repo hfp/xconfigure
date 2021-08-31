@@ -40,6 +40,6 @@ CONFOPTS="-DBUILD_TESTING=OFF"
 rm -rf ${HERE}/build
 mkdir -p ${HERE}/build && cd ${HERE}/build
 
-cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} $* ${HERE}
+cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=g++ ${CONFOPTS} $* ${HERE}
 echo
 echo "Remember to \"cd build\" before \"make; make install\""
