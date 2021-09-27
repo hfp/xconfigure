@@ -34,7 +34,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS="openmp=1"
-TARGET="-march=native"
+TARGET="-march=native -mtune=native"
 
 export FLAGS="-fPIC ${TARGET}"
 export LDFLAGS=""

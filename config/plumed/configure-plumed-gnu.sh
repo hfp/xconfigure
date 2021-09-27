@@ -28,7 +28,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS="--disable-shared --disable-libsearch --disable-doc --enable-asmjit"
-TARGET="-march=native"
+TARGET="-march=native -mtune=native"
 
 export FLAGS="-O3 ${TARGET} -D__PLUMED_HAS_MPI -D__PLUMED_HAS_FFTW -D__PLUMED_HAS_ZLIB -I${MKLROOT}/include/fftw"
 export LDFLAGS=""

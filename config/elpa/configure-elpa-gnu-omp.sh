@@ -44,7 +44,7 @@ fi
 CONFOPTS="--enable-avx512 --enable-openmp"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
-TARGET="-march=native"
+TARGET="-march=native -mtune=native"
 FLAGS="-O3 ${TARGET} -I${MKLROOT}/include"
 
 export LDFLAGS="-L${MKLROOT}/lib/intel64"
