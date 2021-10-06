@@ -41,7 +41,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS="--enable-avx512 --enable-openmp"
+CONFOPTS="--enable-openmp"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-march=native -mtune=native"

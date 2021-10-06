@@ -42,7 +42,7 @@ if [ "" = "${MKLROOT}" ]; then
 fi
 
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
-CONFOPTS="--enable-avx512 --enable-openmp"
+CONFOPTS="--enable-openmp"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
