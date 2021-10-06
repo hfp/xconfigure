@@ -41,7 +41,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--disable-avx512"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-march=native -mtune=native"
