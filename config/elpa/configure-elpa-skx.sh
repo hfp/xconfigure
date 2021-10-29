@@ -42,8 +42,8 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-FPFLAGS="-fp-model fast=2 -complex-limited-range"
 CONFOPTS="--enable-avx512"
+FPFLAGS="-fp-model fast=2 -complex-limited-range"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 

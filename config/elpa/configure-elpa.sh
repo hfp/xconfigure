@@ -42,8 +42,16 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
+if [ -e /proc/cpuinfo ] && [ "" = "$(grep -m1 flags /proc/cpuinfo | grep avx512f)" ]; then
+  CONFOPTS="--disable-avx512"
+elif [ "Darwin" = "$(uname)" ] && [ "x86_64" = "$(uname) -m" ] && \
+     [ "" = "$(sysctl -a machdep.cpu.leaf7_features | grep AVX512F)" ];
+then
+  CONFOPTS="--disable-avx512"
+fi
+
+CONFOPTS="${CONFOPTS} --enable-openmp"
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
-CONFOPTS="--disable-avx512 --enable-openmp"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
