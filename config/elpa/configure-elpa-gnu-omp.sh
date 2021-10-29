@@ -9,9 +9,10 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
+# shellcheck disable=SC2012,SC2086,SC2164
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
-HERE=$(cd $(dirname $0); pwd -P)
+HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../elpa/${PRFX}omp
 
 if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
@@ -86,7 +87,7 @@ fi
   --disable-dependency-tracking \
   --host=x86_64-unknown-linux-gnu \
   --disable-mpi-module \
-  --prefix=${DEST} ${CONFOPTS} $*
+  --prefix=${DEST} ${CONFOPTS} "$@"
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \

@@ -18,7 +18,7 @@ OPTC=-O3
 OPTF=-O3
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 
-HERE=$(cd $(dirname $0); pwd -P)
+HERE=$(cd "$(dirname "$0")" && pwd -P)
 if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
@@ -61,7 +61,7 @@ rm -f make.sys make.inc
 ./configure ${OPENMP} --with-scalapack=intel --with-elpa=${ELPAROOT} \
   --with-elpa-include="-I${ELPAROOT}/include/elpa/modules" \
   --with-elpa-lib=${ELPAROOT}/lib/libelpa.a \
-  $*
+  "$@"
 
 if [ -e ${HERE}/make.inc ]; then
   INCFILE=${HERE}/make.inc

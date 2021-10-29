@@ -22,7 +22,7 @@ else
   SORT="sort -k2,2n -k6,6n"
 fi
 
-if [ "" != "$1" ] && [ -e $1 ]; then
+if [ "" != "$1" ] && [ -e "$1" ]; then
   FILEPATH="$1"
   shift
 else

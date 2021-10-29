@@ -33,7 +33,7 @@ TR=$(command -v tr)
 if [ "" != "${HOME}" ]; then
   CONFIGFILE=${HOME}/.xconfigure-cp2k-plan
 else
-  HERE=$(cd $(dirname $0); pwd -P)
+  HERE=$(cd "$(dirname "$0")" && pwd -P)
   CONFIGFILE=${HERE}/.xconfigure-cp2k-plan
 fi
 

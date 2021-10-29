@@ -11,7 +11,7 @@
 ###############################################################################
 
 if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
-HERE=$(cd $(dirname $0); pwd -P)
+HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../vc/${PRFX}
 CMAKE=$(command -v cmake)
 
@@ -40,6 +40,6 @@ CONFOPTS="-DBUILD_TESTING=OFF"
 rm -rf ${HERE}/build
 mkdir -p ${HERE}/build && cd ${HERE}/build
 
-cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} $* ${HERE}
+cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} "$@" ${HERE}
 echo
 echo "Remember to \"cd build\" before \"make; make install\""

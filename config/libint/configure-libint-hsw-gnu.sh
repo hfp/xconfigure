@@ -11,7 +11,7 @@
 ###############################################################################
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
-HERE=$(cd $(dirname $0); pwd -P)
+HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../libint/${PRFX}hsw
 
 if [[ ((! -e ${HERE}/configure.in) && (! -e ${HERE}/configure.ac)) || ("${HERE}" != "$(pwd -P)") ]]; then
@@ -74,5 +74,5 @@ fi
   --with-libint-max-am=6 \
   --disable-libtool \
   --enable-fortran \
-  $*
+  "$@"
 

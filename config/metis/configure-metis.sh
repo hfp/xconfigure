@@ -11,7 +11,7 @@
 ###############################################################################
 
 if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
-HERE=$(cd $(dirname $0); pwd -P)
+HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../metis/${PRFX}
 CMAKE=$(command -v cmake)
 
@@ -56,4 +56,4 @@ export CXX="icpc"
 export F77=${FC}
 export F90=${FC}
 
-make config prefix=${DEST} cc=${CC} ${CONFOPTS} $*
+make config prefix=${DEST} cc=${CC} ${CONFOPTS} "$@"

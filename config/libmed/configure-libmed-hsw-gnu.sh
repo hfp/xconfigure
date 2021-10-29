@@ -11,7 +11,7 @@
 ###############################################################################
 
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
-HERE=$(cd $(dirname $0); pwd -P)
+HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../libmed/${PRFX}hsw
 
 if [ ! -e ${HERE}/configure.ac ] || [ "${HERE}" != "$(pwd -P)" ]; then
@@ -61,5 +61,5 @@ autoconf
 ./configure \
   --prefix=${DEST} ${CONFOPTS} \
   --host=x86_64-unknown-linux-gnu \
-  $*
+  "$@"
 
