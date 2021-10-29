@@ -22,7 +22,7 @@ There are no configuration wrapper scripts provided for CP2K since a configure-s
 Although there are no configuration wrapper scripts for CP2K, below command delivers, e.g., an [info-script](#performance) and a script for [planning](#plan-script) CP2K execution:
 
 ```bash
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
@@ -30,9 +30,9 @@ chmod +x configure-get.sh
 <a name="info-script"></a>Of course, the scripts can be also download manually:
 
 ```bash
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/info.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/info.sh
 chmod +x info.sh
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/plan.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/plan.sh
 chmod +x plan.sh
 ```
 
@@ -82,12 +82,12 @@ $ mpif90 --version
 
 ```bash
 cd $HOME
-echo "wget --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
-wget --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
+echo "wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
+wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
 tar xvf elpa-2020.11.001.tar.gz
 
 cd elpa-2020.11.001
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -127,7 +127,7 @@ tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 
 ```bash
 cd libint-v2.6.0-cp2k-lmax-6
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
@@ -158,11 +158,11 @@ make distclean
 
 ```bash
 cd $HOME
-wget --content-disposition https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
+wget --content-disposition --no-check-certificate https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
 tar xvf libxc-4.3.4.tar.bz2
 
 cd libxc-4.3.4
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```
@@ -193,11 +193,11 @@ make distclean
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/plumed/plumed2/archive/v2.6.1.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/plumed/plumed2/archive/v2.6.1.tar.gz
 tar xvf v2.6.1.tar.gz
 
 cd plumed2-2.6.1
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh plumed
 ```
@@ -226,7 +226,7 @@ make distclean
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.16.1.tar.gz
 ```
 
@@ -242,7 +242,7 @@ tar xvf cp2k-7.1.tar.bz2
 
 ```bash
 cd cp2k-7.1
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
@@ -340,7 +340,7 @@ wget https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2017.11.001/elp
 tar xvf elpa-2017.11.001.tar.gz
 
 cd elpa-2017.11.001
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 
@@ -354,11 +354,11 @@ The second step builds LIBINT (1.1.6 recommended, newer version cannot be used).
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
 tar xvf release-1-1-6.tar.gz
 
 cd libint-release-1-1-6
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 
@@ -372,11 +372,11 @@ The third step builds LIBXC.
 
 ```bash
 cd $HOME
-wget --content-disposition https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
+wget --content-disposition --no-check-certificate https://gitlab.com/libxc/libxc/-/archive/4.3.4/libxc-4.3.4.tar.bz2
 tar xvf libxc-4.3.4.tar.bz2
 
 cd libxc-4.3.4
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
 
@@ -390,11 +390,11 @@ The fourth step builds [Plumed2](https://github.com/plumed/plumed2/releases/late
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/plumed/plumed2/archive/v2.6.1.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/plumed/plumed2/archive/v2.6.1.tar.gz
 tar xvf v2.6.1.tar.gz
 
 cd plumed2-2.6.1
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh plumed
 ./configure-plumed-skx.sh
@@ -412,7 +412,7 @@ The fifth step makes LIBXSMM [available](https://github.com/hfp/libxsmm/releases
 
 ```bash
 cd $HOME
-wget --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.16.1.tar.gz
 ```
 
@@ -424,13 +424,13 @@ wget https://github.com/cp2k/cp2k/archive/v6.1.0.tar.gz
 tar xvf v6.1.0.tar.gz
 
 cd cp2k-6.1.0
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh cp2k
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/mpi-wrapper.diff
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/mpi-wrapper.diff
 patch -p0 src/mpiwrap/message_passing.F mpi-wrapper.diff
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/intel-mkl.diff
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/config/cp2k/intel-mkl.diff
 patch -p0 src/pw/fft/fftw3_lib.F intel-mkl.diff
 ```
 

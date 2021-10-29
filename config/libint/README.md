@@ -41,7 +41,7 @@ To unpack the archive and to download the configure wrapper (lmax6-version is as
 tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 cd libint-v2.6.0-cp2k-lmax-6
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
@@ -67,11 +67,11 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
 
 ```bash
-wget --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
 tar xvf release-1-1-6.tar.gz
 cd libint-release-1-1-6
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```

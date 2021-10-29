@@ -3,11 +3,11 @@
 To [download](https://gitlab.com/libxc/libxc/-/releases), configure, build, and install [LIBXC](https://www.tddft.org/programs/libxc/)&#160;2.x, 3.x (CP2K&#160;5.1 and earlier is only compatible with LIBXC&#160;3.0 or earlier), 4.x (CP2K&#160;7.1 and earlier is only compatible with LIBXC&#160;4.x), or 5.x (CP2K&#160;8.1 and later require LIBXC&#160;5.x), one may proceed as shown below. For CP2K, see also [How to compile the CP2K code](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2k-libxc-optional-wider-choice-of-xc-functionals)). In general, only the latest major release of LIBXC (by the time of the CP2K-release) is supported.
 
 ```bash
-wget --content-disposition https://www.tddft.org/programs/libxc/down.php?file=5.1.7/libxc-5.1.7.tar.gz
+wget --content-disposition --no-check-certificate https://www.tddft.org/programs/libxc/down.php?file=5.1.7/libxc-5.1.7.tar.gz
 tar xvf libxc-5.1.7.tar.gz
 cd libxc-5.1.7
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```

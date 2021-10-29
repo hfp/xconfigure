@@ -3,11 +3,11 @@
 To [download](https://salome-platform.org/downloads/), configure, build, and install libmed, one may proceed as shown below.
 
 ```bash
-wget --no-check-certificate https://files.salome-platform.org/Salome/other/med-4.1.0.tar.gz
+wget --content-disposition --no-check-certificate https://files.salome-platform.org/Salome/other/med-4.1.0.tar.gz
 tar xvf med-4.1.0.tar.gz
 cd med-4.1.0
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libmed
 ```

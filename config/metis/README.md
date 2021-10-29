@@ -3,11 +3,11 @@
 To [download](http://glaros.dtc.umn.edu/gkhome/metis/metis/download), configure, build, and install METIS, one may proceed as shown below.
 
 ```bash
-wget --no-check-certificate http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
+wget --content-disposition --no-check-certificate http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
 tar xvf metis-5.1.0.tar.gz
 cd metis-5.1.0
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh metis
 ```

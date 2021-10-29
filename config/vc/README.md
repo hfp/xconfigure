@@ -3,11 +3,11 @@
 To [download](https://github.com/VcDevel/Vc/releases/latest), configure, build, and install Vc, one may proceed as shown below.
 
 ```bash
-wget --no-check-certificate https://github.com/VcDevel/Vc/archive/refs/tags/1.4.2.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/VcDevel/Vc/archive/refs/tags/1.4.2.tar.gz
 tar xvf Vc-1.4.2.tar.gz
 cd Vc-1.4.2
 
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh vc
 ```
