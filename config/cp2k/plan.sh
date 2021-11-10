@@ -60,18 +60,25 @@ then
     TOTALNUMNODES=$1
     shift
   fi
-  if [ -e /proc/cpuinfo ] && [ "" != "$(command -v wc)" ];
-  then
-    NS=$(${GREP} "physical id" /proc/cpuinfo | ${SORT} -u | wc -l | ${TR} -d " ")
+  if [ "$(command -v lscpu)" ]; then
+    NS=$(lscpu | ${GREP} -m1 "Socket(s)" | ${TR} -d " " | ${CUT} -d: -f2)
+    if [ "" = "${NS}" ]; then NS=1; fi
+    NC=$((NS*$(lscpu | ${GREP} -m1 "Core(s) per socket" | ${TR} -d " " | ${CUT} -d: -f2)))
+    NT=$((NC*$(lscpu | ${GREP} -m1 "Thread(s) per core" | ${TR} -d " " | ${CUT} -d: -f2)))
+  elif [ -e /proc/cpuinfo ]; then
+    NS=$(${GREP} "physical id" /proc/cpuinfo | ${SORT} -u | ${WC} -l | ${TR} -d " ")
+    if [ "" = "${NS}" ]; then NS=1; fi
     NC=$((NS*$(${GREP} -m1 "cpu cores" /proc/cpuinfo | ${TR} -d " " | ${CUT} -d: -f2)))
-    NT=$(${GREP} "core id" /proc/cpuinfo | wc -l | ${TR} -d " ")
-  elif [ "Darwin" = "$(uname)" ] && [ "" != "$(command -v sysctl)" ]; then
-    NS=$(sysctl hw.packages | ${CUT} -d: -f2 | ${TR} -d " ")
+    NT=$(${GREP} "core id" /proc/cpuinfo | ${WC} -l | ${TR} -d " ")
+  elif [ "Darwin" = "$(uname)" ]; then
+    NS=$(sysctl hw.packages    | ${CUT} -d: -f2 | ${TR} -d " ")
     NC=$(sysctl hw.physicalcpu | ${CUT} -d: -f2 | ${TR} -d " ")
-    NT=$(sysctl hw.logicalcpu | ${CUT} -d: -f2 | ${TR} -d " ")
+    NT=$(sysctl hw.logicalcpu  | ${CUT} -d: -f2 | ${TR} -d " ")
   fi
-  if [ "" != "${NC}" ] && [ "" != "${NT}" ]; then
+  if [ "${NC}" ] && [ "${NT}" ]; then
     HT=$((NT/NC))
+  else
+    NS=1 NC=1 NT=1 HT=1
   fi
   OUTPUT=0
   if [ "" = "$1" ]; then
@@ -248,4 +255,3 @@ else
   echo "Error: missing prerequisites!"
   exit 1
 fi
-
