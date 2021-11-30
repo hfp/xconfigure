@@ -30,6 +30,7 @@ if [ "$1" ] && [ "${SED}" ] && [ "${PS}" ]; then
   else
     export CUDA_VISIBLE_DEVICES="${SKT}"
   fi
+  export ACC_OPENCL_DEVICE=${CUDA_VISIBLE_DEVICES}
   echo "MULTIRUN ${HOSTNAME}-${PID}: SOCKET${SKT} <-> GPU${CUDA_VISIBLE_DEVICES}"
   exec  "$@"
 else
