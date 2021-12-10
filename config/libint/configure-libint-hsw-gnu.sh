@@ -57,12 +57,6 @@ if [ -e ${HERE}/fortran/Makefile ]; then
   cd ${HERE}
 fi
 
-#libtoolize
-#aclocal
-#autoheader
-#automake -a
-#autoconf
-
 if [ ! -e ${HERE}/configure ]; then
   autoconf
 fi
