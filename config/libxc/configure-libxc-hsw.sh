@@ -70,7 +70,7 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-cat << EOM
+cat << EOM > .autom4te.cfg
 begin-language: "Autoconf-without-aclocal-m4"
 args: --no-cache
 end-language: "Autoconf-without-aclocal-m4"

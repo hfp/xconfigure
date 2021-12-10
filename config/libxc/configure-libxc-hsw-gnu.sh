@@ -47,7 +47,7 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
-cat << EOM
+cat << EOM > .autom4te.cfg
 begin-language: "Autoconf-without-aclocal-m4"
 args: --no-cache
 end-language: "Autoconf-without-aclocal-m4"
