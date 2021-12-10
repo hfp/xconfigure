@@ -57,6 +57,12 @@ export MPIF77=${F77}
 export MPIF90=${F90}
 export MPICXX=${CXX}
 
+cat << EOM
+begin-language: "Autoconf-without-aclocal-m4"
+args: --no-cache
+end-language: "Autoconf-without-aclocal-m4"
+EOM
+
 libtoolize
 aclocal
 #autoheader

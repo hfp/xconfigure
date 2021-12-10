@@ -47,6 +47,12 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
+cat << EOM
+begin-language: "Autoconf-without-aclocal-m4"
+args: --no-cache
+end-language: "Autoconf-without-aclocal-m4"
+EOM
+
 libtoolize
 aclocal
 autoheader

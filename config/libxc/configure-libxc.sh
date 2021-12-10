@@ -72,6 +72,12 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
+cat << EOM
+begin-language: "Autoconf-without-aclocal-m4"
+args: --no-cache
+end-language: "Autoconf-without-aclocal-m4"
+EOM
+
 libtoolize
 aclocal
 autoheader
