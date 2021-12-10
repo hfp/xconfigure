@@ -13,6 +13,7 @@
 BASENAME=$(command -v basename)
 CHMOD=$(command -v chmod)
 WGET=$(command -v wget)
+GREP=$(command -v grep)
 CAT=$(command -v cat)
 CUT=$(command -v cut)
 TR=$(command -v tr)
@@ -26,9 +27,11 @@ APPLICATION=$1
 ARCHS=$2
 KINDS=$3
 
-if [ "" = "${BASENAME}" ] || [ "" = "${CHMOD}" ] || [ "" = "${WGET}" ] || \
-   [ "" = "${CAT}" ] || [ "" = "${CUT}" ] || [ "" = "${TR}" ] || \
-   [ "" = "${LS}" ] || [ "" = "${RM}" ] || [ "" = "${MV}" ];
+if [ "" = "${BASENAME}" ] || [ "" = "${CHMOD}" ] || \
+   [ "" = "${WGET}" ] || [ "" = "${GREP}" ] || \
+   [ "" = "${CAT}" ] || [ "" = "${CUT}" ] || \
+   [ "" = "${TR}" ] || [ "" = "${LS}" ] || \
+   [ "" = "${RM}" ] || [ "" = "${MV}" ];
 then
   echo "Error: prerequisites not found!"
   exit 1
@@ -42,7 +45,7 @@ fi
 
 echo "Be patient, it can take up to 30 seconds before progress is shown..."
 echo
-if [ "0" != $(${WGET} -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null; echo $?) ]; then
+if [ "$(${WGET} -q -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null | ${GREP} '200 OK')" ]; then
   echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
@@ -119,4 +122,3 @@ if [ "" = "$(${LS} -1 configure-${APPLICATION}*.sh 2>/dev/null)" ]; then
   echo "There is no configuration needed! Please read:"
   echo "https://xconfigure.readthedocs.io/${APPLICATION}/"
 fi
-
