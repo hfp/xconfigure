@@ -11,6 +11,7 @@
 ###############################################################################
 
 BASENAME=$(command -v basename)
+TIMEOUT=$(command -v timeout)
 CHMOD=$(command -v chmod)
 WGET=$(command -v wget)
 GREP=$(command -v grep)
@@ -21,24 +22,29 @@ LS=$(command -v ls)
 RM=$(command -v rm)
 MV=$(command -v mv)
 
+TIMEOUT_DURATION=10s
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
 ARCHS=$2
 KINDS=$3
 
-if [ "" = "${BASENAME}" ] || [ "" = "${CHMOD}" ] || \
-   [ "" = "${WGET}" ] || [ "" = "${GREP}" ] || \
-   [ "" = "${CAT}" ] || [ "" = "${CUT}" ] || \
-   [ "" = "${TR}" ] || [ "" = "${LS}" ] || \
-   [ "" = "${RM}" ] || [ "" = "${MV}" ];
+if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || \
+   [ ! "${WGET}" ] || [ ! "${GREP}" ] || \
+   [ ! "${CAT}" ] || [ ! "${CUT}" ] || \
+   [ ! "${TR}" ] || [ ! "${LS}" ] || \
+   [ ! "${RM}" ] || [ ! "${MV}" ];
 then
   echo "Error: prerequisites not found!"
   exit 1
 fi
 WGET="${WGET} --no-check-certificate --no-cache"
 
-if [ "" = "${APPLICATION}" ]; then
+if [ "${TIMEOUT}" ] && [ "${TIMEOUT_DURATION}" ]; then
+  WGET="${TIMEOUT} ${TIMEOUT_DURATION} ${WGET} --no-check-certificate --no-cache"
+fi
+
+if [ ! "${APPLICATION}" ]; then
   echo "Please use: $0 <application-name>"
   exit 1
 fi
@@ -51,10 +57,10 @@ if [ "$(${WGET} -q -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null |
 fi
 
 MSGBUFFER=$(mktemp .configure-XXXXXX.buf)
-if [ "" = "${ARCHS}" ]; then
+if [ ! "${ARCHS}" ]; then
   ARCHS="gnu snb hsw knl skx"
 fi
-if [ "" = "${KINDS}" ]; then
+if [ ! "${KINDS}" ]; then
   KINDS="omp gnu gnu-omp"
   for KIND in ${KINDS} ; do
     if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
@@ -116,7 +122,7 @@ ${CHMOD} +x *.sh 2>/dev/null
 # cleanup message buffer
 ${RM} ${MSGBUFFER}
 
-if [ "" = "$(${LS} -1 configure-${APPLICATION}*.sh 2>/dev/null)" ]; then
+if [ ! "$(${LS} -1 configure-${APPLICATION}*.sh 2>/dev/null)" ]; then
   # display reminder about build recipe
   echo
   echo "There is no configuration needed! Please read:"
