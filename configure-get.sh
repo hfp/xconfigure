@@ -22,7 +22,7 @@ LS=$(command -v ls)
 RM=$(command -v rm)
 MV=$(command -v mv)
 
-TIMEOUT_DURATION=10s
+TIMEOUT_ARGS="10s"
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
@@ -40,8 +40,8 @@ then
 fi
 WGET="${WGET} --no-check-certificate --no-cache"
 
-if [ "${TIMEOUT}" ] && [ "${TIMEOUT_DURATION}" ]; then
-  WGET="${TIMEOUT} ${TIMEOUT_DURATION} ${WGET} --no-check-certificate --no-cache"
+if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
+  WGET="${TIMEOUT} ${TIMEOUT_ARGS} ${WGET} --no-check-certificate --no-cache"
 fi
 
 if [ ! "${APPLICATION}" ]; then
