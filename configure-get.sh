@@ -14,26 +14,27 @@ BASENAME=$(command -v basename)
 TIMEOUT=$(command -v timeout)
 CHMOD=$(command -v chmod)
 WGET=$(command -v wget)
-GREP=$(command -v grep)
-CAT=$(command -v cat)
+SED=$(command -v gsed)
 CUT=$(command -v cut)
 TR=$(command -v tr)
 LS=$(command -v ls)
 RM=$(command -v rm)
 MV=$(command -v mv)
 
-TIMEOUT_ARGS="10s"
+# GNU sed is desired (macOS)
+if [ "" = "${SED}" ]; then
+  SED=$(command -v sed)
+fi
+
+TIMEOUT_ARGS="--foreground 10s"
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
 ARCHS=$2
 KINDS=$3
 
-if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || \
-   [ ! "${WGET}" ] || [ ! "${GREP}" ] || \
-   [ ! "${CAT}" ] || [ ! "${CUT}" ] || \
-   [ ! "${TR}" ] || [ ! "${LS}" ] || \
-   [ ! "${RM}" ] || [ ! "${MV}" ];
+if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || [ ! "${WGET}" ] || [ ! "${CUT}" ] || \
+   [ ! "${TR}" ] || [ ! "${LS}" ] || [ ! "${RM}" ] || [ ! "${MV}" ];
 then
   echo "Error: prerequisites not found!"
   exit 1
@@ -51,7 +52,7 @@ fi
 
 echo "Be patient, it can take up to 30 seconds before progress is shown..."
 echo
-if [ "$(${WGET} -q -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null | ${GREP} '200 OK')" ]; then
+if [ "$(${WGET} -q -S --spider ${BASEURL}/${APPLICATION}/README.md 2>/dev/null | ${SED} -n '/200 OK/p')" ]; then
   echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
@@ -62,43 +63,43 @@ if [ ! "${ARCHS}" ]; then
 fi
 if [ ! "${KINDS}" ]; then
   KINDS="omp gnu gnu-omp"
-  for KIND in ${KINDS} ; do
+  for KIND in ${KINDS}; do
     if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
-      ${CAT} ${MSGBUFFER}
+      ${SED} "" ${MSGBUFFER}
     fi
   done
-  for ARCH in ${ARCHS} ; do
+  for ARCH in ${ARCHS}; do
     if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh 2>${MSGBUFFER}; echo $?)" ]; then
-      ${CAT} ${MSGBUFFER}
+      ${SED} "" ${MSGBUFFER}
     fi
-    for KIND in ${KINDS} ; do
+    for KIND in ${KINDS}; do
       if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
-        ${CAT} ${MSGBUFFER}
+        ${SED} "" ${MSGBUFFER}
       fi
     done
   done
   if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; echo $?)" ]; then
-    ${CAT} ${MSGBUFFER}
+    ${SED} "" ${MSGBUFFER}
   fi
 else
-  for ARCH in ${ARCHS} ; do
-    for KIND in ${KINDS} ; do
+  for ARCH in ${ARCHS}; do
+    for KIND in ${KINDS}; do
       if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh 2>${MSGBUFFER}; echo $?)" ]; then
-        ${CAT} ${MSGBUFFER}
+        ${SED} "" ${MSGBUFFER}
       fi
     done
   done
   if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh 2>${MSGBUFFER}; echo $?)" ]; then
-    ${CAT} ${MSGBUFFER}
+    ${SED} "" ${MSGBUFFER}
   fi
 fi
 
 # attempt to get a list of non-default file names, and then download each file
 if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N ${BASEURL}/${APPLICATION}/.filelist 2>${MSGBUFFER}; echo $?)" ]; then
-  ${CAT} ${MSGBUFFER}
+  ${SED} "" ${MSGBUFFER}
 fi
 if [ -e .filelist ]; then
-  ${CAT} .filelist | ${TR} -s " " | \
+  ${TR} -s " " <.filelist | \
   while read LINE; do
     FILE=$(echo "${LINE}" | ${CUT} -d" " -f1)
     DIR=$(echo "${LINE}" | ${CUT} -d" " -f2)
