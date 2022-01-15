@@ -41,7 +41,7 @@ fi
 WGET="${WGET} --no-check-certificate --no-cache"
 
 if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
-  WGET="${TIMEOUT} ${TIMEOUT_ARGS} ${WGET} --no-check-certificate --no-cache"
+  WGET="${TIMEOUT} ${TIMEOUT_ARGS} ${WGET}"
 fi
 
 if [ ! "${APPLICATION}" ]; then
