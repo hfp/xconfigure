@@ -9,6 +9,8 @@ Each application (or library) is hosted in a separate directory. To configure (a
 ```bash
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
+
+echo "EXAMPLE: recipe for Quantum Espresso"
 ./configure-get.sh qe hsw
 ```
 
