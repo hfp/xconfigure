@@ -9,10 +9,10 @@
 **Note**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
-echo "wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2021.05.001.tar.gz"
-wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.05.002_bugfix/elpa-2021.05.002_bugfix.tar.gz
-tar xvf elpa-2021.05.002_bugfix.tar.gz
-cd elpa-2021.05.002_bugfix
+echo "wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2021.11.001.tar.gz"
+wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.11.001/elpa-2021.11.001.tar.gz
+tar xvf elpa-2021.11.001.tar.gz
+cd elpa-2021.11.001
 
 wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
@@ -40,7 +40,7 @@ make -j ; make install
 Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format"). After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
-[user@system elpa-2021.05.002_bugfix]$ ls ../elpa
+[user@system elpa-2021.11.001]$ ls ../elpa
  intel-skx
  intel-skx-omp
 ```
