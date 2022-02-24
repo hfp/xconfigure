@@ -6,13 +6,11 @@
 
 [Download](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. Consider CP2K's download area (cache) as an [alternative source](https://www.cp2k.org/static/downloads) for downloading ELPA.
 
-**Note**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
-
 ```bash
-echo "wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2021.11.001.tar.gz"
-wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.11.001/elpa-2021.11.001.tar.gz
-tar xvf elpa-2021.11.001.tar.gz
-cd elpa-2021.11.001
+echo "wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2021.11.002.tar.gz"
+wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.11.002/elpa-2021.11.002.tar.gz
+tar xvf elpa-2021.11.002.tar.gz
+cd elpa-2021.11.002
 
 wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
 chmod +x configure-get.sh
@@ -40,7 +38,7 @@ make -j ; make install
 Even if ELPA was just unpacked (and never built before), `make clean` is recommended in advance of building ELPA ("unknown module file format"). After building and installing the desired configuration(s), one may have a look at the installation:
 
 ```bash
-[user@system elpa-2021.11.001]$ ls ../elpa
+[user@system elpa-2021.11.002]$ ls ../elpa
  intel-skx
  intel-skx-omp
 ```
@@ -56,8 +54,6 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 ### ELPA 2020
 
 [Download](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. Consider CP2K's download area (cache) as an [alternative source](https://www.cp2k.org/static/downloads) for downloading ELPA.
-
-**Note**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
 echo "wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
@@ -99,8 +95,6 @@ Even if ELPA was just unpacked (and never built before), `make clean` is recomme
 ### ELPA 2019
 
 [Download](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
-
-**Note**: Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1.
 
 ```bash
 wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2019.11.001/elpa-2019.11.001.tar.gz
