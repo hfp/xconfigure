@@ -50,7 +50,7 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS="${CONFOPTS} --enable-openmp"
+CONFOPTS="${CONFOPTS} --enable-openmp --without-threading-support-check-during-build"
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"

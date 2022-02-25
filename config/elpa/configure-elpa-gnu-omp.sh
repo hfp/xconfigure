@@ -50,7 +50,7 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS="${CONFOPTS} --enable-openmp"
+CONFOPTS="${CONFOPTS} --enable-openmp --without-threading-support-check-during-build"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-march=native -mtune=native"

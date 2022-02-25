@@ -42,7 +42,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS="--disable-avx512 --enable-openmp"
+CONFOPTS="--disable-avx512 --enable-openmp --without-threading-support-check-during-build"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-march=core-avx2"
