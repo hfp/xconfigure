@@ -4,7 +4,7 @@ To [download](https://www.plumed.org/download), configure, build, and install [P
 
 ```bash
 wget --content-disposition --no-check-certificate https://github.com/plumed/plumed2/archive/v2.8.0.tar.gz
-tar xvf v2.8.0.tar.gz
+tar xvf plumed2-2.8.0.tar.gz
 cd plumed2-2.8.0
 
 wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
