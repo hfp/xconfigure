@@ -1,0 +1,1122 @@
+# Arch file targeting Linux 64-bit using the Intel tool chain
+#
+PERL          = perl
+# use compiler to preprocess Fortran code
+CPP           = $(NULL)
+ACC           = $(NULL)
+OFFLOAD_CC    = $(NULL)
+OFFLOAD_FLAGS = $(NULL)
+DFLAGS        = -D__NO_IPI_DRIVER -D__DBCSR_DISABLE_WORKSHARE
+CSTD          = -std=c99
+CFLAGS        = $(CSTD)
+IFLAGS        = $(NULL)
+CXXFLAGS      = $(NULL)
+FCFLAGS       = $(NULL)
+LDFLAGS       = $(NULL)
+ACCFLAGS      = $(NULL)
+LIBS          = $(NULL)
+LIBDIRNAME    = lib
+OBJDIRNAME    = obj
+EXTSDIR       = exts
+
+# LIBXSMM (https://github.com/hfp/libxsmm)
+#LIBXSMMROOT := /path/to/libxsmm
+
+# LIBINT: https://xconfigure.readthedocs.io/libint/
+#LIBINTROOT := /path/to/libint
+
+# PLUMED: https://xconfigure.readthedocs.io/plumed/
+#PLUMEDROOT := /path/to/plumed
+
+# LIBXC: https://xconfigure.readthedocs.io/libxc/
+#LIBXCROOT := /path/to/libxc
+
+# ELPA: https://xconfigure.readthedocs.io/elpa/
+#ELPAROOT := /path/to/elpa
+
+COMMAND := $(shell which command 2>/dev/null)
+ifneq (,$(COMMAND))
+  which = $(shell $(COMMAND) -v $1)
+else
+  which = $(shell which $(firstword $1) 2>/dev/null)
+endif
+
+# Automatically pickup the environment (make -e is not required),
+# or pickup the Intel Compiler (if available).
+GNU ?= 0
+ICX ?= 0
+ifeq (0,$(GNU))
+  ifeq (,$(shell echo "$${CXX}"))
+    ifneq (,$(filter icpc icpc1,$(notdir $(call which,icpc))$(INTEL)))
+      CXX := icpc
+    else ifneq (,$(filter icpx icpx2,$(notdir $(call which,icpx))$(INTEL)))
+      CXX := icpx
+    endif
+  endif
+  ifeq (,$(shell echo "$${CC}"))
+    ifneq (,$(filter icc icc1,$(notdir $(call which,icc))$(INTEL)))
+      CC := icc
+    else ifneq (,$(filter icx icx2,$(notdir $(call which,icx))$(INTEL)))
+      CC := icx
+    endif
+  endif
+  ifeq (__INTEL_COMPILER,$(shell echo "__INTEL_COMPILER" | $(CC) $(ECFLAGS) $(EFLAGS) -E -P - 2>/dev/null))
+    ICX := 1
+  else ifneq (,$(filter icx icx2,$(notdir $(call which,icx))$(INTEL)))
+    ICX := 2
+  endif
+endif
+
+# check if the Intel Development Tools are available
+INTEL ?= $(if $(filter 2,$(words $(filter icpc% icpx% icc% icx%, \
+  $(shell $(CXX) --version 2>/dev/null | head -n1 | cut -d' ' -f1) \
+  $(shell $(CC)  --version 2>/dev/null | head -n1 | cut -d' ' -f1)))),1,0)
+
+ifneq (0,$(INTEL))
+  CFG := intel
+  GNU := 0
+else
+  CFG := gnu
+  GNU := 1
+endif
+
+# DEFAULTS
+#
+SSE ?= 0
+AVX ?= 0
+MPI ?= 1
+OMP ?= 1
+DBG ?= 0
+SYM ?= $(DBG)
+FPE ?= 0
+VMAX ?= 0
+MKL_DIRECT ?= 0
+MKL_STATIC ?= 1
+
+# NDEBUG=0: keep all assertions active
+# NDEBUG=1: apply to DBCSR (should be fine)
+# NDEBUG=2: apply to CP2K (regtests may fail)
+ifeq (0,$(DBG)) # production code
+  NDEBUG ?= 1
+else
+  NDEBUG ?= 0
+endif
+
+EXTSHOME ?= $(CP2KHOME)/$(EXTSDIR)
+EXTDBCSR ?= $(EXTSHOME)/dbcsr
+DBCSRSRC ?= $(EXTDBCSR)/src
+LEGACY ?= $(if $(wildcard $(EXTDBCSR)),0,1)
+UNAME ?= $(shell uname 2>/dev/null)
+
+ifeq (0,$(LEGACY))
+  IFLAGS += -I$(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/exts/dbcsr
+  ELPA ?= 1
+else # legacy
+  ELPA ?= 201705
+endif
+
+ifneq (,$(LIBXSMM))
+ifneq (0,$(shell echo "$$((2 < $(LIBXSMM)))"))
+  IPO ?= 0
+endif
+endif
+ifeq (0,$(GNU))
+  OMPRT ?= iomp5
+  ifeq (1,$(INTEL))
+    MATMUL ?= 0
+  endif
+else # GNU
+  OMPRT ?= gomp
+  #ifeq (0,$(SYM))
+    #IPO ?= 1
+  #endif
+endif
+MATMUL ?= 1
+IPO ?= 0
+
+ifneq (0,$(OMP))
+  MKL ?= 2
+else ifneq (0,$(MPI))
+  MKL ?= 1
+else
+  MKL ?= 2
+endif
+
+# consider more accurate FP-model
+#FPCMODEL := fast=2
+#FPFMODEL := fast=2
+
+# FP compiler flags
+ifeq (1,$(INTEL))
+  FPFLAGS += -complex-limited-range
+  #FPFLAGS += -nostandard-realloc-lhs
+  #FPFLAGS += -fimf-domain-exclusion=1
+  #FPFLAGS += -fast-transcendentals
+endif
+
+# TBB malloc proxy is enabled if TBBROOT is set
+TBBMALLOC ?= 0
+# TBB runtime compatible with oldest supported GCC
+TBBGCC_OLD ?= 1
+
+SCALAPACK ?= $(MPI)
+ifneq (0,$(MPI))
+  ifeq (0,$(GNU))
+    ifeq (1,$(INTEL))
+      CXX := mpiicpc
+      CC  := mpiicc
+      FC  := mpiifort
+      LD  := mpiifort
+    else
+      CXX := mpiicpc  -cxx=icpx
+      CC  := mpiicc   -cc=icx
+      FC  := mpiifort -fc=ifx
+      LD  := mpiifort -fc=ifx
+    endif
+  else # GNU
+    CXX := mpicxx
+    CC  := mpicc
+    FC  := mpif90
+    LD  := mpif90
+    ifneq (0,$(LEGACY))
+      DFLAGS += -D__HAS_NO_MPI_MOD
+    endif
+  endif
+  DFLAGS += -D__parallel
+  ifneq (1,$(MPI))
+    DFLAGS += -D__MPI_VERSION=$(MPI)
+  else # default MPI std. version
+    DFLAGS += -D__MPI_VERSION=3
+  endif
+else ifeq (0,$(GNU))
+  CXX := icpc
+  CC  := icc
+  FC  := ifort
+  LD  := ifort
+else # GNU
+  CXX := g++
+  CC  := gcc
+  FC  := gfortran
+  LD  := gfortran
+endif
+XCXX := $(CXX)
+XCC := $(CC)
+XFC := $(FC)
+
+OCL ?= 0
+CUDA ?= 0
+ifeq (opencl,$(USE_ACCEL))
+  OCL := 1
+else ifeq (cuda,$(USE_ACCEL))
+  CUDA := 1
+else ifneq (,$(USE_ACCEL))
+  $(info ============================)
+  $(info USE_ACCEL=$(USE_ACCEL) not supported!)
+  $(info ============================)
+  $(error USE_ACCEL)
+endif
+
+# MKL_MPIRTL: intelmpi, openmpi
+MKL_MPIRTL ?= intelmpi
+ifneq (0,$(BLAS))
+  ifneq (Darwin,$(UNAME))
+    MKL_PLATFORM := linux
+  else # OSX
+    MKL_PLATFORM := mac
+  endif
+endif
+
+# enable MKL if available
+ifeq (,$(strip $(MKLROOT)))
+  MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/$(MKL_PLATFORM)/mkl/include/mkl.h))))
+  ifneq (,$(MKL_INCFILE))
+    MKLROOT := $(abspath $(dir $(MKL_INCFILE))/..)
+  endif
+endif
+ifeq (,$(strip $(MKLROOT)))
+  MKL_INCFILE := $(strip $(wildcard /usr/include/mkl/mkl.h))
+  ifneq (,$(MKL_INCFILE))
+    MKLROOT := $(abspath $(dir $(MKL_INCFILE))/../..)
+  endif
+endif
+ifeq (/,$(MKLROOT))
+  MKL_INCFILE := $(NULL)
+  MKLROOT := $(NULL)
+endif
+
+# COSMA section must appear before SCALAPACK section
+ifneq (0,$(COSMA)) # incl. undefined
+ifneq (0,$(MPI))
+  ifneq (,$(NVCC))
+    COSMATGT := gpu
+  else
+    COSMATGT := cpu
+  endif
+  COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(CP2KHOME)/../cosma*$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
+  COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(HOME)/cosma*$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
+  COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(CP2KHOME)/../cosma*/$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
+  COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(HOME)/cosma*/$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
+  COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(CP2KHOME)/../cosma*/lib*/libcosma_pxgemm_cpp.*)))
+  COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(HOME)/cosma*/lib*/libcosma_pxgemm_cpp.*)))
+  ifneq (,$(COSMAROOT))
+    COSMAROOT := $(abspath $(dir $(COSMAROOT))/..)
+  endif
+  ifneq (,$(COSMAROOT))
+    LIBS += -L$(COSMAROOT)/lib64 -L$(COSMAROOT)/lib -lcosma -lcosma_pxgemm_cpp -lcosma_prefixed_pxgemm -lcosta_scalapack -lcosta
+    DFLAGS += -D__COSMA
+    ifneq (,$(NVCC))
+      LIBS += -lTiled-MM
+    endif
+  endif
+endif
+endif
+
+ifneq (0,$(SCALAPACK))
+ifneq (0,$(MPI))
+  DFLAGS += -D__SCALAPACK
+  ifneq (0,$(LEGACY))
+    DFLAGS += -D__BLACS
+  endif
+  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
+    ifneq (-1,$(SCALAPACK))
+      ifneq (1,$(SCALAPACK))
+        DFLAGS += -D__SCALAPACK$(SCALAPACK)
+      endif
+    else
+      SCALAPACKDIR := $(HOME)/scalapack-2.0.2
+    endif
+    ifeq (,$(SCALAPACKDIR))
+      SCALAPACKDIR := $(MKLROOT)/lib/intel64
+      SCALAPACKLIB := mkl_scalapack_lp64
+    else
+      ifeq (,$(SCALAPACKLIB))
+        SCALAPACKLIB := scalapack
+      endif
+      LIBS += -L$(SCALAPACKDIR)
+    endif
+  else # NaN
+    SCALAPACKDIR := $(SCALAPACK)
+    SCALAPACKLIB := scalapack
+    LIBS += -L$(SCALAPACKDIR)
+  endif
+endif
+endif
+
+ifneq (0,$(NDEBUG))
+  DFLAGS += -DNDEBUG
+  ifneq (1,$(NDEBUG)) # CP2K and DBCSR
+  else # only DBCSR
+    ifeq (,$(wildcard $(CP2KHOME)/.inject.sh))
+      INJECT := $(shell printf '\#!/usr/bin/env bash\nif [ "$$4" ]; then\n\tif [ "$$(echo "$${@:4}" | sed -n "/$$1/p" 2>/dev/null)" ]; then\n\t\texec $$3 $$2 "$${@:4}"\n\telif [ "$$1" ]; then\n\t\texec $$3 "$${@:4}"\n\telse\n\t\texec $$3 $$2 "$${@:4}"\n\tfi\nelse\n\texec $$3\nfi\n' >$(CP2KHOME)/.inject.sh)
+    endif
+    ifneq (,$(wildcard $(CP2KHOME)/.inject.sh))
+      INJECT := $(shell chmod +x $(CP2KHOME)/.inject.sh)
+      FC := $(CP2KHOME)/.inject.sh dbcsr_ -DNDEBUG $(FC)
+      #CXX := $(CP2KHOME)/.inject.sh \"\" -DNDEBUG $(CXX)
+      CXX := $(CXX) -DNDEBUG
+      #CC := $(CP2KHOME)/.inject.sh \"\" -DNDEBUG $(CC)
+      CC := $(CC) -DNDEBUG
+    endif
+  endif
+endif
+
+# Diagnostic message to be turned off
+DIAG_DISABLE := 8290,8291,10010,10212,10411,11060
+
+CC_VERSION_STRING := $(shell $(CC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+CC_VERSION_MAJOR := $(shell echo "$(CC_VERSION_STRING)" | cut -d"." -f1)
+CC_VERSION_MINOR := $(shell echo "$(CC_VERSION_STRING)" | cut -d"." -f2)
+CC_VERSION_PATCH := $(shell echo "$(CC_VERSION_STRING)" | cut -d"." -f3)
+ifeq (3,$(words $(CC_VERSION_MAJOR) $(CC_VERSION_MINOR) $(CC_VERSION_PATCH)))
+  CC_VERSION := $(shell echo "$$(($(CC_VERSION_MAJOR) * 10000 + $(CC_VERSION_MINOR) * 100 + $(CC_VERSION_PATCH)))")
+else ifeq (2,$(words $(CC_VERSION_MAJOR) $(CC_VERSION_MINOR)))
+  CC_VERSION := $(shell echo "$$(($(CC_VERSION_MAJOR) * 10000 + $(CC_VERSION_MINOR) * 100))")
+  CC_VERSION_PATCH := 0
+else
+  CC_VERSION_STRING := $(NULL)
+  CC_VERSION := 0
+endif
+
+MIC ?= 0
+ifeq (0,$(GNU)) # Intel
+  ifeq (0,$(INTEL))
+    $(info ================================================================================)
+    $(info This ARCH file relies on Intel Compiler and Libraries. Please try the following:)
+    $(info $$ source /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh intel64)
+    $(info ================================================================================)
+    $(error Intel Development Tools not found!)
+  endif
+  ifneq (0,$(shell echo "$$((2 > $(DBG)))"))
+    ifeq (1,$(AVX))
+      TARGET := -xAVX
+      TGT := snb
+    else ifeq (2,$(AVX))
+      TARGET := -march=core-avx2
+      TGT := hsw
+    else ifeq (3,$(AVX))
+      ifeq (,$(MIC))
+        TARGET := -xCOMMON-AVX512
+        TGT := hsw
+      else ifneq (0,$(MIC))
+        TARGET := -xMIC-AVX512
+        TGT := knl
+      else
+        TARGET := -xCORE-AVX512
+        ifneq (0,$(VMAX))
+          TARGET += -qopt-zmm-usage=high
+        else
+          TARGET += -qopt-zmm-usage=low
+        endif
+        TGT := skx
+      endif
+    else ifneq (0,$(SSE))
+      TARGET := -xSSE3
+    else
+      TARGET := -xHost
+      ifneq (,$(shell grep -om1 '\bavx512vl\b' /proc/cpuinfo))
+        ifneq (0,$(VMAX))
+          TARGET += -qopt-zmm-usage=high
+        else
+          TARGET += -qopt-zmm-usage=low
+        endif
+        TGT := skx
+      else ifneq (,$(shell grep -om1 '\bavx2\b' /proc/cpuinfo))
+        TGT := hsw
+      else ifneq (,$(shell grep -om1 '\bavx\b' /proc/cpuinfo))
+        TGT := snb
+      endif
+    endif
+  endif
+  ifeq (0,$(DBG))
+    FCFLAGS  += -align array64byte     $(FPFMODEL) $(FPFLAGS)
+    CFLAGS   += -fno-alias -ansi-alias $(FPCMODEL) $(FPFLAGS)
+    CXXFLAGS += -fno-alias -ansi-alias $(FPCMODEL) $(FPFLAGS)
+    OPT ?= 2
+    #OPTFLAGS += -qoverride_limits
+    ifeq (0,$(MATMUL))
+      OPTFLAGS += -qopt-matmul
+    endif
+    ifneq (0,$(IPO))
+      IPOFLAGS += -ipo
+    else ifeq (0,$(IPO))
+      LDFLAGS += -no-ipo
+    endif
+  else
+    ifeq (1,$(INTEL))
+      CXXFLAGS += -debug
+      FCFLAGS  += -debug
+      CFLAGS   += -debug
+      ifneq (0,$(FPE))
+        FCFLAGS += -fpe0 # debugging NaNs
+      endif
+    #else
+      #OPT ?= 1
+    endif
+    OPT ?= 0
+  endif
+  FCFLAGS += -free -fpp
+  DFLAGS += -D__INTEL
+  ifneq (0,$(LEGACY))
+    DFLAGS += -D__F2008
+  endif
+  MKL_OMPRTL := intel
+  MKL_FCRTL := intel
+  RANLIB := xiar -s
+  AR := xiar -r
+else # GNU GCC
+  ifeq (,$(MKLROOT))
+    $(info ================================================================================)
+    $(info This ARCH file relies on Intel Libraries. Please try the following:)
+    $(info $$ source /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh intel64)
+    $(info Note: Intel MPI is also required.)
+    $(info ================================================================================)
+    $(error Intel MKL not found!)
+  endif
+  ifneq (0,$(shell echo "$$((2 > $(DBG)))"))
+    ifeq (1,$(AVX))
+      TARGET := -mavx
+      TGT := snb
+    else ifeq (2,$(AVX))
+      TARGET := -march=core-avx2
+      TGT := hsw
+      ifneq (0,$(VMAX))
+        TARGET += -mprefer-vector-width=256
+      endif
+    else ifeq (3,$(AVX))
+      TARGET := -mfma -mavx512f -mavx512cd
+      ifneq (,$(filter-out 0,$(MIC))) # AVX512/MIC
+        TARGET += -mavx512pf -mavx512er
+        ifneq (0,$(VMAX))
+          TARGET += -mprefer-vector-width=512
+        endif
+        TGT := knl
+      else # AVX512/Core
+        TARGET += -mavx512dq -mavx512bw -mavx512vl
+        ifneq (0,$(VMAX))
+          TARGET += -mprefer-vector-width=512
+        endif
+        TGT := skx
+      endif
+    else ifneq (0,$(SSE))
+      TARGET := -mSSE3
+    else
+      TARGET := -march=native -mtune=native
+      ifneq (,$(shell grep -om1 '\bavx512vl\b' /proc/cpuinfo))
+        ifneq (0,$(VMAX))
+          TARGET += -mprefer-vector-width=512
+        endif
+        TGT := skx
+      else ifneq (,$(shell grep -om1 '\bavx2\b' /proc/cpuinfo))
+        ifneq (0,$(VMAX))
+          TARGET += -mprefer-vector-width=256
+        endif
+        TGT := hsw
+      else ifneq (,$(shell grep -om1 '\bavx\b' /proc/cpuinfo))
+        TGT := snb
+      endif
+    endif
+  endif
+  FCFLAGS += -ffree-form -ffree-line-length-none
+  ifeq (0,$(DBG))
+    OPTFLAGS += -funroll-loops -ftree-vectorize
+    #FCFLAGS += -fstack-arrays
+    ifeq (0,$(MATMUL))
+      FCFLAGS += -fexternal-blas -fblas-matmul-limit=4
+    endif
+    ifneq (0,$(IPO))
+      IPOFLAGS += -flto -Wl,-flto -Wno-lto-type-mismatch
+    endif
+    OPT ?= 3
+  else
+    FCFLAGS += \
+      -fimplicit-none -fsanitize=leak -fcheck=all -finit-derived -finit-real=snan -finit-integer=-42 -finline-matmul-limit=0 \
+      -Werror=aliasing -Werror=ampersand -Werror=c-binding-type -Werror=intrinsics-std -Werror=line-truncation -Werror=tabs \
+      -Werror=target-lifetime -Werror=underflow -Werror=unused-but-set-variable -Werror=conversion -Werror=unused-variable \
+      -Werror=unused-dummy-argument -Werror=zerotrip -Wuse-without-only -Wintrinsic-shadow #-Warray-temporaries
+    ifeq (,$(NVCC))
+      FCFLAGS += -Werror=uninitialized -Wno-maybe-uninitialized
+    endif
+    ifneq (1,$(DBG))
+      FCFLAGS += -std=f2008 -Werror=realloc-lhs-all
+    endif
+    ifneq (0,$(FPE))
+      FCFLAGS += -ffpe-trap=invalid,zero,overflow
+    endif
+    OPT ?= 0
+  endif
+  MKL_OMPRTL := gnu
+  MKL_FCRTL := gf
+  INTEL ?= 0
+  RANLIB := gcc-ranlib
+  AR := gcc-ar -r
+endif
+
+ifneq (,$(TGT))
+  XCFG := $(CFG)-$(TGT)
+else
+  XCFG := $(CFG)
+endif
+ifneq (0,$(OMP))
+  XCFGOMP := $(XCFG)-omp
+else
+  XCFGOMP := $(XCFG)
+endif
+
+$(info ================================================================================)
+$(info Using the following libraries:)
+ifneq (0,$(MKL)) # incl. undefined
+ifneq (,$(MKLROOT))
+  $(info MKLROOT=$(MKLROOT))
+endif
+endif
+ifneq (0,$(LIBXSMM)) # incl. undefined
+  ifneq (,$(wildcard $(CP2KHOME)/../libxsmm/Makefile))
+    LIBXSMMROOT ?= $(abspath $(CP2KHOME)/../libxsmm)
+  else ifneq (,$(wildcard $(CP2KHOME)/../libxsmm-master/Makefile))
+    LIBXSMMROOT ?= $(abspath $(CP2KHOME)/../libxsmm-master)
+  else ifneq (,$(wildcard $(CP2KHOME)/../libxsmm-*/Makefile))
+    LIBXSMMROOT ?= $(abspath $(dir $(lastword $(sort $(wildcard $(CP2KHOME)/../libxsmm-*/Makefile)))))
+  else ifneq (,$(wildcard $(HOME)/libxsmm/Makefile))
+    LIBXSMMROOT ?= $(abspath $(HOME)/libxsmm)
+  else ifneq (,$(wildcard $(HOME)/libxsmm-master/Makefile))
+    LIBXSMMROOT ?= $(abspath $(HOME)/libxsmm-master)
+  else ifneq (,$(wildcard $(HOME)/libxsmm-*/Makefile))
+    LIBXSMMROOT ?= $(abspath $(dir $(lastword $(sort $(wildcard $(HOME)/libxsmm-*/Makefile)))))
+  else ifneq (,$(wildcard $(TOOLSRC)/toolchain/build/libxsmm*/Makefile))
+    LIBXSMMROOT ?= $(abspath $(dir $(lastword $(sort $(wildcard $(TOOLSRC)/toolchain/build/libxsmm*/Makefile)))))
+  endif
+  ifeq (/,$(LIBXSMMROOT))
+    LIBXSMMROOT := $(NULL)
+  endif
+  ifneq (,$(LIBXSMMROOT))
+    $(info LIBXSMMROOT=$(LIBXSMMROOT))
+  endif
+endif
+ifneq (0,$(LIBINT)) # incl. undefined
+  ifneq (,$(wildcard $(CP2KHOME)/../libint/$(XCFG)))
+    LIBINTROOT ?= $(abspath $(CP2KHOME)/../libint/$(XCFG))
+  else ifneq (,$(wildcard $(HOME)/libint/$(XCFG)))
+    LIBINTROOT ?= $(abspath $(HOME)/libint/$(XCFG))
+  else ifneq (0,$(GNU))
+    ifneq (,$(wildcard $(CP2KHOME)/../libint/gnu))
+      LIBINTROOT ?= $(abspath $(CP2KHOME)/../libint/gnu)
+    else ifneq (,$(wildcard $(HOME)/libint/gnu))
+      LIBINTROOT ?= $(abspath $(HOME)/libint/gnu)
+    endif
+  else ifneq (0,$(INTEL))
+    ifneq (,$(wildcard $(CP2KHOME)/../libint/intel))
+      LIBINTROOT ?= $(abspath $(CP2KHOME)/../libint/intel)
+    else ifneq (,$(wildcard $(HOME)/libint/intel))
+      LIBINTROOT ?= $(abspath $(HOME)/libint/intel)
+    endif
+  endif
+  ifeq (/,$(LIBINTROOT))
+    LIBINTROOT := $(NULL)
+  endif
+  ifneq (,$(LIBINTROOT))
+    $(info LIBINTROOT=$(LIBINTROOT))
+  endif
+endif
+ifneq (0,$(PLUMED)) # incl. undefined
+  ifneq (,$(wildcard $(CP2KHOME)/../plumed/$(XCFG)))
+    PLUMEDROOT ?= $(abspath $(CP2KHOME)/../plumed/$(XCFG))
+  else ifneq (,$(wildcard $(HOME)/plumed/$(XCFG)))
+    PLUMEDROOT ?= $(abspath $(HOME)/plumed/$(XCFG))
+  else ifneq (0,$(GNU))
+    ifneq (,$(wildcard $(CP2KHOME)/../plumed/gnu))
+      PLUMEDROOT ?= $(abspath $(CP2KHOME)/../plumed/gnu)
+    else ifneq (,$(wildcard $(HOME)/plumed/gnu))
+      PLUMEDROOT ?= $(abspath $(HOME)/plumed/gnu)
+    endif
+  else ifneq (0,$(INTEL))
+    ifneq (,$(wildcard $(CP2KHOME)/../plumed/intel))
+      PLUMEDROOT ?= $(abspath $(CP2KHOME)/../plumed/intel)
+    else ifneq (,$(wildcard $(HOME)/plumed/intel))
+      PLUMEDROOT ?= $(abspath $(HOME)/plumed/intel)
+    endif
+  endif
+  ifeq (/,$(PLUMEDROOT))
+    PLUMEDROOT := $(NULL)
+  endif
+  ifneq (,$(PLUMEDROOT))
+    $(info PLUMEDROOT=$(PLUMEDROOT))
+  endif
+endif
+ifneq (0,$(LIBXC)) # incl. undefined
+  ifneq (,$(wildcard $(CP2KHOME)/../libxc/$(XCFG)))
+    LIBXCROOT ?= $(abspath $(CP2KHOME)/../libxc/$(XCFG))
+  else ifneq (,$(wildcard $(HOME)/libxc/$(XCFG)))
+    LIBXCROOT ?= $(abspath $(HOME)/libxc/$(XCFG))
+  else ifneq (0,$(GNU))
+    ifneq (,$(wildcard $(CP2KHOME)/../libxc/gnu))
+      LIBXCROOT ?= $(abspath $(CP2KHOME)/../libxc/gnu)
+    else ifneq (,$(wildcard $(HOME)/libxc/gnu))
+      LIBXCROOT ?= $(abspath $(HOME)/libxc/gnu)
+    endif
+  else ifneq (0,$(INTEL))
+    ifneq (,$(wildcard $(CP2KHOME)/../libxc/intel))
+      LIBXCROOT ?= $(abspath $(CP2KHOME)/../libxc/intel)
+    else ifneq (,$(wildcard $(HOME)/libxc/intel))
+      LIBXCROOT ?= $(abspath $(HOME)/libxc/intel)
+    endif
+  endif
+  ifeq (/,$(LIBXCROOT))
+    LIBXCROOT := $(NULL)
+  endif
+  ifneq (,$(LIBXCROOT))
+    $(info LIBXCROOT=$(LIBXCROOT))
+  endif
+endif
+ifneq (0,$(ELPA)) # incl. undefined
+  ifneq (,$(wildcard $(CP2KHOME)/../elpa/$(XCFGOMP)))
+    ELPAROOT ?= $(abspath $(CP2KHOME)/../elpa/$(XCFGOMP))
+  else ifneq (,$(wildcard $(HOME)/elpa/$(XCFGOMP)))
+    ELPAROOT ?= $(abspath $(HOME)/elpa/$(XCFGOMP))
+  else ifneq (0,$(OMP))
+    ifneq (0,$(GNU))
+      ifneq (,$(wildcard $(CP2KHOME)/../elpa/gnu-omp))
+        ELPAROOT ?= $(abspath $(CP2KHOME)/../elpa/gnu-omp)
+      else ifneq (,$(wildcard $(HOME)/elpa/gnu-omp))
+        ELPAROOT ?= $(abspath $(HOME)/elpa/gnu-omp)
+      endif
+    else ifneq (0,$(INTEL))
+      ifneq (,$(wildcard $(CP2KHOME)/../elpa/intel-omp))
+        ELPAROOT ?= $(abspath $(CP2KHOME)/../elpa/intel-omp)
+      else ifneq (,$(wildcard $(HOME)/elpa/intel-omp))
+        ELPAROOT ?= $(abspath $(HOME)/elpa/intel-omp)
+      endif
+    endif
+  else ifneq (0,$(GNU))
+    ifneq (,$(wildcard $(CP2KHOME)/../elpa/gnu))
+      ELPAROOT ?= $(abspath $(CP2KHOME)/../elpa/gnu)
+    else ifneq (,$(wildcard $(HOME)/elpa/gnu))
+      ELPAROOT ?= $(abspath $(HOME)/elpa/gnu)
+    endif
+  else ifneq (0,$(INTEL))
+    ifneq (,$(wildcard $(CP2KHOME)/../elpa/intel))
+      ELPAROOT ?= $(abspath $(CP2KHOME)/../elpa/intel)
+    else ifneq (,$(wildcard $(HOME)/elpa/intel))
+      ELPAROOT ?= $(abspath $(HOME)/elpa/intel)
+    endif
+  endif
+  ifneq (,$(ELPAROOT))
+    $(info ELPAROOT=$(ELPAROOT))
+  endif
+endif
+ifneq (0,$(COSMA)) # incl. undefined
+ifneq (,$(COSMAROOT))
+  $(info COSMAROOT=$(COSMAROOT))
+endif
+endif
+$(info ================================================================================)
+
+OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
+OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
+ifeq (0,$(ATTRIBS))
+  DFLAGS += -DCP_DISABLE_ATTRIBS
+endif
+
+SYM ?= $(DBG)
+ifneq (0,$(SYM))
+  LDFLAGS += -Wl,--export-dynamic
+  ifeq (0,$(GNU))
+  ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
+    ifneq (0,$(LEGACY))
+      DFLAGS += -D__USE_CP2K_TRACE
+    endif
+    OPTFLAGS += -traceback
+  endif
+  endif
+  OPTFLAGS += -g
+endif
+
+FYPP := $(wildcard $(TOOLSRC)/build_utils/fypp)
+ifeq (0,$(GNU))
+  # workaround for certain bits introduced by GCC 7.0
+  ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION) && 0 != $(CC_VERSION)))"))
+    CFLAGS += -D_Float128=__float128
+    FPCMODEL ?= precise
+    FPFMODEL ?= source
+    # Workaround (see bottom of this file); disabled for older
+    # versions of CP2K (use recommended toolchain!) due to
+    # fypp preprocessed files, renamed translation units, etc.
+    #
+    BEEP ?= $(if $(FYPP),1,0)
+  endif
+  ifneq (,$(strip $(FPCMODEL)))
+    FPCMODEL := -fp-model $(FPCMODEL)
+  endif
+  ifneq (,$(strip $(FPFMODEL)))
+    FPFMODEL := -fp-model $(FPFMODEL)
+  endif
+endif
+# default if not set earlier
+BEEP ?= 0
+
+ifneq (0,$(OMP))
+  ifeq (0,$(GNU))
+    FCFLAGS += -threads #-parallel
+    LDFLAGS += -threads
+  endif
+  ifneq (0,$(INTEL))
+    OPTFLAGS += -qopenmp
+  else
+    OPTFLAGS += -fopenmp
+  endif
+endif
+
+ifneq (,$(LIBINTROOT))
+  DFLAGS += -D__LIBINT -D__MAX_CONTR=4
+  IFLAGS += -I$(LIBINTROOT)/include
+  ifneq (,$(wildcard $(LIBINTROOT)/lib/libint2.*))
+    LIBS += $(LIBINTROOT)/lib/libint2.a
+  else # LIBINT1
+    LIBS += $(LIBINTROOT)/lib/libderiv.a $(LIBINTROOT)/lib/libint.a
+    DFLAGS += -D__LIBINT_MAX_AM=7 -D__LIBDERIV_MAX_AM1=6
+  endif
+endif
+
+ifneq (,$(LIBXCROOT))
+  DFLAGS += -D__LIBXC
+  IFLAGS += -I$(LIBXCROOT)/include
+  LIBS   += $(LIBXCROOT)/lib/libxcf03.a $(LIBXCROOT)/lib/libxc.a
+endif
+
+ifneq (,$(PLUMEDROOT))
+  DFLAGS += -D__PLUMED2
+  # avoid duplicated libraries (-ldl -lstdc++)
+  LIBS   += $(PLUMEDROOT)/lib/libplumed.a -lz
+endif
+
+ifneq (,$(ELPAROOT))
+ifneq (0,$(ELPA))
+  ifneq (0,$(CUDA))
+    DFLAGS += -D__ELPA_NVIDIA_GPU
+  endif
+  ifneq (1,$(ELPA))
+    DFLAGS += -D__ELPA=$(ELPA)
+  else
+    DFLAGS += -D__ELPA
+  endif
+  ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
+  ELPAMODDIR := $(ELPAINCDIR)../modules
+  IFLAGS += -I$(ELPAINCDIR) -I$(ELPAMODDIR)
+  LIBS += $(ELPAROOT)/lib/libelpa.a
+  # in case ELPA is built with OpenMP
+  ifeq (0,$(OMP))
+    LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
+  endif
+endif
+endif
+
+ifneq (0,$(TBBMALLOC))
+  ifneq (,$(TBBROOT))
+    GCC := $(notdir $(call which,gcc))
+    ifneq (,$(GCC))
+      GCC_VERSION_STRING := $(shell $(GCC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+      GCC_VERSION_MAJOR := $(shell echo "$(GCC_VERSION_STRING)" | cut -d"." -f1)
+      GCC_VERSION_MINOR := $(shell echo "$(GCC_VERSION_STRING)" | cut -d"." -f2)
+      GCC_VERSION_PATCH := $(shell echo "$(GCC_VERSION_STRING)" | cut -d"." -f3)
+      TBBLIBDIR := $(TBBROOT)/lib/intel64/gcc$(GCC_VERSION_MAJOR).$(GCC_VERSION_MINOR)
+      TBBMALLOCLIB := $(wildcard $(TBBLIBDIR)/libtbbmalloc_proxy.so)
+    endif
+    ifeq (,$(TBBMALLOCLIB))
+      ifneq (0,$(TBBGCC_OLD))
+        TBBGCCDIR := $(shell ls -1 "$(TBBROOT)/lib/intel64" | tr "\n" " " | cut -d" " -f1)
+      else
+        TBBGCCDIR := $(shell ls -1 "$(TBBROOT)/lib/intel64" | tr "\n" " " | rev | cut -d" " -f2 | rev)
+      endif
+      TBBLIBDIR := $(TBBROOT)/lib/intel64/$(TBBGCCDIR)
+      TBBMALLOCLIB := $(wildcard $(TBBLIBDIR)/libtbbmalloc_proxy.so)
+    endif
+    ifneq (,$(TBBMALLOCLIB))
+      IFLAGS += -I$(TBBROOT)/include
+      DFLAGS += -D__TBBMALLOC
+      LIBS += $(TBBMALLOCLIB) $(TBBLIBDIR)/libtbbmalloc.so
+      ifneq (1,$(TBBMALLOC)) # TBBMALLOC=2
+        FCFLAGS += -heap-arrays
+      endif
+    endif
+  endif
+else ifneq (,$(TCMALLOCROOT))
+  # configured using ./configure --enable-minimal --prefix=<TCMALLOCROOT>
+  LIBS += $(TCMALLOCROOT)/lib/libtcmalloc_minimal.a
+endif
+
+MEMKIND ?= 1
+ifneq (0,$(MEMKIND))
+ifneq (,$(MEMKINDROOT))
+  #LIBS += -L$(MEMKINDROOT)/lib -lmemkind
+  LIBS += $(MEMKINDROOT)/lib/libmemkind.a
+endif
+endif
+
+# Allow for LIBSMM to ease performance comparison...
+LIBSMM ?= 0
+ifneq (0,$(LIBSMM))
+  LIBSMM_INSTALL := $(shell cd $(TOOLSRC)/toolchain; ./scripts/install_libsmm.sh)
+  LIBSMM_LIB := $(TOOLSRC)/toolchain/install/lib/libsmm_dnn.a
+endif
+ifneq (,$(wildcard $(LIBSMM_LIB))) # LIBSMM successfully downloaded
+  DFLAGS += -D__HAS_smm_dnn
+  LIBS += $(LIBSMM_LIB)
+endif
+
+ifneq (,$(LIBXSMMROOT))
+  # 1: SMMs, 2: 1+UnreleasedFeat, 3: 2+AllGEMM
+  LIBXSMM ?= 1
+  ifneq (0,$(LIBXSMM))
+    DFLAGS += -D__LIBXSMM=$(LIBXSMM)
+    ifeq (0,$(GNU))
+      DFLAGS += -D_OPENMP_SIMD
+      OPTFLAGS += -qopenmp-simd
+    else ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
+    # GNU: https://github.com/cp2k/dbcsr/issues/217
+      DFLAGS += -D_OPENMP_SIMD
+      OPTFLAGS += -fopenmp-simd
+    endif
+    # investigate __HAS_smm_vec
+    #DFLAGS += -D__HAS_smm_vec
+
+    # always attempt to link libxsmmext (needed at least in case of WRAP)
+    LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmmf.a
+    LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmmext.a
+    LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmm.a
+    IFLAGS += -I$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/include
+
+    # account for OpenMP-enabled libxsmmext routines
+    ifeq (0,$(OMP))
+      DFLAGS += -DDBCSR_LIBXSMM_GEMM_BATCH=libxsmm_gemm_batch_omp
+      ifeq (1,$(MKL))
+        LIBS += -l$(OMPRT)
+      else ifeq (0,$(MKL))
+        LIBS += -l$(OMPRT)
+      endif
+    endif
+    # enable additional use cases for LIBXSMM
+    ifneq (0,$(shell echo "$$((1 < $(LIBXSMM)))"))
+      BIGVERNUM := echo "99" > version.txt
+      # substitute all GEMM calls with LIBXSMM
+      WRAP ?= $(shell echo "$$(((2<$(LIBXSMM))*($(LIBXSMM)-2)))")
+      ifneq (0,$(WRAP))
+        ifneq (0,$(shell echo "$$((2<$(WRAP)))"))
+          LDFLAGS += -Wl,--wrap=dgemm_,--wrap=sgemm_,--wrap=dgemv_,--wrap=sgemv_
+          ifneq (0,$(shell echo "$$((3<$(WRAP)))"))
+            LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmmnoblas.a
+          endif
+        else
+          LDFLAGS += -Wl,--wrap=dgemm_,--wrap=sgemm_
+        endif
+      endif
+    else
+      BIGVERNUM := rm -f version.txt
+    endif
+    WRAP ?= 0
+    JIT ?= 1
+    ifneq (0,$(shell echo "$$((0>=$(JIT)))"))
+      LIBXSMM_MNK := "23, 6, 14 16 29, 14 32 29, 5 32 13 24 26, 9 32 22, 64, 78, 16 29 55, 32 29 55, 12, 4 5 7 9 13 25 26 28 32 45"
+    endif
+-include libxsmm-build
+.PHONY: libxsmm-build
+libxsmm-build:
+	@$(BIGVERNUM)
+	@$(MAKE) --no-print-directory -f "$(LIBXSMMROOT)/Makefile" \
+		INCDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/include" \
+		BLDDIR="$(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/build" \
+		BINDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/bin" \
+		OUTDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib" \
+		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" "LD=$(LD)" \
+		JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 \
+		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
+		TARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) WRAP=$(WRAP) \
+		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
+  endif
+endif
+
+ifeq (1,$(MKL_DIRECT))
+  DFLAGS += -DMKL_DIRECT_CALL_SEQ
+endif
+
+ifeq (1,$(MKL)) # sequential
+  MKL_THREADS := sequential
+else ifneq (0,$(MKL)) # multi-threaded
+  MKL_THREADS := $(MKL_OMPRTL)_thread
+  ifeq (0,$(OMP))
+    LIBS += -l$(OMPRT)
+  endif
+endif
+ifneq (0,$(MKL))
+  DFLAGS += -D__MKL -D__FFTW3
+  ifeq (,$(MKL_INCFILE))
+    IFLAGS += -I$(MKLROOT)/include
+    ifneq (,$(wildcard $(MKLROOT)/include/fftw))
+      IFLAGS += -I$(MKLROOT)/include/fftw
+    endif
+  else
+    IFLAGS += -I$(dir $(MKL_INCFILE))
+    ifneq (,$(wildcard $(dir $(MKL_INCFILE))/fftw))
+      IFLAGS += -I$(dir $(MKL_INCFILE))/fftw
+    endif
+  endif
+  ifeq (0,$(MKL_STATIC))
+    LIBS += -L$(MKLROOT)/lib/intel64
+    ifneq (0,$(MPI))
+      LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_lp64 -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_lp64
+    else
+      LIBS += -lmkl_$(MKL_FCRTL)_lp64 -lmkl_core -lmkl_$(MKL_THREADS)
+    endif
+  else # static
+    ifneq (0,$(MPI))
+      LIBS += \
+        -Wl,--start-group \
+          $(SCALAPACKDIR)/lib$(SCALAPACKLIB).a \
+          $(MKLROOT)/lib/intel64/libmkl_$(MKL_FCRTL)_lp64.a \
+          $(MKLROOT)/lib/intel64/libmkl_core.a \
+          $(MKLROOT)/lib/intel64/libmkl_$(MKL_THREADS).a \
+          $(MKLROOT)/lib/intel64/libmkl_blacs_$(MKL_MPIRTL)_lp64.a \
+        -Wl,--end-group
+    else
+      LIBS += \
+        -Wl,--start-group \
+          $(MKLROOT)/lib/intel64/libmkl_$(MKL_FCRTL)_lp64.a \
+          $(MKLROOT)/lib/intel64/libmkl_core.a \
+          $(MKLROOT)/lib/intel64/libmkl_$(MKL_THREADS).a \
+        -Wl,--end-group
+    endif
+  endif
+  LIBS += -Wl,--as-needed
+  LIBS += -lpthread -ldl
+  ifneq (0,$(INTEL))
+    LIBS += -limf
+  else
+    LIBS += -lm
+  endif
+  LIBS += -Wl,--no-as-needed
+endif
+
+ifneq (0,$(LEGACY))
+  DFLAGS += -D__HAS_ISO_C_BINDING
+endif
+# general include paths
+#IFLAGS +=
+
+# Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
+# toggles code using this symbol, but of course the cpp preprocessor is not defining this symbol.
+ifneq (,$(strip $(CPP)))
+  CPPFLAGS += -C $(IFLAGS) $(DFLAGS) -D__INTEL_COMPILER -P -traditional
+endif
+
+# finalize flags common to CXX, CC, and FC
+OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
+
+ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
+  ifneq (0,$(OCL))
+    DFLAGS += -D__ACC -D__DBCSR_ACC
+    ifeq (Darwin,$(UNAME))
+      LIBS += -framework OpenCL
+    else
+      ifneq (,$(CUDATOOLKIT_HOME))
+        IFLAGS += -I$(CUDATOOLKIT_HOME)/include
+        LIBS += -L$(CUDATOOLKIT_HOME)/lib64
+      else ifneq (,$(NVSDKCOMPUTE_ROOT))
+        IFLAGS += -I$(NVSDKCOMPUTE_ROOT)/include
+        LIBS += -L$(NVSDKCOMPUTE_ROOT)/lib64
+      endif
+      LIBS += -lOpenCL
+    endif
+    ACCFLAGS += $(CFLAGS)
+    USE_ACCEL := opencl
+    ACC := $(CC)
+  else #ifneq (0,$(CUDA))
+    CUDA_PATH ?= $(if $(call which,nvcc),$(abspath $(dir $(call which,nvcc))/..))
+    ifneq (,$(CUDA_PATH))
+      ifneq (undefined,$(origin GPUVER))
+        NVCC := nvcc
+        DFLAGS += -D__ACC -D__DBCSR_ACC -D__CUDA -D__GRID_CUDA -D__DBM_CUDA -D__OFFLOAD_CUDA
+        LIBS += -L$(CUDA_PATH)/lib64 -lcudart -lcublas -lnvrtc -lcuda
+        # compiler-specific headers/modules (nvc/nvcc/pgi) can disturb other compilers (NVHPCSDK)
+        #IFLAGS += -I$(CUDA_PATH)/include
+        INCDENY += -I$(CUDA_PATH)/include
+        CUDA_INCFILE := $(strip $(lastword $(sort $(wildcard $(CUDA_PATH)/../cuda/*/targets/x86_64-linux/include/cuda_runtime.h))))
+        ifneq (,$(CUDA_INCFILE))
+          IFLAGS += -I$(abspath $(dir $(CUDA_INCFILE)))
+        endif
+        ifneq (,$(filter-out 0 1,$(CUDA)))
+          DFLAGS += -D__PW_GPU -D__PW_CUDA
+          LIBS += -lcufft
+        else
+          DFLAGS += -D__NO_OFFLOAD_PW
+        endif
+        NVCFLAGS := $(addprefix -Xcompiler $(NULL),$(filter-out -Wl%,$(OPTFLAGS)))
+        ifneq (0,$(SYM))
+          ACCFLAGS += -g
+          NVFLAGS += -g
+        endif
+        ACCFLAGS += $(NVCFLAGS) $(DFLAGS)
+        NVFLAGS += $(NVCFLAGS) $(DFLAGS)
+        USE_ACCEL := cuda
+        ACC := $(NVCC)
+        IPO := 0
+      else
+        $(info ===================)
+        $(info GPUVER not defined!)
+        $(info ===================)
+        $(error GPUVER)
+      endif
+    else
+      $(info ===============)
+      $(info NVCC not found!)
+      $(info ===============)
+      $(error NVCC)
+    endif
+  endif
+else # ACC off
+  ifeq (0,$(GNU))
+  ifneq (0,$(LEGACY))
+    OPTFLAGS += -qno-offload
+  endif
+  endif
+endif
+
+CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS)$(DFLAGS) $(IFLAGS) #-std=c++0x
+CFLAGS    += $(OPTFLAGS) $(DFLAGS) $(IFLAGS)
+FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(DFLAGS) $(IFLAGS)
+LDFLAGS   += $(OPTFLAGS) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
+
+ifeq (0,$(GNU))
+  CXXFLAGS  += -diag-disable $(DIAG_DISABLE)
+  CFLAGS    += -diag-disable $(DIAG_DISABLE)
+  FCFLAGS   += -diag-disable $(DIAG_DISABLE)
+  LDFLAGS   += -diag-disable $(DIAG_DISABLE)
+  ifeq (1,$(INTEL))
+    LDFLAGS_C += -nofor_main
+  else
+    LDFLAGS_C += -nofor-main
+  endif
+endif
+
+# Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
+LD_LIBRARY_PATH := $(wildcard $(subst :, ,$(LD_LIBRARY_PATH)))
+LD_LIBSTUB_PATH := $(wildcard $(patsubst %,%/stubs,$(LD_LIBRARY_PATH)))
+#LD_INCLUDE_PATH := $(wildcard $(patsubst %,$(abspath %/../include),$(LD_LIBRARY_PATH)))
+#INCPATHS := $(foreach DIR,$(LD_INCLUDE_PATH),$(if $(filter -I$(DIR),$(IFLAGS) $(INCDENY)),$(NULL),-I$(DIR)))
+LIBPATHS := $(foreach DIR,$(LD_LIBRARY_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
+LIBSTUBS := $(foreach DIR,$(LD_LIBSTUB_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
+LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -Wl,--no-as-needed
+#IFLAGS += $(INCPATHS)
+
+cleanup = $(foreach flag,$1,$(flag))
+LDFLAGS := $(filter-out -ipo -ipo-separate,$(call cleanup,$(LDFLAGS)))
+CXXFLAGS := $(call cleanup,$(CXXFLAGS))
+FCFLAGS := $(call cleanup,$(FCFLAGS))
+CFLAGS := $(call cleanup,$(CFLAGS))
+DFLAGS := $(call cleanup,$(DFLAGS))
+IFLAGS := $(call cleanup,$(IFLAGS))
+
+# apply ACC settings for CP2K/GRID code
+OFFLOAD_TARGET := $(USE_ACCEL)
+OFFLOAD_FLAGS := $(ACCFLAGS)
+OFFLOAD_CC := $(ACC)
+
+dbm_miniapp.o: dbm_miniapp.c $(ALL_HEADERS)
+	$(CC) -c $(filter-out $(CSTD),$(CFLAGS)) $<
+
+# filter-out override_limits flag since IFORT can run out of memory (SIGKILL)
+ifeq (1,$(INTEL))
+ifneq (,$(filter -qoverride_limits,$(FCFLAGS)))
+mp2_eri.o: mp2_eri.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(filter-out -qoverride_limits,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+minimax_exp_k53.o: minimax_exp_k53.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(filter-out -qoverride_limits,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+endif
+mp2_optimize_ri_basis.o: mp2_optimize_ri_basis.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(FCFLAGS) -O0 -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+else ifneq (0,$(INTEL))
+thermostat_types.o: thermostat_types.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+dbt_types.o: dbt_types.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(FCFLAGS) -O0 -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+endif
+
+ifneq (,$(filter 0,$(GNU)))
+ifneq (,$(filter-out 0,$(BEEP)))
+helium_sampling.o: helium_sampling.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(FCFLAGS) -O$(OPT1) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+qs_dispersion_nonloc.o: qs_dispersion_nonloc.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(FCFLAGS) -O$(OPT1) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+endif
+endif

@@ -1,0 +1,6 @@
+# Arch file targeting Linux 64-bit using the Intel tool chain
+#
+ROOTDIR = $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+
+include $(ROOTDIR)/Linux-x86-64-intelx.arch
+

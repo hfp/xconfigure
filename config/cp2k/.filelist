@@ -1,6 +1,6 @@
 info.sh
 plan.sh
 multirun.sh
-https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch arch
-https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp arch
-https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp arch
+Linux-x86-64-intelx.arch arch
+Linux-x86-64-intelx.psmp arch
+Linux-x86-64-intelx.ssmp arch
