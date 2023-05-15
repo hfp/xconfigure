@@ -7,7 +7,8 @@ ACC           = $(NULL)
 OFFLOAD_CC    = $(NULL)
 OFFLOAD_FLAGS = $(NULL)
 DFLAGS        = -D__NO_IPI_DRIVER -D__DBCSR_DISABLE_WORKSHARE
-CSTD          = -std=c99
+#CSTD          = -std=c99
+CSTD          = -std=c11
 CFLAGS        = $(CSTD)
 IFLAGS        = $(NULL)
 CXXFLAGS      = $(NULL)
