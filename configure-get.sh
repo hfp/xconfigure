@@ -22,7 +22,7 @@ RM=$(command -v rm)
 MV=$(command -v mv)
 
 # GNU sed is desired (macOS)
-if [ "" = "${SED}" ]; then
+if [ ! "${SED}" ]; then
   SED=$(command -v sed)
 fi
 
@@ -103,7 +103,7 @@ if [ -e .filelist ]; then
   while read -r LINE; do
     FILE=$(echo "${LINE}" | ${CUT} -d" " -f1)
     DIR=$(echo "${LINE}" | ${CUT} -d" " -f2)
-    if [ "" != "${LINE}" ]; then # skip empty lines
+    if [ "${LINE}" ]; then # skip empty lines
       if [[ "${FILE}" =~ "://" ]]; then
         ${WGET} -N "${FILE}"
       else
@@ -111,6 +111,8 @@ if [ -e .filelist ]; then
       fi
       if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then
         ${MV} "$(${BASENAME} "${FILE}")" "${DIR}"
+      elif [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
+        git apply "${FILE}"
       fi
     fi
   done
