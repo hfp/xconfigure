@@ -4,3 +4,4 @@ multirun.sh
 Linux-x86-64-intelx.arch arch
 Linux-x86-64-intelx.psmp arch
 Linux-x86-64-intelx.ssmp arch
+mpi-wrapper2.git.diff

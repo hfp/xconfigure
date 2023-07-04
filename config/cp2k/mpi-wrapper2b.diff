@@ -1,0 +1,20 @@
+1379c1379
+<       CALL mp_group%set_handle(eri_env%eri(1)%csr_mat%mp_group)
+---
+>       CALL mp_group%set_handle(eri_env%eri(1)%csr_mat%mp_group%get_handle())
+2113c2113
+<       CALL mp_group%set_handle(eri%mp_group)
+---
+>       CALL mp_group%set_handle(eri%mp_group%get_handle())
+2193c2193
+<       CALL mp_group%set_handle(eri_aa%mp_group)
+---
+>       CALL mp_group%set_handle(eri_aa%mp_group%get_handle())
+2243c2243
+<       CALL mp_group%set_handle(eri_ab%mp_group)
+---
+>       CALL mp_group%set_handle(eri_ab%mp_group%get_handle())
+2277c2277
+<       CALL mp_group%set_handle(eri_aa%mp_group)
+---
+>       CALL mp_group%set_handle(eri_aa%mp_group%get_handle())

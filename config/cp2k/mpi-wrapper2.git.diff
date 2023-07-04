@@ -1,0 +1,62 @@
+diff --git a/src/qs_active_space_methods.F b/src/qs_active_space_methods.F
+index a13bca87f5..02a0a739a8 100644
+--- a/src/qs_active_space_methods.F
++++ b/src/qs_active_space_methods.F
+@@ -1376,7 +1376,7 @@ CONTAINS
+       rho_r%cr3d = 0.0D0
+       CALL pw_transfer(rho_r, rho_g)
+       dvol = rho_r%pw_grid%dvol
+-      CALL mp_group%set_handle(eri_env%eri(1)%csr_mat%mp_group)
++      CALL mp_group%set_handle(eri_env%eri(1)%csr_mat%mp_group%get_handle())
+ 
+       ! calculate the integrals
+       intcount = 0
+@@ -2110,7 +2110,7 @@ CONTAINS
+       norb = SIZE(active_orbitals, 1)
+       nmo_total = SIZE(p_mat, 1)
+       nindex = (nmo_total*(nmo_total + 1))/2
+-      CALL mp_group%set_handle(eri%mp_group)
++      CALL mp_group%set_handle(eri%mp_group%get_handle())
+       irange = get_irange_csr(nindex, mp_group)
+       DO m1 = 1, norb
+          i1 = active_orbitals(m1, 1)
+@@ -2190,7 +2190,7 @@ CONTAINS
+       norb = SIZE(active_orbitals, 1)
+       nmo_total = SIZE(p_a_mat, 1)
+       nindex = (nmo_total*(nmo_total + 1))/2
+-      CALL mp_group%set_handle(eri_aa%mp_group)
++      CALL mp_group%set_handle(eri_aa%mp_group%get_handle())
+       irange = get_irange_csr(nindex, mp_group)
+       IF (tr_mixed_eri) THEN
+          spin1 = 2
+@@ -2240,7 +2240,7 @@ CONTAINS
+       END DO
+       !
+ 
+-      CALL mp_group%set_handle(eri_ab%mp_group)
++      CALL mp_group%set_handle(eri_ab%mp_group%get_handle())
+       irange = get_irange_csr(nindex, mp_group)
+       DO m1 = 1, norb
+          i1 = active_orbitals(m1, 1)
+@@ -2274,7 +2274,7 @@ CONTAINS
+             ks_a_ref(i2, i1) = ks_a_ref(i1, i2)
+          END DO
+       END DO
+-      CALL mp_group%set_handle(eri_aa%mp_group)
++      CALL mp_group%set_handle(eri_aa%mp_group%get_handle())
+       CALL mp_group%sum(ks_a_ref)
+ 
+    END SUBROUTINE build_subspace_spin_fock_matrix
+diff --git a/src/qs_active_space_types.F b/src/qs_active_space_types.F
+index d45e43cf7c..2bbedf4c5c 100644
+--- a/src/qs_active_space_types.F
++++ b/src/qs_active_space_types.F
+@@ -335,7 +335,7 @@ CONTAINS
+ 
+       ASSOCIATE (eri => this%eri(nspin)%csr_mat, norb => this%norb)
+          nindex = (norb*(norb + 1))/2
+-         CALL mp_group%set_handle(eri%mp_group)
++         CALL mp_group%set_handle(eri%mp_group%get_handle())
+          irange = get_irange_csr(nindex, mp_group)
+          ALLOCATE (erival(nindex), colind(nindex))
+ 

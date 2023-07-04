@@ -1,0 +1,4 @@
+338c338
+<          CALL mp_group%set_handle(eri%mp_group)
+---
+>          CALL mp_group%set_handle(eri%mp_group%get_handle())
