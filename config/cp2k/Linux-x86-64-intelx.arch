@@ -892,7 +892,7 @@ libxsmm-build:
 		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" STATIC=1 \
 		JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 \
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
-		TARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) WRAP=$(WRAP) \
+		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) WRAP=$(WRAP) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
   endif
 endif
