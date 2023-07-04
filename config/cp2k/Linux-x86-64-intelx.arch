@@ -167,7 +167,7 @@ ifneq (0,$(MPI))
       CXX := mpiicpc
       CC  := mpiicc
       FC  := mpiifort
-      LD  := mpiifort
+      LD  := mpiifort $(if $(call which,ifx),-fc=ifx)
     else
       CXX := mpiicpc  -cxx=icpx
       CC  := mpiicc   -cc=icx
@@ -886,7 +886,7 @@ libxsmm-build:
 		BLDDIR="$(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/build" \
 		BINDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/bin" \
 		OUTDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib" \
-		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" \
+		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" STATIC=1 \
 		JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 \
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
 		TARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) WRAP=$(WRAP) \
@@ -1049,11 +1049,8 @@ ifeq (0,$(GNU))
   CFLAGS    += -diag-disable $(DIAG_DISABLE)
   FCFLAGS   += -diag-disable $(DIAG_DISABLE)
   LDFLAGS   += -diag-disable $(DIAG_DISABLE)
-  ifeq (1,$(INTEL))
-    LDFLAGS_C += -nofor_main
-  else
-    LDFLAGS_C += -nofor-main
-  endif
+  # consider -nofor_main for legacy compiler
+  LDFLAGS_C += -nofor-main
 endif
 
 # Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
