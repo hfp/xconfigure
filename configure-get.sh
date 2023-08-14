@@ -112,7 +112,7 @@ if [ -e .filelist ]; then
       if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then
         ${MV} "$(${BASENAME} "${FILE}")" "${DIR}"
       elif [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
-        git apply "${FILE}"
+        git apply "${FILE}" 2>/dev/null
       fi
     fi
   done
