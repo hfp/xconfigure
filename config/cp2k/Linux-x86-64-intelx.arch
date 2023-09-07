@@ -830,6 +830,7 @@ ifneq (,$(LIBXSMMROOT))
   # 1: SMMs, 2: 1+UnreleasedFeat, 3: 2+AllGEMM
   LIBXSMM ?= 1
   ifneq (0,$(LIBXSMM))
+    LIBXSMM_DSTDIR := $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm
     DFLAGS += -D__LIBXSMM=$(LIBXSMM)
     ifeq (0,$(GNU))
       DFLAGS += -D_OPENMP_SIMD
@@ -842,11 +843,11 @@ ifneq (,$(LIBXSMMROOT))
     # investigate __HAS_smm_vec
     #DFLAGS += -D__HAS_smm_vec
 
-    # always attempt to link libxsmmext (needed at least in case of WRAP)
-    LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmmf.a
-    LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmmext.a
-    LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmm.a
-    IFLAGS += -I$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/include
+    # link libxsmmext (needed at least in case of WRAP)
+    LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmf.a
+    LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmext.a
+    LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmm.a
+    IFLAGS += -I$(LIBXSMM_DSTDIR)/include
 
     # account for OpenMP-enabled libxsmmext routines
     ifeq (0,$(OMP))
@@ -866,7 +867,7 @@ ifneq (,$(LIBXSMMROOT))
         ifneq (0,$(shell echo "$$((2<$(WRAP)))"))
           LDFLAGS += -Wl,--wrap=dgemm_,--wrap=sgemm_,--wrap=dgemv_,--wrap=sgemv_
           ifneq (0,$(shell echo "$$((3<$(WRAP)))"))
-            LIBS += $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib/libxsmmnoblas.a
+            LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmnoblas.a
           endif
         else
           LDFLAGS += -Wl,--wrap=dgemm_,--wrap=sgemm_
@@ -884,15 +885,13 @@ ifneq (,$(LIBXSMMROOT))
 .PHONY: libxsmm-build
 libxsmm-build:
 	@$(BIGVERNUM)
-	@$(MAKE) --no-print-directory -f "$(LIBXSMMROOT)/Makefile" \
-		INCDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/include" \
-		BLDDIR="$(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/build" \
-		BINDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/bin" \
-		OUTDIR="$(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm/lib" \
-		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" STATIC=1 \
-		JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 \
+  @mkdir -p $(LIBXSMM_DSTDIR)
+	@$(MAKE) -C $(LIBXSMM_DSTDIR) \
+		-f "$(LIBXSMMROOT)/Makefile" --no-print-directory \
+		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" \
+		STATIC=1 JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
-		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) WRAP=$(WRAP) \
+		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
   endif
 endif
