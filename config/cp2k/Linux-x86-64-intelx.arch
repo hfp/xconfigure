@@ -885,7 +885,7 @@ ifneq (,$(LIBXSMMROOT))
 .PHONY: libxsmm-build
 libxsmm-build:
 	@$(BIGVERNUM)
-  @mkdir -p $(LIBXSMM_DSTDIR)
+	@mkdir -p $(LIBXSMM_DSTDIR)
 	@$(MAKE) -C $(LIBXSMM_DSTDIR) \
 		-f "$(LIBXSMMROOT)/Makefile" --no-print-directory \
 		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" \
