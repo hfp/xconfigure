@@ -1100,10 +1100,6 @@ mp2_optimize_ri_basis.o: mp2_optimize_ri_basis.F
 	$(MAKE_FYPP)
 	$(FC) -c $(FCFLAGS) -O0 -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 else ifneq (0,$(INTEL))
-thermostat_types.o: thermostat_types.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 dbt_types.o: dbt_types.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
