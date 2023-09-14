@@ -50,11 +50,7 @@ if [ "" != "${FILE0}" ]; then
   if [ "PROJECT" = "${PROJECT}" ]; then
     PROJECT=$(grep "GLOBAL| Method name" "${FILE0}" | sed -n "s/..*\s\s*\(\w\)/\1/p" | head -n1)
   fi
-  NUMACCDEVS=$(grep " DBCSR| ACC: Number of devices/node" "${FILE0}" | sed -n "s/..*\s\s*\(\w\)/\1/p" | head -n1)
   echo -e -n "$(printf %-23.23s "${PROJECT}")\tNodes\tR/N\tT/R\tCases/d\tSeconds"
-  if [ "${NUMACCDEVS}" ]; then
-    echo -e -n "\t\tDevices"
-  fi
   echo
 fi
 
@@ -91,13 +87,7 @@ for FILE in ${FILES}; do
       echo -e -n "$(printf %-23.23s "${BASENAME}")\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t${DURATION}"
       NDEVS=$(grep " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p" | head -n1)
-      if [ "${NUMACCDEVS}" ]; then
-        if [ "${NDEVS}" ]; then
-          echo -e -n "\t\t${NDEVS} ACC"
-        else
-          echo -e -n "\t\t0 ACC"
-        fi
-      elif [ "${NDEVS}" ]; then
+      if [ "${NDEVS}" ]; then
         echo -e -n "\t\t${NDEVS} ACC"
       fi
       echo
