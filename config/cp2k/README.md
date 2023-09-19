@@ -5,7 +5,7 @@ This document describes building CP2K with several (optional) libraries, which m
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
     * FFTw library
-* [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
+* [LIBXSMM](https://github.com/libxsmm/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (depends on CP2K version)
 * [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x)
@@ -49,7 +49,7 @@ This step-by-step guide uses (**a**)&#160;GNU Fortran (version 8.x, or 9.x, 9.1 
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
     * FFTw library
-* [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
+* [LIBXSMM](https://github.com/libxsmm/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (2.x from CP2K.org!)
 * [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x, not 5.x)
@@ -222,11 +222,11 @@ make install
 make distclean
 ```
 
-**5**) The fifth step makes LIBXSMM [available](https://github.com/hfp/libxsmm/releases/latest), which is compiled as part of the last step.
+**5**) The fifth step makes LIBXSMM [available](https://github.com/libxsmm/libxsmm/releases/latest), which is compiled as part of the last step.
 
 ```bash
 cd $HOME
-wget --content-disposition --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/libxsmm/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.16.1.tar.gz
 ```
 
@@ -302,7 +302,7 @@ As the step-by-step guide uses GNU Fortran (version 7.x, 8.x, or 9.x, 9.1 is not
 * Intel Math Kernel Library (also per Linux' distro's package manager) acts as:
     * LAPACK/BLAS and ScaLAPACK library
     * FFTw library
-* [LIBXSMM](https://github.com/hfp/libxsmm) (replaces LIBSMM)
+* [LIBXSMM](https://github.com/libxsmm/libxsmm) (replaces LIBSMM)
 * [LIBINT](../libint/README.md#libint) (version 1.1.5 or 1.1.6)
 * [PLUMED](https://www.plumed.org/) (version 2.x)
 * [LIBXC](../libxc/README.md#libxc) (version 4.x)
@@ -408,11 +408,11 @@ make install
 make distclean
 ```
 
-The fifth step makes LIBXSMM [available](https://github.com/hfp/libxsmm/releases/latest), which is compiled as part of the last step.
+The fifth step makes LIBXSMM [available](https://github.com/libxsmm/libxsmm/releases/latest), which is compiled as part of the last step.
 
 ```bash
 cd $HOME
-wget --content-disposition --no-check-certificate https://github.com/hfp/libxsmm/archive/1.16.1.tar.gz
+wget --content-disposition --no-check-certificate https://github.com/libxsmm/libxsmm/archive/1.16.1.tar.gz
 tar xvf 1.16.1.tar.gz
 ```
 
@@ -498,11 +498,11 @@ The purpose of the Intel ARCH files is to avoid writing an own ARCH-file even wh
 
 ```bash
 cd cp2k-6.1.0/arch
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
-wget https://github.com/hfp/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
+wget https://github.com/cp2k/cp2k/raw/master/arch/Linux-x86-64-intelx.arch
+wget https://github.com/cp2k/cp2k/raw/master/arch/Linux-x86-64-intelx.popt
+wget https://github.com/cp2k/cp2k/raw/master/arch/Linux-x86-64-intelx.psmp
+wget https://github.com/cp2k/cp2k/raw/master/arch/Linux-x86-64-intelx.sopt
+wget https://github.com/cp2k/cp2k/raw/master/arch/Linux-x86-64-intelx.ssmp
 ```
 
 ## Running CP2K<a name="run-instructions"></a>
@@ -530,6 +530,10 @@ mpirun -perhost 8 -host node1,node2,node3,node4,node5,node6,node7,node8 \
 ```
 
 **Note**: the [documentation](plan.md) of `plan.sh` also motivates and explains the MPI environment variables as shown in above MPI command lines.
+
+## CP2K on GPUs
+
+TODO.
 
 ## Performance
 
@@ -591,37 +595,6 @@ There is nothing that can replace the full regression test suite. However, to qu
 ```
 
 The column called "Convergence" must monotonically converge towards zero.
-
-## Development<a name="build-the-cp2kintel-branch"></a>
-
-<a name="build-the-intel-fork-of-cp2k"></a>The [Intel fork of CP2K](https://github.com/hfp/cp2k.git) was formerly a branch of CP2K's Git-mirror. CP2K is meanwhile natively hosted at GitHub. Ongoing work in the Intel branch was supposed to tightly track the master version of CP2K, which is also true for the fork. In addition, valuable topics may be upstreamed in a timelier fashion. To build [CP2K/Intel](https://github.com/hfp/cp2k.git) from source for experimental purpose, one may rely on [Intel Compiler 16, 17, or 18 series](#recommended-intel-compiler):
-
-```bash
-source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
-```
-
-LIBXSMM is automatically built in an out-of-tree fashion when building CP2K/Intel fork. The only prerequisite is that the LIBXSMMROOT path needs to be detected (or supplied on the `make` command line). LIBXSMMROOT is automatically discovered automatically if it is in the user's home directory, or when it is in parallel to the CP2K directory. By default (no `AVX` or `MIC` is given), the build process is carried out by using the `-xHost` target flag. For example, to explicitly target "Cascadelake" or "Skylake" server ("SKX"):
-
-```bash
-git clone https://github.com/hfp/libxsmm.git
-git clone https://github.com/hfp/cp2k.git
-cd cp2k
-git submodule update --init --recursive
-
-rm -rf lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp AVX=3
-```
-
-**Note**: Most if not all hotspots in CP2K are covered by libraries (e.g., LIBXSMM). It can be beneficial to rely on the GNU Compiler toolchain. To only use Intel libraries such as Intel&#160;MPI and Intel&#160;MKL, one can rely on the GNU-key (`GNU=1`).
-
-The GNU toolchain requires to configure LIBINT, LIBXC, and ELPA accordingly (e.g., `configure-elpa-skx-gnu-omp.sh` instead of `configure-elpa-skx-omp.sh`). To further adjust CP2K at build time, additional key-value pairs (like `ARCH=Linux-x86-64-intelx` or `VERSION=psmp`) can be passed at Make's command line when relying on CP2K/Intel's ARCH files.
-
-* **SYM**: set `SYM=1` to include debug symbols into the executable, e.g., helpful with performance profiling.
-* **DBG**: set `DBG=1` to include debug symbols, and to generate non-optimized code.
-
-<a name="memory-allocation"></a>Dynamic allocation of heap memory usually requires global bookkeeping eventually incurring overhead in shared-memory parallel regions of an application. For this case, specialized allocation strategies are available. To use such a strategy, memory allocation wrappers can be used to replace the default memory allocation at build-time or at runtime of an application.
-
-To use the malloc-proxy of the Intel Threading Building Blocks (Intel&#160;TBB), rely on the `TBBMALLOC=1` key-value pair at build-time of CP2K (default: `TBBMALLOC=0`). Usually, Intel&#160;TBB is already available when sourcing the Intel development tools (one can check the TBBROOT environment variable). To use TCMALLOC as an alternative, set `TCMALLOCROOT` at build-time of CP2K by pointing to TCMALLOC's installation path (configured per `./configure --enable-minimal --prefix=<TCMALLOCROOT>`).
 
 ## References
 
