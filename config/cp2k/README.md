@@ -533,7 +533,31 @@ mpirun -perhost 8 -host node1,node2,node3,node4,node5,node6,node7,node8 \
 
 ## CP2K on GPUs
 
-TODO.
+This section shows how to build CP2K with DBCSR's OpenCL backend (`USE_ACCEL=opencl` like `USE_ACCEL=opencl` for CUDA). Any other dependencies like LIBINT, LIBXC, and others are auto-detected and can be made available using XCONFIGURE as well. LIBXSMM is a prerequisite and building it, is managed by using the ARCH-file as fetched below (`configure-get.sh cp2k`).
+
+```bash
+git clone -b main https://github.com/libxsmm/libxsmm.git
+
+git clone https://github.com/cp2k/cp2k.git
+cd cp2k
+git submodule update --init --recursive
+cd exts/dbcsr
+git checkout develop
+cd ../..
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh cp2k
+
+rm -rf exe lib obj
+echo "Intel MPI, Intel MKL, and GNU Fortran are made available"
+make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl -j
+```
+
+DBCSR can be built stand-alone and used to exercise and test GPU accleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a stand-alone fashion as well. The latter is not even subject to DBCSR's build system and simply required GNU Make (see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The mentioned SMM driver can be used to [auto-tune](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/1-autotune.html) or [bulk-tune](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/2-bulktune.html) kernels for the OpenCL backend.
+
+**Note**: if the GNU Fortran compiler rejects Intel MPI because of an incompatible MPI module, please list the content of the directory `${I_MPI_ROOT}/include/gfortran` and select the closest version matching the GNU Fortran compiler, e.g., `make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl GNUVER=11.1.0` for GNU Fortran&#160;12.2. Further, using CP2K's "toolchain" is possible as well or blending the OpenCL backend with other GPU-enabled code written in CUDA (not documented here).
+
+The OpenCL backend provides [pretuned kernels](https://github.com/cp2k/dbcsr/tree/develop/src/acc/opencl/smm/params) and comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific workloads (kernels).
 
 ## Performance
 
@@ -602,4 +626,3 @@ The column called "Convergence" must monotonically converge towards zero.
 [https://xconfigure.readthedocs.io/cp2k/plan/](https://xconfigure.readthedocs.io/cp2k/plan/)  
 [https://www.cp2k.org/static/downloads](https://www.cp2k.org/static/downloads)  
 [https://www.cp2k.org/howto:compile](https://www.cp2k.org/howto:compile)
-
