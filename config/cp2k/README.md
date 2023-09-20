@@ -537,11 +537,12 @@ This section shows how to build CP2K with DBCSR's OpenCL backend (`USE_ACCEL=ope
 
 ```bash
 git clone -b main https://github.com/libxsmm/libxsmm.git
-
 git clone https://github.com/cp2k/cp2k.git
+
 cd cp2k
 git submodule update --init --recursive
 cd exts/dbcsr
+git fetch
 git checkout develop
 cd ../..
 wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
