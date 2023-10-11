@@ -888,7 +888,7 @@ libxsmm-build:
 	@mkdir -p $(LIBXSMM_DSTDIR)
 	@$(MAKE) -C $(LIBXSMM_DSTDIR) \
 		-f "$(LIBXSMMROOT)/Makefile" --no-print-directory \
-		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" \
+		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" WERROR=0 \
 		STATIC=1 JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
 		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) \
