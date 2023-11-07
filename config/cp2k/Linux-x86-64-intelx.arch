@@ -978,6 +978,10 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
     ifeq (Darwin,$(UNAME))
       LIBS += -framework OpenCL
     else
+      OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
+      ifneq (,$(OCL_ICD_LOADER))
+        LIBS += -L$(abspath $(dir $(OCL_ICD_LOADER)))
+      endif
       ifneq (,$(CUDATOOLKIT_HOME))
         IFLAGS += -I$(CUDATOOLKIT_HOME)/include
         LIBS += -L$(CUDATOOLKIT_HOME)/lib64
