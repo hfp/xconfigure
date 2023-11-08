@@ -20,6 +20,9 @@ LIBDIRNAME    = lib
 OBJDIRNAME    = obj
 EXTSDIR       = exts
 
+# Special characters
+CHAR_HASH := \#
+
 # LIBXSMM (https://github.com/hfp/libxsmm)
 #LIBXSMMROOT := /path/to/libxsmm
 
@@ -311,7 +314,7 @@ ifneq (0,$(NDEBUG))
   ifneq (1,$(NDEBUG)) # CP2K and DBCSR
   else # only DBCSR
     ifeq (,$(wildcard $(CP2KHOME)/.inject.sh))
-      INJECT := $(shell printf '#!/usr/bin/env bash\nif [ "$$4" ]; then\n\tif [ "$$(echo "$${@:4}" | sed -n "/$$1/p" 2>/dev/null)" ]; then\n\t\texec $$3 $$2 "$${@:4}"\n\telif [ "$$1" ]; then\n\t\texec $$3 "$${@:4}"\n\telse\n\t\texec $$3 $$2 "$${@:4}"\n\tfi\nelse\n\texec $$3\nfi\n' >$(CP2KHOME)/.inject.sh)
+      INJECT := $(shell printf '$(CHAR_HASH)!/usr/bin/env bash\nif [ "$$4" ]; then\n\tif [ "$$(echo "$${@:4}" | sed -n "/$$1/p" 2>/dev/null)" ]; then\n\t\texec $$3 $$2 "$${@:4}"\n\telif [ "$$1" ]; then\n\t\texec $$3 "$${@:4}"\n\telse\n\t\texec $$3 $$2 "$${@:4}"\n\tfi\nelse\n\texec $$3\nfi\n' >$(CP2KHOME)/.inject.sh)
     endif
     ifneq (,$(wildcard $(CP2KHOME)/.inject.sh))
       INJECT := $(shell chmod +x $(CP2KHOME)/.inject.sh)
@@ -978,10 +981,6 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
     ifeq (Darwin,$(UNAME))
       LIBS += -framework OpenCL
     else
-      OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
-      ifneq (,$(OCL_ICD_LOADER))
-        LIBS += -L$(abspath $(dir $(OCL_ICD_LOADER)))
-      endif
       ifneq (,$(CUDATOOLKIT_HOME))
         IFLAGS += -I$(CUDATOOLKIT_HOME)/include
         LIBS += -L$(CUDATOOLKIT_HOME)/lib64
@@ -989,7 +988,12 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
         IFLAGS += -I$(NVSDKCOMPUTE_ROOT)/include
         LIBS += -L$(NVSDKCOMPUTE_ROOT)/lib64
       endif
-      LIBS += -lOpenCL
+      OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
+      ifneq (,$(OCL_ICD_LOADER))
+        LIBS += $(OCL_ICD_LOADER)
+      else
+        LIBS += -lOpenCL
+      endif
     endif
     ACCFLAGS += $(CFLAGS)
     USE_ACCEL := opencl
