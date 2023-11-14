@@ -992,7 +992,7 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
       ifneq (,$(OCL_ICD_LOADER))
         LIBS += $(OCL_ICD_LOADER)
       else
-        LIBS += -lOpenCL
+        LIBS += -l:libOpenCL.so.1
       endif
     endif
     ACCFLAGS += $(CFLAGS)
