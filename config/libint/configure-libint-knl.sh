@@ -72,26 +72,35 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-if [ -e ${HERE}/fortran/Makefile ] || [ -e ${HERE}/fortran/Makefile.in ]; then
-  sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile*
-fi
-# broken build system incl. "make -f ${HERE}/fortran/Makefile distclean"
-if [ -e ${HERE}/fortran/Makefile ]; then
-  cd ${HERE}/fortran
-  make distclean
-  cd ${HERE}
-fi
+if [ -e ${HERE}/CMakeLists.txt ]; then
+  if [ ! "$(command -v cmake)" ]; then
+    echo "Error: XCONFIGURE requires CMake to build LIBINT!"
+    exit 1
+  fi
+  cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
+else
+  if [ -e ${HERE}/fortran/Makefile ] || [ -e ${HERE}/fortran/Makefile.in ]; then
+    sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile*
+  fi
+  # broken build system incl. "make -f ${HERE}/fortran/Makefile distclean"
+  if [ -e ${HERE}/fortran/Makefile ]; then
+    cd ${HERE}/fortran
+    make distclean
+    cd ${HERE}
+  fi
 
-if [ ! -e ${HERE}/configure ]; then
-  autoconf
+  if [ ! -e ${HERE}/configure ]; then
+    autoconf
+  fi
+
+  ./configure --prefix=${DEST} ${CONFOPTS} \
+    --with-cc-optflags="${CFLAGS}" \
+    --with-cxx-optflags="${CXXFLAGS}" \
+    --with-libderiv-max-am1=5 \
+    --with-libint-max-am=6 \
+    --disable-libtool \
+    --enable-fortran \
+    "$@"
 fi
-
-./configure --prefix=${DEST} ${CONFOPTS} \
-  --with-cc-optflags="${CFLAGS}" \
-  --with-cxx-optflags="${CXXFLAGS}" \
-  --with-libderiv-max-am1=5 \
-  --with-libint-max-am=6 \
-  --disable-libtool \
-  --enable-fortran \
-  "$@"
-
