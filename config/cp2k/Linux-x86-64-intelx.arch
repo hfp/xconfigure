@@ -746,7 +746,16 @@ endif
 ifneq (,$(LIBXCROOT))
   DFLAGS += -D__LIBXC
   IFLAGS += -I$(LIBXCROOT)/include
-  LIBS   += $(LIBXCROOT)/lib/libxcf03.a $(LIBXCROOT)/lib/libxc.a
+  ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxcf03.a))
+    LIBS += $(LIBXCROOT)/lib64/libxcf03.a
+  else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxcf03.a))
+    LIBS += $(LIBXCROOT)/lib/libxcf03.a
+  endif
+  ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxc.a))
+    LIBS += $(LIBXCROOT)/lib64/libxc.a
+  else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxc.a))
+    LIBS += $(LIBXCROOT)/lib/libxc.a
+  endif
 endif
 
 ifneq (,$(PLUMEDROOT))
