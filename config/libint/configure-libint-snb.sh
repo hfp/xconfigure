@@ -72,7 +72,7 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-if [ -e ${HERE}/CMakeLists.txt ]; then
+if [ -e ${HERE}/CMakeLists.txt ] && [ ! -e ${HERE}/configure.in ] && [ ! -e ${HERE}/configure.ac ]; then
   if [ ! "$(command -v cmake)" ]; then
     echo "Error: XCONFIGURE requires CMake to build LIBINT!"
     exit 1

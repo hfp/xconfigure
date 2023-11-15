@@ -49,7 +49,7 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
-if [ -e ${HERE}/CMakeLists.txt ]; then
+if [ -e ${HERE}/CMakeLists.txt ] && [ ! -e ${HERE}/configure.in ] && [ ! -e ${HERE}/configure.ac ]; then
   if [ ! "$(command -v cmake)" ]; then
     echo "Error: XCONFIGURE requires CMake to build LIBINT!"
     exit 1
