@@ -735,7 +735,9 @@ endif
 ifneq (,$(LIBINTROOT))
   DFLAGS += -D__LIBINT -D__MAX_CONTR=4
   IFLAGS += -I$(LIBINTROOT)/include
-  ifneq (,$(wildcard $(LIBINTROOT)/lib/libint2.*))
+  ifneq (,$(wildcard $(LIBINTROOT)/lib64/libint2.*))
+    LIBS += $(LIBINTROOT)/lib64/libint2.a
+  else ifneq (,$(wildcard $(LIBINTROOT)/lib/libint2.*))
     LIBS += $(LIBINTROOT)/lib/libint2.a
   else # LIBINT1
     LIBS += $(LIBINTROOT)/lib/libderiv.a $(LIBINTROOT)/lib/libint.a
