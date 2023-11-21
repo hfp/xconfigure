@@ -125,6 +125,10 @@ ${CHMOD} +x ./*.sh 2>/dev/null
 # cleanup message buffer
 ${RM} "${MSGBUFFER}"
 
+# cleanup old core dump files
+HERE=$(cd "$(dirname "$0")" && pwd -P)
+${RM} -f "${HERE}/core.*"
+
 # cleanup backup copies of configure-get.sh (wget)
 ${RM} -f "$0.*"
 
