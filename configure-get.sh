@@ -125,6 +125,9 @@ ${CHMOD} +x ./*.sh 2>/dev/null
 # cleanup message buffer
 ${RM} "${MSGBUFFER}"
 
+# cleanup backup copies of configure-get.sh (wget)
+${RM} -f "$0.*"
+
 if [ ! "$(${LS} -1 "configure-${APPLICATION}"*.sh 2>/dev/null)" ]; then
   # display reminder about build recipe
   echo
