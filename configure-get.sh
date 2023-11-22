@@ -9,11 +9,13 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
+# shellcheck disable=SC2012
 
 BASENAME=$(command -v basename)
 TIMEOUT=$(command -v timeout)
 CHMOD=$(command -v chmod)
 WGET=$(command -v wget)
+TAIL=$(command -v tail)
 SED=$(command -v gsed)
 CUT=$(command -v cut)
 TR=$(command -v tr)
@@ -33,8 +35,8 @@ APPLICATION=$1
 ARCHS=$2
 KINDS=$3
 
-if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || [ ! "${WGET}" ] || [ ! "${CUT}" ] || \
-   [ ! "${TR}" ] || [ ! "${LS}" ] || [ ! "${RM}" ] || [ ! "${MV}" ];
+if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || [ ! "${WGET}" ] || [ ! "${TAIL}" ] || \
+   [ ! "${CUT}" ] || [ ! "${TR}" ] || [ ! "${LS}" ] || [ ! "${RM}" ] || [ ! "${MV}" ];
 then
   echo "Error: prerequisites not found!"
   exit 1
@@ -48,6 +50,14 @@ fi
 if [ ! "${APPLICATION}" ]; then
   echo "Please use: $0 <application-name>"
   exit 1
+fi
+
+# check if configure-get.sh was duplicated by wget
+SELF=$(${LS} -1t "$0".* 2>/dev/null | tail -n1)
+if [ "${SELF}" ]; then
+  echo "Warning: $0 was duplicated by wget!"
+  exec "${SELF}" "$*"
+  exit 0
 fi
 
 echo "Be patient, it can take up to 30 seconds before progress is shown..."
@@ -128,9 +138,6 @@ ${RM} "${MSGBUFFER}"
 # cleanup old core dump files
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 ${RM} -f "${HERE}/core.*"
-
-# cleanup backup copies of configure-get.sh (wget)
-${RM} -f "$0.*"
 
 if [ ! "$(${LS} -1 "configure-${APPLICATION}"*.sh 2>/dev/null)" ]; then
   # display reminder about build recipe
