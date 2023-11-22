@@ -185,8 +185,12 @@ ifneq (0,$(MPI))
     ifneq (0,$(LEGACY))
       DFLAGS += -D__HAS_NO_MPI_MOD
     else ifeq (2,$(words $(I_MPI_ROOT) $(GNUVER)))
-      # see $I_MPI_ROOT/include/gfortran/
-      IFLAGS += -I$(I_MPI_ROOT)/include/gfortran/$(GNUVER)
+      # see if $I_MPI_ROOT/include/[mpi/]gfortran/ exists
+      ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
+        IFLAGS += -I$(I_MPI_ROOT)/include/gfortran/mpi/$(GNUVER)
+      else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
+        IFLAGS += -I$(I_MPI_ROOT)/include/gfortran/$(GNUVER)
+      endif
     endif
   endif
   DFLAGS += -D__parallel
