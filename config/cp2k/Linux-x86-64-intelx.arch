@@ -187,7 +187,7 @@ ifneq (0,$(MPI))
     else ifeq (2,$(words $(I_MPI_ROOT) $(GNUVER)))
       # see if $I_MPI_ROOT/include/[mpi/]gfortran/ exists
       ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
-        IFLAGS += -I$(I_MPI_ROOT)/include/gfortran/mpi/$(GNUVER)
+        IFLAGS += -I$(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
       else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
         IFLAGS += -I$(I_MPI_ROOT)/include/gfortran/$(GNUVER)
       endif
