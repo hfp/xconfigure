@@ -35,7 +35,7 @@ TARGET="-march=core-avx2"
 export FLAGS="-O3 ${TARGET}"
 export LDFLAGS=""
 export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
+export CXXFLAGS="${FLAGS} -std=c++17"
 export FCFLAGS="${FLAGS}"
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
