@@ -556,10 +556,10 @@ make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl -j
 
 DBCSR can be built stand-alone and used to exercise and test GPU accleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a stand-alone fashion as well. The latter is not even subject to DBCSR's build system and simply required GNU Make (see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The mentioned SMM driver can be used to [auto-tune](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/1-autotune.html) or [bulk-tune](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/2-bulktune.html) kernels for the OpenCL backend.
 
-**Note**: if the GNU Fortran compiler rejects Intel MPI because of an incompatible MPI module, please list the content of the directory `${I_MPI_ROOT}/include/gfortran` and select the closest version matching the GNU Fortran compiler using `GNUVER`, e.g., `make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl GNUVER=11.1.0` for GNU Fortran&#160;12.2.
+**Note**: if the GNU Fortran compiler rejects Intel MPI because of an incompatible MPI module, please list the content of the directory `${I_MPI_ROOT}/include/gfortran` and select the closest version matching the GNU Fortran compiler using `GNUVER`, e.g., `make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl GNUVER=11.1.0` for GNU Fortran&#160;12.2. To rely on the GNU Compiler even when Intel Compiler was source'd, use `GNU=1`.
 
 ```bash
-make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl GNUVER=11.1.0 cp2k
+make ARCH=Linux-x86-64-intelx VERSION=psmp NDEBUG=2 USE_ACCEL=opencl GNU=1 GNUVER=11.1.0 cp2k
 ```
 
 **Note**: for more comprehensive builds of CP2K, please refer to CP2K's Toolchain, e.g., it is possible to blend the OpenCL backend with other GPU-enabled code written in CUDA.
