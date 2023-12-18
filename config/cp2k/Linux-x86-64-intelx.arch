@@ -1107,6 +1107,15 @@ dbm_miniapp.o: dbm_miniapp.c $(ALL_HEADERS)
 	$(CC) -c $(filter-out $(CSTD),$(CFLAGS)) $<
 endif
 
+ifneq (0,$(NDEBUG))
+environment.o: environment.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(filter-out -DNDEBUG,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+grid_library.o: grid_library.c $(ALL_HEADERS)
+	$(CC) -c $(filter-out -DNDEBUG,$(CFLAGS)) $<
+endif
+
 # filter-out override_limits flag since IFORT can run out of memory (SIGKILL)
 ifeq (1,$(INTEL))
 ifneq (,$(filter -qoverride_limits,$(FCFLAGS)))
