@@ -353,7 +353,7 @@ ifeq (0,$(GNU)) # Intel
   ifeq (0,$(INTEL))
     $(info ================================================================================)
     $(info This ARCH file relies on Intel Compiler and Libraries. Please try the following:)
-    $(info $$ source /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh intel64)
+    $(info $$ source /opt/intel/oneapi/setvars.sh)
     $(info ================================================================================)
     $(error Intel Development Tools not found!)
   endif
@@ -438,8 +438,8 @@ else # GNU GCC
   ifeq (,$(MKLROOT))
     $(info ================================================================================)
     $(info This ARCH file relies on Intel Libraries. Please try the following:)
-    $(info $$ source /opt/intel/compilers_and_libraries/linux/bin/compilervars.sh intel64)
-    $(info Note: Intel MPI is also required.)
+    $(info $$ source /opt/intel/oneapi/mkl/latest/env/vars.sh)
+    $(info $$ source /opt/intel/oneapi/mpi/latest/env/vars.sh)
     $(info ================================================================================)
     $(error Intel MKL not found!)
   endif
@@ -499,15 +499,15 @@ else # GNU GCC
       IPOFLAGS += -flto -Wl,-flto -Wno-lto-type-mismatch
     endif
     OPT ?= 3
-  else
+  else # debug
     FCFLAGS += \
       -fimplicit-none -fsanitize=leak -fcheck=all -finit-derived -finit-real=snan -finit-integer=-42 -finline-matmul-limit=0 \
       -Werror=aliasing -Werror=ampersand -Werror=c-binding-type -Werror=intrinsics-std -Werror=line-truncation -Werror=tabs \
       -Werror=target-lifetime -Werror=underflow -Werror=unused-but-set-variable -Werror=conversion -Werror=unused-variable \
-      -Werror=unused-dummy-argument -Werror=zerotrip -Wintrinsic-shadow #-Warray-temporaries
+      -Werror=zerotrip -Wintrinsic-shadow #-Warray-temporaries
     ifneq (1,$(DBG))
       ifeq (,$(NVCC))
-        FCFLAGS += -Werror=uninitialized -Wno-maybe-uninitialized
+        FCFLAGS += -Werror=uninitialized -Werror=unused-dummy-argument -Wno-maybe-uninitialized
       endif
       FCFLAGS += -std=f2008 -Werror=realloc-lhs-all
     endif
