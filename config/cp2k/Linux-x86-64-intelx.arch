@@ -227,6 +227,12 @@ else ifneq (,$(USE_ACCEL))
   $(error USE_ACCEL)
 endif
 
+NVCC := $(call which,nvcc)
+NVCC_PATH := $(if $(NVCC),$(wildcard $(dir $(NVCC))/..))
+CUDA_FILE := $(wildcard $(NVCC_PATH)/../cuda/include/cuda.h)
+CUDA_PATH := $(if $(CUDA_FILE),$(NVCC_PATH)/../cuda,$(NVCC_PATH))
+CUDA_LIBS := $(if $(wildcard $(CUDA_PATH)/lib64),lib64,lib)
+
 # MKL_MPIRTL: intelmpi, openmpi
 MKL_MPIRTL ?= intelmpi
 ifneq (0,$(BLAS))
@@ -488,7 +494,8 @@ else # GNU GCC
     endif
   endif
   FCFLAGS += -ffree-form -ffree-line-length-none
-  FCFLAGS += -fallow-argument-mismatch
+  #FCFLAGS += -fallow-argument-mismatch
+  FCFLAGS += -Wno-argument-mismatch
   ifeq (0,$(DBG))
     OPTFLAGS += -funroll-loops -ftree-vectorize
     #FCFLAGS += -fstack-arrays
@@ -997,12 +1004,9 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
     ifeq (Darwin,$(UNAME))
       LIBS += -framework OpenCL
     else
-      ifneq (,$(CUDATOOLKIT_HOME))
-        IFLAGS += -I$(CUDATOOLKIT_HOME)/include
-        LIBS += -L$(CUDATOOLKIT_HOME)/lib64
-      else ifneq (,$(NVSDKCOMPUTE_ROOT))
-        IFLAGS += -I$(NVSDKCOMPUTE_ROOT)/include
-        LIBS += -L$(NVSDKCOMPUTE_ROOT)/lib64
+      ifneq (,$(CUDA_PATH))
+        IFLAGS += -I$(CUDA_PATH)/include
+        #LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS)
       endif
       OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
       ifneq (,$(OCL_ICD_LOADER))
@@ -1015,19 +1019,11 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
     USE_ACCEL := opencl
     ACC := $(CC)
   else #ifneq (0,$(CUDA))
-    CUDA_PATH ?= $(if $(call which,nvcc),$(abspath $(dir $(call which,nvcc))/..))
     ifneq (,$(CUDA_PATH))
       ifneq (undefined,$(origin GPUVER))
-        NVCC := nvcc
         DFLAGS += -D__ACC -D__DBCSR_ACC -D__CUDA -D__GRID_CUDA -D__DBM_CUDA -D__OFFLOAD_CUDA
-        LIBS += -L$(CUDA_PATH)/lib64 -lcudart -lcublas -lnvrtc -lcuda
-        # compiler-specific headers/modules (nvc/nvcc/pgi) can disturb other compilers (NVHPCSDK)
-        #IFLAGS += -I$(CUDA_PATH)/include
-        INCDENY += -I$(CUDA_PATH)/include
-        CUDA_INCFILE := $(strip $(lastword $(sort $(wildcard $(CUDA_PATH)/../cuda/*/targets/x86_64-linux/include/cuda_runtime.h))))
-        ifneq (,$(CUDA_INCFILE))
-          IFLAGS += -I$(abspath $(dir $(CUDA_INCFILE)))
-        endif
+        LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lnvrtc -lcuda
+        IFLAGS += -I$(CUDA_PATH)/include
         ifneq (,$(filter-out 0 1,$(CUDA)))
           DFLAGS += -D__PW_GPU -D__PW_CUDA
           LIBS += -lcufft
@@ -1083,7 +1079,6 @@ endif
 LD_LIBRARY_PATH := $(wildcard $(subst :, ,$(LD_LIBRARY_PATH)))
 LD_LIBSTUB_PATH := $(wildcard $(patsubst %,%/stubs,$(LD_LIBRARY_PATH)))
 #LD_INCLUDE_PATH := $(wildcard $(patsubst %,$(abspath %/../include),$(LD_LIBRARY_PATH)))
-#INCPATHS := $(foreach DIR,$(LD_INCLUDE_PATH),$(if $(filter -I$(DIR),$(IFLAGS) $(INCDENY)),$(NULL),-I$(DIR)))
 LIBPATHS := $(foreach DIR,$(LD_LIBRARY_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBSTUBS := $(foreach DIR,$(LD_LIBSTUB_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -Wl,--no-as-needed
