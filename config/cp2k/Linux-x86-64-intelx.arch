@@ -1000,7 +1000,7 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
     ifneq (1,$(OCL))
       OPENCL_DBM_SRC := $(SRCDIR)/dbm/dbm_multiply_opencl.cl
       OPENCL_DBM_CMN := $(wildcard $(DBCSRSRC)/acc/opencl/common/*.h)
-      OPENCL_DBM_GEN := $(CP2KHOME)/acc/opencl/acc_opencl.sh
+      OPENCL_DBM_GEN := $(DBCSRSRC)/acc/opencl/acc_opencl.sh
       OPENCL_DBM_KRN := $(SRCDIR)/dbm/dbm_multiply_opencl.cl.h
 #$(OPENCL_DBM_KRN): $(OPENCL_DBM_GEN) $(OPENCL_DBM_SRC) $(OPENCL_DBM_CMN)
 -include opencl-dbm-build
