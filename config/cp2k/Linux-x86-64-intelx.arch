@@ -997,6 +997,10 @@ OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
 ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
   ifneq (0,$(OCL))
     DFLAGS += -D__ACC -D__DBCSR_ACC
+    ifneq (1,$(OCL))
+      DFLAGS += -D__OFFLOAD_OPENCL
+      IFLAGS += -I$(EXTDBCSR)
+    endif
     ifeq (Darwin,$(UNAME))
       LIBS += -framework OpenCL
     else
