@@ -1002,7 +1002,10 @@ ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
       OPENCL_DBM_CMN := $(wildcard $(DBCSRSRC)/acc/opencl/common/*.h)
       OPENCL_DBM_GEN := $(CP2KHOME)/acc/opencl/acc_opencl.sh
       OPENCL_DBM_KRN := $(SRCDIR)/dbm/dbm_multiply_opencl.cl.h
-$(OPENCL_DBM_KRN): $(OPENCL_DBM_GEN) $(OPENCL_DBM_SRC) $(OPENCL_DBM_CMN)
+#$(OPENCL_DBM_KRN): $(OPENCL_DBM_GEN) $(OPENCL_DBM_SRC) $(OPENCL_DBM_CMN)
+-include opencl-dbm-build
+.PHONY: opencl-dbm-build
+opencl-dbm-build:
 	$(OPENCL_DBM_GEN) -b 6 -p "" $(OPENCL_DBM_SRC) $@
       DFLAGS += -D__OFFLOAD_OPENCL
       # TODO: implement support or missing features for GRID and PW
