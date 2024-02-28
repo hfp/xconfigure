@@ -1016,6 +1016,12 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
       ifneq (,$(CUDA_PATH))
         IFLAGS += -I$(CUDA_PATH)/include
         #LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS)
+      else ifneq (,$(wildcard $(OPENCL_ROOT)/include/CL/cl.h))
+        IFLAGS += -I$(OPENCL_ROOT)/include
+        LIBS += -L$(OPENCL_ROOT)/lib64
+      else ifneq (,$(wildcard $(OCL_ROOT)/include/CL/cl.h))
+        IFLAGS += -I$(OCL_ROOT)/include
+        LIBS += -L$(OCL_ROOT)/lib64
       endif
       OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
       ifneq (,$(OCL_ICD_LOADER))
