@@ -490,8 +490,7 @@ else # GNU GCC
     endif
   endif
   FCFLAGS += -ffree-form -ffree-line-length-none
-  #FCFLAGS += -fallow-argument-mismatch
-  FCFLAGS += -Wno-argument-mismatch
+  FCFLAGS += -Wno-argument-mismatch #-fallow-argument-mismatch
   ifeq (0,$(DBG))
     OPTFLAGS += -funroll-loops -ftree-vectorize
     #FCFLAGS += -fstack-arrays
@@ -515,7 +514,7 @@ else # GNU GCC
       FCFLAGS += -std=f2008 -Werror=realloc-lhs-all
     endif
     ifneq (0,$(FPE))
-      FCFLAGS += -ffpe-trap=invalid,zero,overflow
+      FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
     endif
     OPT ?= 0
   endif
