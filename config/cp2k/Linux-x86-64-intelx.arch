@@ -414,18 +414,16 @@ ifeq (0,$(GNU)) # Intel
     else ifeq (0,$(IPO))
       LDFLAGS += -no-ipo
     endif
-  else
+  else # debug
     ifeq (1,$(INTEL))
       CXXFLAGS += -debug
       FCFLAGS  += -debug
       CFLAGS   += -debug
-      ifneq (0,$(FPE))
-        FCFLAGS += -fpe0 # debugging NaNs
-      endif
-    #else
-      #OPT ?= 1
     endif
     OPT ?= 0
+  endif
+  ifneq (0,$(FPE))
+    FCFLAGS += -fpe0 # debugging NaNs
   endif
   FCFLAGS += -free -fpp
   DFLAGS += -D__INTEL
@@ -513,10 +511,11 @@ else # GNU GCC
       endif
       FCFLAGS += -std=f2008 -Werror=realloc-lhs-all
     endif
-    ifneq (0,$(FPE))
-      FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
-    endif
     OPT ?= 0
+  endif
+  ifneq (0,$(FPE))
+    FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
+    CFLAGS += -fsignaling-nans
   endif
   MKL_OMPRTL := gnu
   MKL_FCRTL := gf
