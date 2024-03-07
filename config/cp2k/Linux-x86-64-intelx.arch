@@ -1038,16 +1038,10 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
   else #ifneq (0,$(CUDA))
     ifneq (,$(CUDA_PATH))
       ifneq (undefined,$(origin GPUVER))
-        DFLAGS += -D__ACC -D__DBCSR_ACC -D__CUDA -D__GRID_CUDA -D__DBM_CUDA -D__OFFLOAD_CUDA
-        LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lnvrtc -lcuda
-        IFLAGS += -I$(CUDA_PATH)/include
-        ifneq (,$(filter-out 0 1,$(CUDA)))
-          DFLAGS += -D__PW_GPU -D__PW_CUDA
-          LIBS += -lcufft
-        else
-          DFLAGS += -D__NO_OFFLOAD_PW
-        endif
+        DFLAGS += -D__ACC -D__DBCSR_ACC -D__CUDA -D__OFFLOAD_CUDA -D__GRID_CUDA -D__DBM_CUDA -D__PW_GPU -D__PW_CUDA
+        LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lcufft -lnvrtc -lcuda
         NVCFLAGS := $(addprefix -Xcompiler $(NULL),$(filter-out -Wl%,$(OPTFLAGS)))
+        IFLAGS += -I$(CUDA_PATH)/include
         ifneq (0,$(SYM))
           ACCFLAGS += -g
           NVFLAGS += -g
