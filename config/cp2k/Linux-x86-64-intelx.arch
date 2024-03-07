@@ -995,6 +995,10 @@ OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
 ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
   ifneq (0,$(OCL))
     DFLAGS += -D__ACC -D__DBCSR_ACC
+    ifneq (0,$(DBG))
+      # suppress "Fortran runtime warning:"
+      LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
+    endif
     ifneq (1,$(OCL))
       OPENCL_DBM_CMN := $(wildcard $(DBCSRSRC)/acc/opencl/common/*.h)
       OPENCL_DBM_SRC := $(CP2KHOME)/src/dbm/dbm_multiply_opencl.cl
