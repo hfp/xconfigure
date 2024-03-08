@@ -6,7 +6,7 @@ CPP           = $(NULL)
 ACC           = $(NULL)
 OFFLOAD_CC    = $(NULL)
 OFFLOAD_FLAGS = $(NULL)
-DFLAGS        = -D__NO_IPI_DRIVER -D__DBCSR_DISABLE_WORKSHARE
+DFLAGS        = __NO_IPI_DRIVER __DBCSR_DISABLE_WORKSHARE
 #CSTD          = -std=c99
 #CSTD          = -std=c11
 CFLAGS        = $(CSTD)
@@ -113,7 +113,7 @@ LEGACY ?= $(if $(wildcard $(EXTDBCSR)),0,1)
 UNAME ?= $(shell uname 2>/dev/null)
 
 ifeq (0,$(LEGACY))
-  IFLAGS += -I$(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/exts/dbcsr
+  IFLAGS += $(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/exts/dbcsr
   ELPA ?= 1
 else # legacy
   ELPA ?= 201705
@@ -180,21 +180,21 @@ ifneq (0,$(MPI))
     FC  := mpif90
     LD  := mpif90
     ifneq (0,$(LEGACY))
-      DFLAGS += -D__HAS_NO_MPI_MOD
+      DFLAGS += __HAS_NO_MPI_MOD
     else ifeq (2,$(words $(I_MPI_ROOT) $(GNUVER)))
       # see if $I_MPI_ROOT/include/[mpi/]gfortran/ exists
       ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
-        IFLAGS += -I$(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
+        IFLAGS += $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
       else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
-        IFLAGS += -I$(I_MPI_ROOT)/include/gfortran/$(GNUVER)
+        IFLAGS += $(I_MPI_ROOT)/include/gfortran/$(GNUVER)
       endif
     endif
   endif
-  DFLAGS += -D__parallel
+  DFLAGS += __parallel
   ifneq (1,$(MPI))
-    DFLAGS += -D__MPI_VERSION=$(MPI)
+    DFLAGS += __MPI_VERSION=$(MPI)
   else # default MPI std. version
-    DFLAGS += -D__MPI_VERSION=3
+    DFLAGS += __MPI_VERSION=3
   endif
 else ifeq (0,$(GNU))
   CXX := icpc
@@ -277,7 +277,7 @@ ifneq (0,$(MPI))
   endif
   ifneq (,$(COSMAROOT))
     LIBS += -L$(COSMAROOT)/lib64 -L$(COSMAROOT)/lib -lcosma -lcosma_pxgemm_cpp -lcosma_prefixed_pxgemm -lcosta_scalapack -lcosta
-    DFLAGS += -D__COSMA
+    DFLAGS += __COSMA
     ifneq (,$(NVCC))
       LIBS += -lTiled-MM
     endif
@@ -287,14 +287,14 @@ endif
 
 ifneq (0,$(SCALAPACK))
 ifneq (0,$(MPI))
-  DFLAGS += -D__SCALAPACK
+  DFLAGS += __SCALAPACK
   ifneq (0,$(LEGACY))
-    DFLAGS += -D__BLACS
+    DFLAGS += __BLACS
   endif
   ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
     ifneq (-1,$(SCALAPACK))
       ifneq (1,$(SCALAPACK))
-        DFLAGS += -D__SCALAPACK$(SCALAPACK)
+        DFLAGS += __SCALAPACK$(SCALAPACK)
       endif
     else
       SCALAPACKDIR := $(HOME)/scalapack-2.0.2
@@ -317,7 +317,7 @@ endif
 endif
 
 ifneq (0,$(NDEBUG))
-  DFLAGS += -DNDEBUG
+  DFLAGS += NDEBUG
   ifneq (1,$(NDEBUG)) # CP2K and DBCSR
   else # only DBCSR
     ifeq (,$(wildcard $(CP2KHOME)/.inject.sh))
@@ -423,9 +423,9 @@ ifeq (0,$(GNU)) # Intel
     FCFLAGS += -fpe0 # debugging NaNs
   endif
   FCFLAGS += -free -fpp
-  DFLAGS += -D__INTEL
+  DFLAGS += __INTEL
   ifneq (0,$(LEGACY))
-    DFLAGS += -D__F2008
+    DFLAGS += __F2008
   endif
   MKL_OMPRTL := intel
   MKL_FCRTL := intel
@@ -684,7 +684,7 @@ DBG_FLAG := -g
 OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
 ifeq (0,$(ATTRIBS))
-  DFLAGS += -DCP_DISABLE_ATTRIBS
+  DFLAGS += CP_DISABLE_ATTRIBS
 endif
 
 SYM ?= $(DBG)
@@ -693,7 +693,7 @@ ifneq (0,$(SYM))
   ifeq (0,$(GNU))
   ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
     ifneq (0,$(LEGACY))
-      DFLAGS += -D__USE_CP2K_TRACE
+      DFLAGS += __USE_CP2K_TRACE
     endif
     OPTFLAGS += -traceback
   endif
@@ -737,21 +737,21 @@ ifneq (0,$(OMP))
 endif
 
 ifneq (,$(LIBINTROOT))
-  DFLAGS += -D__LIBINT -D__MAX_CONTR=4
-  IFLAGS += -I$(LIBINTROOT)/include
+  DFLAGS += __LIBINT __MAX_CONTR=4
+  IFLAGS += $(LIBINTROOT)/include
   ifneq (,$(wildcard $(LIBINTROOT)/lib64/libint2.*))
     LIBS += $(LIBINTROOT)/lib64/libint2.a
   else ifneq (,$(wildcard $(LIBINTROOT)/lib/libint2.*))
     LIBS += $(LIBINTROOT)/lib/libint2.a
   else # LIBINT1
     LIBS += $(LIBINTROOT)/lib/libderiv.a $(LIBINTROOT)/lib/libint.a
-    DFLAGS += -D__LIBINT_MAX_AM=7 -D__LIBDERIV_MAX_AM1=6
+    DFLAGS += __LIBINT_MAX_AM=7 __LIBDERIV_MAX_AM1=6
   endif
 endif
 
 ifneq (,$(LIBXCROOT))
-  DFLAGS += -D__LIBXC
-  IFLAGS += -I$(LIBXCROOT)/include
+  DFLAGS += __LIBXC
+  IFLAGS += $(LIBXCROOT)/include
   ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxcf03.a))
     LIBS += $(LIBXCROOT)/lib64/libxcf03.a
   else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxcf03.a))
@@ -765,7 +765,7 @@ ifneq (,$(LIBXCROOT))
 endif
 
 ifneq (,$(PLUMEDROOT))
-  DFLAGS += -D__PLUMED2
+  DFLAGS += __PLUMED2
   # avoid duplicated libraries (-ldl -lstdc++)
   LIBS   += $(PLUMEDROOT)/lib/libplumed.a -lz
 endif
@@ -773,16 +773,16 @@ endif
 ifneq (,$(ELPAROOT))
 ifneq (0,$(ELPA))
   ifneq (0,$(CUDA))
-    DFLAGS += -D__ELPA_NVIDIA_GPU
+    DFLAGS += __ELPA_NVIDIA_GPU
   endif
   ifneq (1,$(ELPA))
-    DFLAGS += -D__ELPA=$(ELPA)
+    DFLAGS += __ELPA=$(ELPA)
   else
-    DFLAGS += -D__ELPA
+    DFLAGS += __ELPA
   endif
   ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
   ELPAMODDIR := $(ELPAINCDIR)../modules
-  IFLAGS += -I$(ELPAINCDIR) -I$(ELPAMODDIR)
+  IFLAGS += $(ELPAINCDIR) $(ELPAMODDIR)
   LIBS += $(ELPAROOT)/lib/libelpa.a
   # in case ELPA is built with OpenMP
   ifeq (0,$(OMP))
@@ -812,8 +812,8 @@ ifneq (0,$(TBBMALLOC))
       TBBMALLOCLIB := $(wildcard $(TBBLIBDIR)/libtbbmalloc_proxy.so)
     endif
     ifneq (,$(TBBMALLOCLIB))
-      IFLAGS += -I$(TBBROOT)/include
-      DFLAGS += -D__TBBMALLOC
+      IFLAGS += $(TBBROOT)/include
+      DFLAGS += __TBBMALLOC
       LIBS += $(TBBMALLOCLIB) $(TBBLIBDIR)/libtbbmalloc.so
       ifneq (1,$(TBBMALLOC)) # TBBMALLOC=2
         FCFLAGS += -heap-arrays
@@ -840,7 +840,7 @@ ifneq (0,$(LIBSMM))
   LIBSMM_LIB := $(TOOLSRC)/toolchain/install/lib/libsmm_dnn.a
 endif
 ifneq (,$(wildcard $(LIBSMM_LIB))) # LIBSMM successfully downloaded
-  DFLAGS += -D__HAS_smm_dnn
+  DFLAGS += __HAS_smm_dnn
   LIBS += $(LIBSMM_LIB)
 endif
 
@@ -849,27 +849,27 @@ ifneq (,$(LIBXSMMROOT))
   LIBXSMM ?= 1
   ifneq (0,$(LIBXSMM))
     LIBXSMM_DSTDIR := $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm
-    DFLAGS += -D__LIBXSMM=$(LIBXSMM)
+    DFLAGS += __LIBXSMM=$(LIBXSMM)
     ifeq (0,$(GNU))
-      DFLAGS += -D_OPENMP_SIMD
+      DFLAGS += _OPENMP_SIMD
       OPTFLAGS += -qopenmp-simd
     else ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
     # GNU: https://github.com/cp2k/dbcsr/issues/217
-      DFLAGS += -D_OPENMP_SIMD
+      DFLAGS += _OPENMP_SIMD
       OPTFLAGS += -fopenmp-simd
     endif
     # investigate __HAS_smm_vec
-    #DFLAGS += -D__HAS_smm_vec
+    #DFLAGS += __HAS_smm_vec
 
     # link libxsmmext (needed at least in case of WRAP)
     LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmf.a
     LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmext.a
     LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmm.a
-    IFLAGS += -I$(LIBXSMM_DSTDIR)/include
+    IFLAGS += $(LIBXSMM_DSTDIR)/include
 
     # account for OpenMP-enabled libxsmmext routines
     ifeq (0,$(OMP))
-      DFLAGS += -DDBCSR_LIBXSMM_GEMM_BATCH=libxsmm_gemm_batch_omp
+      DFLAGS += DBCSR_LIBXSMM_GEMM_BATCH=libxsmm_gemm_batch_omp
       ifeq (1,$(MKL))
         LIBS += -l$(OMPRT)
       else ifeq (0,$(MKL))
@@ -915,7 +915,7 @@ always-build:
 endif
 
 ifeq (1,$(MKL_DIRECT))
-  DFLAGS += -DMKL_DIRECT_CALL_SEQ
+  DFLAGS += MKL_DIRECT_CALL_SEQ
 endif
 
 ifeq (1,$(MKL)) # sequential
@@ -927,16 +927,16 @@ else ifneq (0,$(MKL)) # multi-threaded
   endif
 endif
 ifneq (0,$(MKL))
-  DFLAGS += -D__MKL -D__FFTW3
+  DFLAGS += __MKL __FFTW3
   ifeq (,$(MKL_INCFILE))
-    IFLAGS += -I$(MKLROOT)/include
+    IFLAGS += $(MKLROOT)/include
     ifneq (,$(wildcard $(MKLROOT)/include/fftw))
-      IFLAGS += -I$(MKLROOT)/include/fftw
+      IFLAGS += $(MKLROOT)/include/fftw
     endif
   else
-    IFLAGS += -I$(dir $(MKL_INCFILE))
+    IFLAGS += $(dir $(MKL_INCFILE))
     ifneq (,$(wildcard $(dir $(MKL_INCFILE))/fftw))
-      IFLAGS += -I$(dir $(MKL_INCFILE))/fftw
+      IFLAGS += $(dir $(MKL_INCFILE))/fftw
     endif
   endif
   ifeq (0,$(MKL_STATIC))
@@ -976,7 +976,7 @@ ifneq (0,$(MKL))
 endif
 
 ifneq (0,$(LEGACY))
-  DFLAGS += -D__HAS_ISO_C_BINDING
+  DFLAGS += __HAS_ISO_C_BINDING
 endif
 # general include paths
 #IFLAGS +=
@@ -984,7 +984,7 @@ endif
 # Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
 # toggles code using this symbol, but of course the cpp preprocessor is not defining this symbol.
 ifneq (,$(strip $(CPP)))
-  CPPFLAGS += -C $(IFLAGS) $(DFLAGS) -D__INTEL_COMPILER -P -traditional
+  CPPFLAGS += -C $(addprefix -I,$(wildcard $(IFLAGS))) $(addprefix -D,$(DFLAGS)) -D__INTEL_COMPILER -P -traditional
 endif
 
 # finalize flags common to CXX, CC, and FC
@@ -992,7 +992,7 @@ OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
 
 ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
   ifneq (0,$(OCL))
-    DFLAGS += -D__ACC -D__DBCSR_ACC
+    DFLAGS += __ACC __DBCSR_ACC
     ifneq (0,$(DBG))
       # suppress "Fortran runtime warning:"
       LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
@@ -1005,22 +1005,22 @@ $(OPENCL_DBM_SRC).h: $(OPENCL_DBM_GEN) $(OPENCL_DBM_SRC) $(OPENCL_DBM_CMN)
 	$(OPENCL_DBM_GEN) -b 6 -p "" $(OPENCL_DBM_SRC) $@
 dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
 	$(CC) -c $(CFLAGS) $<
-      DFLAGS += -D__OFFLOAD_OPENCL
+      DFLAGS += __OFFLOAD_OPENCL
       # TODO: implement support or missing features for GRID and PW
-      DFLAGS += -D__NO_OFFLOAD_GRID -D__NO_OFFLOAD_PW
-      IFLAGS += -I$(EXTDBCSR)
+      DFLAGS += __NO_OFFLOAD_GRID __NO_OFFLOAD_PW
+      IFLAGS += $(EXTDBCSR)
     endif
     ifeq (Darwin,$(UNAME))
       LIBS += -framework OpenCL
     else
       ifneq (,$(CUDA_PATH))
-        IFLAGS += -I$(CUDA_PATH)/include
+        IFLAGS += $(CUDA_PATH)/include
         #LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS)
       else ifneq (,$(wildcard $(OPENCL_ROOT)/include/CL/cl.h))
-        IFLAGS += -I$(OPENCL_ROOT)/include
+        IFLAGS += $(OPENCL_ROOT)/include
         LIBS += -L$(OPENCL_ROOT)/lib64
       else ifneq (,$(wildcard $(OCL_ROOT)/include/CL/cl.h))
-        IFLAGS += -I$(OCL_ROOT)/include
+        IFLAGS += $(OCL_ROOT)/include
         LIBS += -L$(OCL_ROOT)/lib64
       endif
       OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
@@ -1039,11 +1039,11 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         ifneq (0,$(SYM))
           ACCFLAGS += $(DBG_FLAG)
         endif
-        IFLAGS += -I$(CUDA_PATH)/include
-        DFLAGS += -D__ACC -D__DBCSR_ACC -D__CUDA -D__OFFLOAD_CUDA -D__GRID_CUDA -D__DBM_CUDA -D__PW_GPU -D__PW_CUDA
+        IFLAGS += $(CUDA_PATH)/include
+        DFLAGS += __ACC __DBCSR_ACC __CUDA __OFFLOAD_CUDA __GRID_CUDA __DBM_CUDA __PW_GPU __PW_CUDA
         LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lcufft -lnvrtc -lcuda
         # consider omitting opt-level entirely due to extreme compilation time even when flag targets only the host compiler
-        ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(DFLAGS)
+        ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(addprefix -D,$(DFLAGS))
         NVCFLAGS := $(ACCFLAGS)
         NVFLAGS := $(ACCFLAGS)
         USE_ACCEL := cuda
@@ -1070,9 +1070,9 @@ else # ACC off
   endif
 endif
 
-CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS)$(DFLAGS) $(IFLAGS) #-std=c++0x
-CFLAGS    += $(OPTFLAGS) $(DFLAGS) $(IFLAGS)
-FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(DFLAGS) $(IFLAGS)
+CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(addprefix -I,$(wildcard $(IFLAGS))) #-std=c++0x
+CFLAGS    += $(OPTFLAGS) $(addprefix -D,$(DFLAGS)) $(addprefix -I,$(wildcard $(IFLAGS)))
+FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(addprefix -I,$(wildcard $(IFLAGS)))
 LDFLAGS   += $(OPTFLAGS) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
 
 ifeq (0,$(GNU))
