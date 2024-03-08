@@ -131,9 +131,6 @@ ifeq (0,$(GNU))
   endif
 else # GNU
   OMPRT ?= gomp
-  #ifeq (0,$(SYM))
-    #IPO ?= 1
-  #endif
 endif
 MATMUL ?= 1
 IPO ?= 0
@@ -683,6 +680,7 @@ endif
 endif
 $(info ================================================================================)
 
+DBG_FLAG := -g
 OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
 ifeq (0,$(ATTRIBS))
@@ -700,7 +698,7 @@ ifneq (0,$(SYM))
     OPTFLAGS += -traceback
   endif
   endif
-  OPTFLAGS += -g
+  OPTFLAGS += $(DBG_FLAG)
 endif
 
 FYPP := $(wildcard $(TOOLSRC)/build_utils/fypp)
@@ -1038,16 +1036,16 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
   else #ifneq (0,$(CUDA))
     ifneq (,$(CUDA_PATH))
       ifneq (undefined,$(origin GPUVER))
+        ifneq (0,$(SYM))
+          ACCFLAGS += $(DBG_FLAG)
+        endif
+        IFLAGS += -I$(CUDA_PATH)/include
         DFLAGS += -D__ACC -D__DBCSR_ACC -D__CUDA -D__OFFLOAD_CUDA -D__GRID_CUDA -D__DBM_CUDA -D__PW_GPU -D__PW_CUDA
         LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lcufft -lnvrtc -lcuda
-        NVCFLAGS := $(addprefix -Xcompiler $(NULL),$(filter-out -Wl%,$(OPTFLAGS)))
-        IFLAGS += -I$(CUDA_PATH)/include
-        ifneq (0,$(SYM))
-          ACCFLAGS += -g
-          NVFLAGS += -g
-        endif
-        ACCFLAGS += $(NVCFLAGS) $(DFLAGS)
-        NVFLAGS += $(NVCFLAGS) $(DFLAGS)
+        # consider omitting opt-level entirely due to extreme compilation time even when flag targets only the host compiler
+        ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(DFLAGS)
+        NVCFLAGS := $(ACCFLAGS)
+        NVFLAGS := $(ACCFLAGS)
         USE_ACCEL := cuda
         ACC := $(NVCC)
         IPO := 0
