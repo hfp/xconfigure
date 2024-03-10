@@ -44,8 +44,9 @@ ifneq (,$(COMMAND))
 else
   which = $(shell which $(firstword $1) 2>/dev/null)
 endif
-#prefix_iflags = $(addprefix -I,$(wildcard $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}))
-prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12})
+#prefix_iflags = $(addprefix -I,$(wildcard $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16}))
+prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
+prefix_dflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
@@ -987,7 +988,7 @@ endif
 # Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
 # toggles code using this symbol, but of course the cpp preprocessor is not defining this symbol.
 ifneq (,$(strip $(CPP)))
-  CPPFLAGS += -C $(call prefix_iflags,$(IFLAGS)) $(addprefix -D,$(DFLAGS)) -D__INTEL_COMPILER -P -traditional
+  CPPFLAGS += -C $(call prefix_iflags,$(IFLAGS)) $(call prefix_dflags,$(DFLAGS) __INTEL_COMPILER) -P -traditional
 endif
 
 # finalize flags common to CXX, CC, and FC
@@ -1046,7 +1047,7 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         DFLAGS += __ACC __DBCSR_ACC __CUDA __OFFLOAD_CUDA __GRID_CUDA __DBM_CUDA __PW_GPU __PW_CUDA
         LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lcufft -lnvrtc -lcuda
         # consider omitting opt-level entirely due to extreme compilation time even when flag targets only the host compiler
-        ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(addprefix -D,$(DFLAGS))
+        ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(call prefix_dflags,$(DFLAGS))
         NVCFLAGS := $(ACCFLAGS)
         NVFLAGS := $(ACCFLAGS)
         USE_ACCEL := cuda
@@ -1073,9 +1074,9 @@ else # ACC off
   endif
 endif
 
-CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
-CFLAGS    += $(OPTFLAGS) $(addprefix -D,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
-FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
+CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
+CFLAGS    += $(OPTFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
+FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 LDFLAGS   += $(OPTFLAGS) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
 
 ifeq (0,$(GNU))
