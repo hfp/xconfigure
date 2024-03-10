@@ -44,6 +44,8 @@ ifneq (,$(COMMAND))
 else
   which = $(shell which $(firstword $1) 2>/dev/null)
 endif
+#prefix_iflags = $(addprefix -I,$(wildcard $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}))
+prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12})
 
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
@@ -985,7 +987,7 @@ endif
 # Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
 # toggles code using this symbol, but of course the cpp preprocessor is not defining this symbol.
 ifneq (,$(strip $(CPP)))
-  CPPFLAGS += -C $(addprefix -I,$(wildcard $(IFLAGS))) $(addprefix -D,$(DFLAGS)) -D__INTEL_COMPILER -P -traditional
+  CPPFLAGS += -C $(call prefix_iflags,$(IFLAGS)) $(addprefix -D,$(DFLAGS)) -D__INTEL_COMPILER -P -traditional
 endif
 
 # finalize flags common to CXX, CC, and FC
@@ -1071,9 +1073,9 @@ else # ACC off
   endif
 endif
 
-CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(addprefix -I,$(wildcard $(IFLAGS))) #-std=c++0x
-CFLAGS    += $(OPTFLAGS) $(addprefix -D,$(DFLAGS)) $(addprefix -I,$(wildcard $(IFLAGS)))
-FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(addprefix -I,$(wildcard $(IFLAGS)))
+CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
+CFLAGS    += $(OPTFLAGS) $(addprefix -D,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
+FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(addprefix -D,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 LDFLAGS   += $(OPTFLAGS) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
 
 ifeq (0,$(GNU))
