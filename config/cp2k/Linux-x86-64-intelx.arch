@@ -51,33 +51,27 @@ prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
 GNU ?= 0
-ICX ?= 0
 ifeq (0,$(GNU))
   ifeq (,$(shell echo "$${CXX}"))
-    ifneq (,$(filter icpc icpc1,$(notdir $(call which,icpc))$(INTEL)))
-      CXX := icpc
-    else ifneq (,$(filter icpx icpx2,$(notdir $(call which,icpx))$(INTEL)))
+    ifneq (,$(filter icpx icpx2,$(notdir $(call which,icpx))$(INTEL)))
       CXX := icpx
+    else ifneq (,$(filter icpc icpc1,$(notdir $(call which,icpc))$(INTEL)))
+      CXX := icpc
     endif
   endif
   ifeq (,$(shell echo "$${CC}"))
-    ifneq (,$(filter icc icc1,$(notdir $(call which,icc))$(INTEL)))
-      CC := icc
-    else ifneq (,$(filter icx icx2,$(notdir $(call which,icx))$(INTEL)))
+    ifneq (,$(filter icx icx2,$(notdir $(call which,icx))$(INTEL)))
       CC := icx
+    else ifneq (,$(filter icc icc1,$(notdir $(call which,icc))$(INTEL)))
+      CC := icc
     endif
-  endif
-  ifeq (__INTEL_COMPILER,$(shell echo "__INTEL_COMPILER" | $(CC) $(ECFLAGS) $(EFLAGS) -E -P - 2>/dev/null))
-    ICX := 1
-  else ifneq (,$(filter icx icx2,$(notdir $(call which,icx))$(INTEL)))
-    ICX := 2
   endif
 endif
 
 # check if the Intel Development Tools are available
-INTEL ?= $(if $(filter 2,$(words $(filter icpc% icpx% icc% icx%, \
-  $(shell $(CXX) --version 2>/dev/null | head -n1 | cut -d' ' -f1) \
-  $(shell $(CC)  --version 2>/dev/null | head -n1 | cut -d' ' -f1)))),1,0)
+INTEL ?= $(if $(filter icc% icx%, \
+  $(shell $(CC) --version 2>/dev/null | head -n1 | cut -d' ' -f1)), \
+  $(if $(call which,ifx),2,1),0)
 
 ifneq (0,$(INTEL))
   CFG := intel
@@ -170,7 +164,7 @@ ifneq (0,$(MPI))
       CXX := mpiicpc
       CC  := mpiicc
       FC  := mpiifort
-      LD  := mpiifort $(if $(call which,ifx),-fc=ifx)
+      LD  := mpiifort
     else
       CXX := mpiicpc  -cxx=icpx
       CC  := mpiicc   -cc=icx
@@ -913,7 +907,7 @@ always-build:
 		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" WERROR=0 \
 		STATIC=1 JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
-		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) \
+		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) INTEL=$(INTEL) GNU=$(GNU) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
   endif
 endif
