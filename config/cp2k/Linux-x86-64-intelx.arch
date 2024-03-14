@@ -152,11 +152,6 @@ ifeq (1,$(INTEL))
   #FPFLAGS += -fast-transcendentals
 endif
 
-# TBB malloc proxy is enabled if TBBROOT is set
-TBBMALLOC ?= 0
-# TBB runtime compatible with oldest supported GCC
-TBBGCC_OLD ?= 1
-
 SCALAPACK ?= $(MPI)
 ifneq (0,$(MPI))
   ifeq (0,$(GNU))
@@ -794,59 +789,6 @@ ifneq (0,$(ELPA))
     LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
   endif
 endif
-endif
-
-ifneq (0,$(TBBMALLOC))
-  ifneq (,$(TBBROOT))
-    GCC := $(notdir $(call which,gcc))
-    ifneq (,$(GCC))
-      GCC_VERSION_STRING := $(shell $(GCC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
-      GCC_VERSION_MAJOR := $(shell echo "$(GCC_VERSION_STRING)" | cut -d"." -f1)
-      GCC_VERSION_MINOR := $(shell echo "$(GCC_VERSION_STRING)" | cut -d"." -f2)
-      GCC_VERSION_PATCH := $(shell echo "$(GCC_VERSION_STRING)" | cut -d"." -f3)
-      TBBLIBDIR := $(TBBROOT)/lib/intel64/gcc$(GCC_VERSION_MAJOR).$(GCC_VERSION_MINOR)
-      TBBMALLOCLIB := $(wildcard $(TBBLIBDIR)/libtbbmalloc_proxy.so)
-    endif
-    ifeq (,$(TBBMALLOCLIB))
-      ifneq (0,$(TBBGCC_OLD))
-        TBBGCCDIR := $(shell ls -1 "$(TBBROOT)/lib/intel64" | tr "\n" " " | cut -d" " -f1)
-      else
-        TBBGCCDIR := $(shell ls -1 "$(TBBROOT)/lib/intel64" | tr "\n" " " | rev | cut -d" " -f2 | rev)
-      endif
-      TBBLIBDIR := $(TBBROOT)/lib/intel64/$(TBBGCCDIR)
-      TBBMALLOCLIB := $(wildcard $(TBBLIBDIR)/libtbbmalloc_proxy.so)
-    endif
-    ifneq (,$(TBBMALLOCLIB))
-      IFLAGS += $(TBBROOT)/include
-      DFLAGS += __TBBMALLOC
-      LIBS += $(TBBMALLOCLIB) $(TBBLIBDIR)/libtbbmalloc.so
-      ifneq (1,$(TBBMALLOC)) # TBBMALLOC=2
-        FCFLAGS += -heap-arrays
-      endif
-    endif
-  endif
-else ifneq (,$(TCMALLOCROOT))
-  # configured using ./configure --enable-minimal --prefix=<TCMALLOCROOT>
-  LIBS += $(TCMALLOCROOT)/lib/libtcmalloc_minimal.a
-endif
-
-MEMKIND ?= 1
-ifneq (0,$(MEMKIND))
-ifneq (,$(MEMKINDROOT))
-  #LIBS += -L$(MEMKINDROOT)/lib -lmemkind
-  LIBS += $(MEMKINDROOT)/lib/libmemkind.a
-endif
-endif
-
-# Allow for LIBSMM to ease performance comparison...
-LIBSMM ?= 0
-ifneq (0,$(LIBSMM))
-  LIBSMM_INSTALL := $(shell cd $(TOOLSRC)/toolchain; ./scripts/install_libsmm.sh)
-  LIBSMM_LIB := $(TOOLSRC)/toolchain/install/lib/libsmm_dnn.a
-endif
-ifneq (,$(wildcard $(LIBSMM_LIB))) # LIBSMM successfully downloaded
-  DFLAGS += __HAS_smm_dnn
-  LIBS += $(LIBSMM_LIB)
 endif
 
 ifneq (,$(LIBXSMMROOT))
