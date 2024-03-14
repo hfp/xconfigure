@@ -194,10 +194,17 @@ ifneq (0,$(MPI))
     DFLAGS += __MPI_VERSION=3
   endif
 else ifeq (0,$(GNU))
-  CXX := icpc
-  CC  := icc
-  FC  := ifort
-  LD  := ifort
+  ifeq (1,$(INTEL))
+    CXX := icpc
+    CC  := icc
+    FC  := ifort
+    LD  := ifort
+  else
+    CXX := icpx
+    CC  := icx
+    FC  := ifx
+    LD  := ifx
+  endif
 else # GNU
   CXX := g++
   CC  := gcc
