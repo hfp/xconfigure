@@ -38,13 +38,18 @@ CHAR_HASH := \#
 # ELPA: https://xconfigure.readthedocs.io/elpa/
 #ELPAROOT := /path/to/elpa
 
+# calculate version number given by up to three components
+version = $(shell echo "$$(( \
+  $(if $(strip $1),$(word 1,$1)*10000,0) + \
+  $(if $(strip $2),$2*100,$(if $(word 2,$1),$(word 2,$1)*100,0)) + \
+  $(if $(strip $3),$3,$(if $(word 3,$1),$(word 3,$1),0))))")
+
 COMMAND := $(shell which command 2>/dev/null)
 ifneq (,$(COMMAND))
   which = $(shell $(COMMAND) -v $1)
 else
   which = $(shell which $(firstword $1) 2>/dev/null)
 endif
-#prefix_iflags = $(addprefix -I,$(wildcard $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16}))
 prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 
@@ -171,16 +176,6 @@ ifneq (0,$(MPI))
     CC  := mpicc
     FC  := mpif90
     LD  := mpif90
-    ifneq (0,$(LEGACY))
-      DFLAGS += __HAS_NO_MPI_MOD
-    else ifeq (2,$(words $(I_MPI_ROOT) $(GNUVER)))
-      # see if $I_MPI_ROOT/include/[mpi/]gfortran/ exists
-      ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
-        IFLAGS += $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
-      else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
-        IFLAGS += $(I_MPI_ROOT)/include/gfortran/$(GNUVER)
-      endif
-    endif
   endif
   DFLAGS += __parallel
   ifneq (1,$(MPI))
@@ -333,18 +328,50 @@ endif
 # Diagnostic message to be turned off
 DIAG_DISABLE := 8290,8291,10010,10212,10411,11060
 
-CC_VERSION_STRING := $(shell $(CC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
-CC_VERSION_MAJOR := $(shell echo "$(CC_VERSION_STRING)" | cut -d"." -f1)
-CC_VERSION_MINOR := $(shell echo "$(CC_VERSION_STRING)" | cut -d"." -f2)
-CC_VERSION_PATCH := $(shell echo "$(CC_VERSION_STRING)" | cut -d"." -f3)
-ifeq (3,$(words $(CC_VERSION_MAJOR) $(CC_VERSION_MINOR) $(CC_VERSION_PATCH)))
-  CC_VERSION := $(shell echo "$$(($(CC_VERSION_MAJOR) * 10000 + $(CC_VERSION_MINOR) * 100 + $(CC_VERSION_PATCH)))")
-else ifeq (2,$(words $(CC_VERSION_MAJOR) $(CC_VERSION_MINOR)))
-  CC_VERSION := $(shell echo "$$(($(CC_VERSION_MAJOR) * 10000 + $(CC_VERSION_MINOR) * 100))")
-  CC_VERSION_PATCH := 0
-else
-  CC_VERSION_STRING := $(NULL)
-  CC_VERSION := 0
+# Make C Compiler version number available
+CC_VERSION := $(shell $(CC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+CC_VERSION_NUM := $(call version, \
+  $(shell echo "$(CC_VERSION)" | cut -d. -f1), \
+  $(shell echo "$(CC_VERSION)" | cut -d. -f2), \
+  $(shell echo "$(CC_VERSION)" | cut -d. -f3))
+
+# Make Fortran Compiler version number available
+FC_VERSION := $(shell $(FC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+FC_VERSION_NUM := $(call version, \
+  $(shell echo "$(FC_VERSION)" | cut -d. -f1), \
+  $(shell echo "$(FC_VERSION)" | cut -d. -f2), \
+  $(shell echo "$(FC_VERSION)" | cut -d. -f3))
+
+# LEGACY support may depend on some VERSION_NUM
+ifeq (0,$(LEGACY))
+  ifeq (0,$(INTEL))
+  ifneq (0,$(MPI))
+  ifneq (0,$(GNU))
+    ifeq (,$(GNUVER))
+      GNUVERS := $(shell echo "$(notdir \
+        $(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/*) \
+        $(wildcard $(I_MPI_ROOT)/include/gfortran/*))" \
+        | xargs -n1 | sort -t. -n -k1,1 -k2,2 -k3,3)
+      GNUVINT := $(foreach GNUVER,$(GNUVERS),$(call version, \
+        $(shell echo "$(GNUVER)" | cut -d. -f1), \
+        $(shell echo "$(GNUVER)" | cut -d. -f2), \
+        $(shell echo "$(GNUVER)" | cut -d. -f3)))
+      ifneq (0,$(shell echo "$$(($(lastword $(GNUVINT))<$(FC_VERSION_NUM)))"))
+        GNUVER := $(lastword $(GNUVERS))
+      endif
+    endif
+    ifneq (,$(GNUVER))
+      ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
+        IFLAGS += $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
+      else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
+        IFLAGS += $(I_MPI_ROOT)/include/gfortran/$(GNUVER)
+      endif
+    endif
+  endif
+  endif
+  endif
+else # legacy
+  DFLAGS += __HAS_NO_MPI_MOD
 endif
 
 MIC ?= 0
@@ -704,7 +731,7 @@ endif
 FYPP := $(wildcard $(TOOLSRC)/build_utils/fypp)
 ifeq (0,$(GNU))
   # workaround for certain bits introduced by GCC 7.0
-  ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION) && 0 != $(CC_VERSION)))"))
+  ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
     CFLAGS += -D_Float128=__float128
     FPCMODEL ?= precise
     FPFMODEL ?= source
@@ -1040,7 +1067,7 @@ LIBSTUBS := $(foreach DIR,$(LD_LIBSTUB_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(N
 LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -Wl,--no-as-needed
 #IFLAGS += $(INCPATHS)
 
-cleanup = $(foreach flag,$1,$(flag))
+cleanup = $(foreach FLAG,$1,$(FLAG))
 LDFLAGS := $(filter-out -ipo -ipo-separate,$(call cleanup,$(LDFLAGS)))
 CXXFLAGS := $(call cleanup,$(CXXFLAGS))
 FCFLAGS := $(call cleanup,$(FCFLAGS))
