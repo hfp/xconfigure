@@ -123,7 +123,7 @@ if [ -e .filelist ]; then
     if [ "${LINE}" ]; then # skip empty lines
       if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then
         cd "${DIR}" || exit 1
-      elif [[ "${FILE}" = *".sh" ]] && [ ! "${BACKUP}" ]; then
+      elif [[ "${FILE}" = *".sh" ]] && [ ! "${NBACKUPS}" ]; then
         FILENAME=$(${BASENAME} "${FILE}")
         if [ -e "${FILENAME}" ]; then
           >&2 echo "WARNING: ${FILENAME} exists hence not updated!"
