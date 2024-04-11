@@ -131,11 +131,11 @@ if [ -e .filelist ]; then
         fi
       fi
       if [[ "${FILE}" =~ "://" ]]; then
-        eval "${WGET} -N ${BACKUP} ${FILE}" 2>/dev/null
+        eval "${WGET} -N ${BACKUP} ${FILE} 2>/dev/null"
       else
-        eval "${WGET} -N ${BACKUP} ${BASEURL}/${APPLICATION}/${FILE}" 2>/dev/null
+        eval "${WGET} -N ${BACKUP} ${BASEURL}/${APPLICATION}/${FILE} 2>/dev/null"
       fi
-      if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then
+      if [ "${FILE}" != "${DIR}" ]; then
         cd "${ROOTDIR}" || exit 1
       else
         if [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
