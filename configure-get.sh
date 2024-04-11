@@ -42,7 +42,7 @@ then
   >&2 echo "Error: prerequisites not found!"
   exit 1
 fi
-WGET="${WGET} --no-check-certificate --no-cache -backups=${NBACKUPS}"
+WGET="${WGET} --no-check-certificate --no-cache --backups=${NBACKUPS}"
 
 if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
   WGET="${TIMEOUT} ${TIMEOUT_ARGS} ${WGET}"
@@ -57,8 +57,7 @@ fi
 SELF=$(${LS} -1t "$0".* 2>/dev/null | tail -n1)
 if [ "${SELF}" ]; then
   >&2 echo "Warning: $0 was duplicated by wget!"
-  chmod +x "${SELF}"
-  exec "${SELF}" "$*"
+  bash "$0" "$*"
   exit 0
 fi
 
