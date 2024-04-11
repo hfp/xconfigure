@@ -39,7 +39,7 @@ KINDS=$3
 if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || [ ! "${WGET}" ] || [ ! "${TAIL}" ] || \
    [ ! "${CUT}" ] || [ ! "${TR}" ] || [ ! "${LS}" ] || [ ! "${RM}" ] || [ ! "${MV}" ];
 then
-  echo "Error: prerequisites not found!"
+  >&2 echo "Error: prerequisites not found!"
   exit 1
 fi
 WGET="${WGET} --no-check-certificate --no-cache -backups=${NBACKUPS}"
@@ -49,14 +49,14 @@ if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
 fi
 
 if [ ! "${APPLICATION}" ]; then
-  echo "Please use: $0 <application-name>"
+  >&2 echo "Please use: $0 <application-name>"
   exit 1
 fi
 
 # check if configure-get.sh was duplicated by wget
 SELF=$(${LS} -1t "$0".* 2>/dev/null | tail -n1)
 if [ "${SELF}" ]; then
-  echo "Warning: $0 was duplicated by wget!"
+  >&2 echo "Warning: $0 was duplicated by wget!"
   exec "${SELF}" "$*"
   exit 0
 fi
@@ -64,7 +64,7 @@ fi
 echo "Be patient, it can take up to 30 seconds before progress is shown..."
 echo
 if [ "$(${WGET} -q -S --spider "${BASEURL}/${APPLICATION}/README.md" 2>/dev/null | ${SED} -n '/200 OK/p')" ]; then
-  echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
+  >&2 echo "Error: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
 
@@ -112,8 +112,8 @@ fi
 if [ -e .filelist ]; then
   ${TR} -s " " <.filelist | \
   while read -r LINE; do
-    FILE=$(echo "${LINE}" | ${CUT} -d" " -f1)
-    DIR=$(echo "${LINE}" | ${CUT} -d" " -f2)
+    FILE=$(${CUT} -d" " -f1 <<<"${LINE}")
+    DIR=$(${CUT} -d" " -f2 <<<"${LINE}")
     if [ "${LINE}" ]; then # skip empty lines
       if [[ "${FILE}" =~ "://" ]]; then
         ${WGET} -N "${FILE}"
