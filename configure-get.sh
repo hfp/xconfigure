@@ -57,6 +57,7 @@ fi
 SELF=$(${LS} -1t "$0".* 2>/dev/null | tail -n1)
 if [ "${SELF}" ]; then
   >&2 echo "Warning: $0 was duplicated by wget!"
+  chmod +x "${SELF}"
   exec "${SELF}" "$*"
   exit 0
 fi
