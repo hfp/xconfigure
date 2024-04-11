@@ -32,7 +32,7 @@ TIMEOUT_ARGS="--foreground 10s"
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
-NBACKUPS=9
+#NBACKUPS=3
 ARCHS=$2
 KINDS=$3
 
@@ -112,27 +112,27 @@ if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/.filelist" 
   ${SED} "" "${MSGBUFFER}"
 fi
 if [ -e .filelist ]; then
+  if [ "${NBACKUPS}" ] && [ "0" != "${NBACKUPS}" ]; then
+    BACKUP="--backups=${NBACKUPS}"
+  fi
+  ROOTDIR=${PWD}
   ${TR} -s " " <.filelist | \
   while read -r LINE; do
     FILE=$(${CUT} -d" " -f1 <<<"${LINE}")
     DIR=$(${CUT} -d" " -f2 <<<"${LINE}")
     if [ "${LINE}" ]; then # skip empty lines
-      if [ "${FILE}" = "${DIR}" ] || [ ! -d "${DIR}" ]; then
-        if [[ "${FILE}" =~ "://" ]]; then
-          ${WGET} -N --backups=${NBACKUPS} "${FILE}" 2>/dev/null
-        else
-          ${WGET} -N --backups=${NBACKUPS} "${BASEURL}/${APPLICATION}/${FILE}" 2>/dev/null
-        fi
+      if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then cd "${DIR}" || exit 1; fi
+      if [[ "${FILE}" =~ "://" ]]; then
+        eval "${WGET} -N ${BACKUP} ${FILE}" 2>/dev/null
+      else
+        eval "${WGET} -N ${BACKUP} ${BASEURL}/${APPLICATION}/${FILE}" 2>/dev/null
+      fi
+      if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then
+        cd "${ROOTDIR}" || exit 1
+      else
         if [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
           git apply "${FILE}" 2>/dev/null
         fi
-      else
-        if [[ "${FILE}" =~ "://" ]]; then
-          ${WGET} -N "${FILE}"
-        else
-          ${WGET} -N "${BASEURL}/${APPLICATION}/${FILE}"
-        fi
-        ${MV} "$(${BASENAME} "${FILE}")" "${DIR}"
       fi
     fi
   done
