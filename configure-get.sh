@@ -42,7 +42,7 @@ then
   >&2 echo "Error: prerequisites not found!"
   exit 1
 fi
-WGET="${WGET} --no-check-certificate --no-cache --backups=${NBACKUPS}"
+WGET="${WGET} --no-check-certificate --no-cache"
 
 if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
   WGET="${TIMEOUT} ${TIMEOUT_ARGS} ${WGET}"
@@ -115,15 +115,22 @@ if [ -e .filelist ]; then
     FILE=$(${CUT} -d" " -f1 <<<"${LINE}")
     DIR=$(${CUT} -d" " -f2 <<<"${LINE}")
     if [ "${LINE}" ]; then # skip empty lines
-      if [[ "${FILE}" =~ "://" ]]; then
-        ${WGET} -N "${FILE}"
+      if [ "${FILE}" = "${DIR}" ] || [ ! -d "${DIR}" ]; then
+        if [[ "${FILE}" =~ "://" ]]; then
+          ${WGET} -N --backups=${NBACKUPS} "${FILE}"
+        else
+          ${WGET} -N --backups=${NBACKUPS} "${BASEURL}/${APPLICATION}/${FILE}"
+        fi
+        if [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
+          git apply "${FILE}" 2>/dev/null
+        fi
       else
-        ${WGET} -N "${BASEURL}/${APPLICATION}/${FILE}"
-      fi
-      if [ "${FILE}" != "${DIR}" ] && [ -d "${DIR}" ]; then
+        if [[ "${FILE}" =~ "://" ]]; then
+          ${WGET} -N "${FILE}"
+        else
+          ${WGET} -N "${BASEURL}/${APPLICATION}/${FILE}"
+        fi
         ${MV} "$(${BASENAME} "${FILE}")" "${DIR}"
-      elif [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
-        git apply "${FILE}" 2>/dev/null
       fi
     fi
   done
