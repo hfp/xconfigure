@@ -32,6 +32,7 @@ TIMEOUT_ARGS="--foreground 10s"
 BASEURL=https://github.com/hfp/xconfigure/raw/master/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
+NBACKUPS=9
 ARCHS=$2
 KINDS=$3
 
@@ -41,7 +42,7 @@ then
   echo "Error: prerequisites not found!"
   exit 1
 fi
-WGET="${WGET} --no-check-certificate --no-cache"
+WGET="${WGET} --no-check-certificate --no-cache -backups=${NBACKUPS}"
 
 if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
   WGET="${TIMEOUT} ${TIMEOUT_ARGS} ${WGET}"
