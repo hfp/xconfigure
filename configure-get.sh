@@ -59,7 +59,7 @@ if [ "${SELF}" ]; then
   >&2 echo "Warning: $0 was duplicated by wget!"
   ${MV} "${SELF}" "$0"
   chmod +x "$0"
-  bash "$0" "$*"
+  exec "$0" "$*"
   exit $?
 fi
 
