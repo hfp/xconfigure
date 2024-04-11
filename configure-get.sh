@@ -57,8 +57,10 @@ fi
 SELF=$(${LS} -1t "$0".* 2>/dev/null | tail -n1)
 if [ "${SELF}" ]; then
   >&2 echo "Warning: $0 was duplicated by wget!"
+  ${MV} "${SELF}" "$0"
+  chmod +x "$0"
   bash "$0" "$*"
-  exit 0
+  exit $?
 fi
 
 echo "Be patient, it can take up to 30 seconds before progress is shown..."
@@ -117,9 +119,9 @@ if [ -e .filelist ]; then
     if [ "${LINE}" ]; then # skip empty lines
       if [ "${FILE}" = "${DIR}" ] || [ ! -d "${DIR}" ]; then
         if [[ "${FILE}" =~ "://" ]]; then
-          ${WGET} -N --backups=${NBACKUPS} "${FILE}"
+          ${WGET} -N --backups=${NBACKUPS} "${FILE}" 2>/dev/null
         else
-          ${WGET} -N --backups=${NBACKUPS} "${BASEURL}/${APPLICATION}/${FILE}"
+          ${WGET} -N --backups=${NBACKUPS} "${BASEURL}/${APPLICATION}/${FILE}" 2>/dev/null
         fi
         if [[ "${FILE}" = *".git.diff" ]] && [ "$(command -v git)" ]; then
           git apply "${FILE}" 2>/dev/null
