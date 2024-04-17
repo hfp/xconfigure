@@ -126,9 +126,12 @@ if [ "${I_MPI_ROOT}" ]; then
   export I_MPI_ADJUST_BCAST=1
   export I_MPI_SHM_HEAP=1
   #
+  if [ ! "${I_MPI_HYDRA_BOOTSTRAP}" ]; then
+    MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
+  fi
+  #
   MPIRUNFLAGS="-genvall"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
   MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_DEBUG 4"
   MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_PIN_DOMAIN auto"
   MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_PIN_ORDER bunch"
