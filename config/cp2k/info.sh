@@ -34,8 +34,8 @@ if [ "$1" ] && [ -e "$1" ]; then
   shift
 else
   FILEPATH="."
-  EXTRA=$1
 fi
+EXTRA=$1
 
 NUMFILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}" | wc -l)
 if [ "0" = "${NUMFILES}" ]; then
