@@ -37,12 +37,12 @@ else
 fi
 EXTRA=$1
 
-NUMFILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}" | wc -l)
+NUMFILES=$(find ${FILEPATH} -maxdepth ${DEPTH} ! -type d -name "${PATTERN}" | wc -l)
 if [ "0" = "${NUMFILES}" ]; then
   PATTERN="*"
 fi
 
-FILES=$(find ${FILEPATH} -maxdepth ${DEPTH} -type f -name "${PATTERN}" | grep -v "..*\.sh\|CMakeLists\.txt")
+FILES=$(find ${FILEPATH} -maxdepth ${DEPTH} ! -type d -name "${PATTERN}" | grep -v "..*\.sh\|CMakeLists\.txt")
 FILE0=$(head -n1 <<<"${FILES}")
 NUMFILES=0
 if [ "${FILE0}" ]; then
