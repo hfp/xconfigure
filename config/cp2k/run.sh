@@ -180,7 +180,7 @@ echo "${RUN}"
 echo
 
 # print environment
-env | grep "^LIBXSMM_\|^CUDA_\|^I_MPI_\|^PMI_\|^MPICH_\|^OMPI_\|^OMP_\|^ZEX_\|^IGC_\|^ACC_\|^DBM_\|^MKL_"
+env | grep "^LIBXSMM_\|^CUDA_\|^I_MPI_\|^PMI_\|^MPICH_\|^OMPI_\|^OMP_\|^ZEX_\|^IGC_\|^ACC_\|^DBM_\|^MKL_" | sort
 echo
 
 # finally evaluate/run
