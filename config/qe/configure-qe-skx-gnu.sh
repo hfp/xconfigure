@@ -19,7 +19,7 @@ OPTF=-O3
 if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/configure" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi

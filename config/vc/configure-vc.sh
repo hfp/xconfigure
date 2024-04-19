@@ -20,7 +20,7 @@ if [ "" = "${CMAKE}" ]; then
   exit 1
 fi
 
-if [ ! -e ${HERE}/CMakeLists.txt ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/CMakeLists.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
@@ -37,8 +37,9 @@ fi
 
 CONFOPTS="-DBUILD_TESTING=OFF"
 
-rm -rf ${HERE}/build
-mkdir -p ${HERE}/build && cd ${HERE}/build
+rm -rf "${HERE}/build"
+mkdir -p "${HERE}/build"
+cd "${HERE}/build" || exit 1
 
 cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} "$@" ${HERE}
 echo

@@ -14,7 +14,7 @@ if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../hdf5/${PRFX}
 
-if [ ! -e ${HERE}/configure.ac ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi

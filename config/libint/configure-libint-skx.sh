@@ -14,7 +14,7 @@ if [ "" = "$1" ]; then PRFX=intel-; else PRFX=$1-; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../libint/${PRFX}skx
 
-if [[ ((! -e ${HERE}/configure.in) && (! -e ${HERE}/configure.ac) && (! -e ${HERE}/CMakeLists.txt)) \
+if [[ ((! -e "${HERE}/configure.in") && (! -e "${HERE}/configure.ac") && (! -e "${HERE}/CMakeLists.txt")) \
     || ("${HERE}" != "$(pwd -P)") ]];
 then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -79,7 +79,7 @@ then
   export CC="${CC} -D_Float128=__float128"
 fi
 
-if [ -e ${HERE}/CMakeLists.txt ] && [ ! -e ${HERE}/configure.in ] && [ ! -e ${HERE}/configure.ac ]; then
+if [ -e "${HERE}/CMakeLists.txt" ] && [ ! -e "${HERE}/configure.in" ] && [ ! -e "${HERE}/configure.ac" ]; then
   if [ ! "$(command -v cmake)" ]; then
     echo "Error: XCONFIGURE requires CMake to build LIBINT!"
     exit 1
@@ -89,17 +89,17 @@ if [ -e ${HERE}/CMakeLists.txt ] && [ ! -e ${HERE}/configure.in ] && [ ! -e ${HE
     -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
 else
-  if [ -e ${HERE}/fortran/Makefile ] || [ -e ${HERE}/fortran/Makefile.in ]; then
-    sed -i '/fortran_example:/!b;n;s/CXX/FC/g' ${HERE}/fortran/Makefile*
+  if [ -e "${HERE}/fortran/Makefile" ] || [ -e "${HERE}/fortran/Makefile.in" ]; then
+    sed -i '/fortran_example:/!b;n;s/CXX/FC/g' "${HERE}"/fortran/Makefile*
   fi
-  # broken build system incl. "make -f ${HERE}/fortran/Makefile distclean"
-  if [ -e ${HERE}/fortran/Makefile ]; then
-    cd ${HERE}/fortran
+  # broken build system incl. "make -f "${HERE}/fortran/Makefile" distclean"
+  if [ -e "${HERE}/fortran/Makefile" ]; then
+    cd "${HERE}/fortran" || exit 1
     make distclean
-    cd ${HERE}
+    cd "${HERE}" || exit 1
   fi
 
-  if [ ! -e ${HERE}/configure ]; then
+  if [ ! -e "${HERE}/configure" ]; then
     autoconf
   fi
 

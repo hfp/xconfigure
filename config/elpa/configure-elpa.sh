@@ -15,7 +15,7 @@ if [ "" = "$1" ]; then PRFX=intel-; else PRFX=$1-; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../elpa/${PRFX}omp
 
-if [ ! -e ${HERE}/configure ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/configure" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
@@ -111,15 +111,15 @@ then
 fi
 
 # Development versions may require autotools mechanics
-if [ -e ${HERE}/autogen.sh ]; then
+if [ -e "${HERE}/autogen.sh" ]; then
   ./autogen.sh
 fi
 
-if [ ! -e ${HERE}/remove_xcompiler ]; then
-  echo "#!/usr/bin/env bash" > ${HERE}/remove_xcompiler
-  echo "remove=(-Xcompiler)" >> ${HERE}/remove_xcompiler
-  echo "\${@/\${remove}}" >> ${HERE}/remove_xcompiler
-  chmod +x ${HERE}/remove_xcompiler
+if [ ! -e "${HERE}/remove_xcompiler" ]; then
+  echo "#!/usr/bin/env bash" > "${HERE}/remove_xcompiler"
+  echo "remove=(-Xcompiler)" >> "${HERE}/remove_xcompiler"
+  echo "\${@/\${remove}}" >> "${HERE}/remove_xcompiler"
+  chmod +x "${HERE}/remove_xcompiler"
 fi
 
 ./configure --disable-option-checking \
@@ -131,7 +131,7 @@ sed -i \
   -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
   Makefile
 
-if [ -e ${HERE}/config.h ]; then
+if [ -e "${HERE}/config.h" ]; then
   VERSION=$(grep ' VERSION ' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')
   if [ "" != "${VERSION}" ]; then
     if [ "0" != "$(grep ' WITH_OPENMP' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')" ]; then
