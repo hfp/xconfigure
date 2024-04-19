@@ -1112,16 +1112,7 @@ endif
 
 ifneq (,$(filter 0,$(GNU)))
 ifneq (,$(filter-out 0,$(BEEP)))
-helium_sampling.o: helium_sampling.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
-	$(MAKE_FYPP)
-	$(FC) -c $(FCFLAGS) -O$(OPT1) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-qs_dispersion_nonloc.o: qs_dispersion_nonloc.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
-	$(MAKE_FYPP)
-	$(FC) -c $(FCFLAGS) -O$(OPT1) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-endif
-ifneq (,$(filter-out 0,$(INTEL)))
+ifneq (,$(filter-out 0 1,$(INTEL)))
 pw_methods.o: pw_methods.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
@@ -1130,5 +1121,6 @@ xc.o: xc.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+endif
 endif
 endif
