@@ -45,9 +45,13 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 
-export AR="xiar"
-export FC="ifort"
-export CC="icc"
-export CXX="icpc"
+FC="ifx"; CC="icx"; CXX="icpx"
+if [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ]; then
+  FC="ifort"
+  CC="icc"
+  CXX="icpc"
+fi
 
+export AR="xiar"
+export FC CC CXX
 make config prefix=${DEST} cc=${CC} ${CONFOPTS} "$@"

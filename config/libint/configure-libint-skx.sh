@@ -46,10 +46,15 @@ export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 export LIBS="-lstdc++"
 
+FC="ifx"; CC="icx"; CXX="icpx"
+if [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ]; then
+  FC="ifort"
+  CC="icc"
+  CXX="icpc"
+fi
+
 export AR="xiar"
-export FC="ifort"
-export CC="icc"
-export CXX="icpc"
+export FC CC CXX
 export F77=${FC}
 export F90=${FC}
 

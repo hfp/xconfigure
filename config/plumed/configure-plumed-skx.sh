@@ -44,10 +44,17 @@ export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
+FC="ifx"; CC="icx"; CXX="icpx"
+if [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ]; then
+  FC="ifort"
+  CC="icc"
+  CXX="icpc"
+fi
+
 export AR="xiar"
-export FC="mpiifort"
-export CC="mpiicc"
-export CXX="mpiicpc"
+export FC="mpiifort -fc=${FC}"
+export CC="mpiicc   -cc=${CC}"
+export CXX="mpiicpc -cxx=${CXX}"
 export F77=${FC}
 export F90=${FC}
 
