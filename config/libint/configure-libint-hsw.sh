@@ -83,6 +83,7 @@ if [ -e ${HERE}/CMakeLists.txt ] && [ ! -e ${HERE}/configure.in ] && [ ! -e ${HE
     echo "Error: XCONFIGURE requires CMake to build LIBINT!"
     exit 1
   fi
+  rm -f "${HERE}/CMakeCache.txt"
   cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
     -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
