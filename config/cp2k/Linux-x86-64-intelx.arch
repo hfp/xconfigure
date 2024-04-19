@@ -74,9 +74,9 @@ ifeq (0,$(GNU))
 endif
 
 # check if the Intel Development Tools are available
-INTEL ?= $(if $(filter icc% icx%, \
+INTEL ?= $(strip $(if $(filter icc% icx% Intel%, \
   $(shell $(CC) --version 2>/dev/null | head -n1 | cut -d' ' -f1)), \
-  $(if $(call which,ifx),2,1),0)
+  $(if $(call which,ifx), 2, 1), 0))
 
 ifneq (0,$(INTEL))
   CFG := intel
