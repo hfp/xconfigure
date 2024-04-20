@@ -878,7 +878,7 @@ always-build:
 		-f "$(LIBXSMMROOT)/Makefile" --no-print-directory \
 		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" WERROR=0 \
 		STATIC=1 JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
-		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 \
+		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 VTUNE=0 \
 		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) INTEL=$(INTEL) GNU=$(GNU) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
   endif
