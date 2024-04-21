@@ -57,6 +57,13 @@ prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13
 # or pickup the Intel Compiler (if available).
 GNU ?= 0
 ifeq (0,$(GNU))
+  ifeq (,$(shell echo "$${FC}"))
+    ifneq (,$(filter ifx ifx2,$(notdir $(call which,ifx))$(INTEL)))
+      FC := ifx
+    else ifneq (,$(filter ifort ifort1,$(notdir $(call which,ifort))$(INTEL)))
+      FC := ifort
+    endif
+  endif
   ifeq (,$(shell echo "$${CXX}"))
     ifneq (,$(filter icpx icpx2,$(notdir $(call which,icpx))$(INTEL)))
       CXX := icpx
@@ -160,9 +167,9 @@ endif
 SCALAPACK ?= $(MPI)
 ifneq (0,$(MPI))
   ifeq (0,$(GNU))
-    ifeq (1,$(INTEL))
-      CXX := mpiicpc
-      CC  := mpiicc
+    ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
+      CXX := mpiicpc $(if $(call which,icpc),$(NULL),-cxx=icpx)
+      CC  := mpiicc  $(if $(call which,icc),$(NULL),-cc=icx)
       FC  := mpiifort
       LD  := mpiifort
     else
@@ -184,9 +191,9 @@ ifneq (0,$(MPI))
     DFLAGS += __MPI_VERSION=3
   endif
 else ifeq (0,$(GNU))
-  ifeq (1,$(INTEL))
-    CXX := icpc
-    CC  := icc
+  ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
+    CXX := $(if $(call which,icpc),icpc,icpx)
+    CC  := $(if $(call which,icc),icc,icx)
     FC  := ifort
     LD  := ifort
   else
