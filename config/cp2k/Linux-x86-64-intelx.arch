@@ -595,18 +595,24 @@ ifneq (0,$(LIBXSMM)) # incl. undefined
   endif
 endif
 ifneq (0,$(LIBINT)) # incl. undefined
-  ifneq (,$(wildcard $(CP2KHOME)/../libint/$(XCFG)))
+  ifneq (,$(wildcard $(LIBINT_BASEDIR)/$(XCFG)))
+    LIBINTROOT ?= $(abspath $(LIBINT_BASEDIR)/$(XCFG))
+  else ifneq (,$(wildcard $(CP2KHOME)/../libint/$(XCFG)))
     LIBINTROOT ?= $(abspath $(CP2KHOME)/../libint/$(XCFG))
   else ifneq (,$(wildcard $(HOME)/libint/$(XCFG)))
     LIBINTROOT ?= $(abspath $(HOME)/libint/$(XCFG))
   else ifneq (0,$(GNU))
-    ifneq (,$(wildcard $(CP2KHOME)/../libint/gnu))
+    ifneq (,$(wildcard $(LIBINT_BASEDIR)/gnu))
+      LIBINTROOT ?= $(abspath $(LIBINT_BASEDIR)/gnu)
+    else ifneq (,$(wildcard $(CP2KHOME)/../libint/gnu))
       LIBINTROOT ?= $(abspath $(CP2KHOME)/../libint/gnu)
     else ifneq (,$(wildcard $(HOME)/libint/gnu))
       LIBINTROOT ?= $(abspath $(HOME)/libint/gnu)
     endif
   else ifneq (0,$(INTEL))
-    ifneq (,$(wildcard $(CP2KHOME)/../libint/intel))
+    ifneq (,$(wildcard $(LIBINT_BASEDIR)/intel))
+      LIBINTROOT ?= $(abspath $(LIBINT_BASEDIR)/intel)
+    else ifneq (,$(wildcard $(CP2KHOME)/../libint/intel))
       LIBINTROOT ?= $(abspath $(CP2KHOME)/../libint/intel)
     else ifneq (,$(wildcard $(HOME)/libint/intel))
       LIBINTROOT ?= $(abspath $(HOME)/libint/intel)
