@@ -1118,8 +1118,8 @@ mp2_optimize_ri_basis.o: mp2_optimize_ri_basis.F
 endif
 
 ifneq (,$(filter 0,$(GNU)))
-ifneq (,$(filter-out 0,$(BEEP)))
 ifneq (,$(filter-out 0 1,$(INTEL)))
+#ifneq (,$(filter-out 0,$(BEEP)))
 pw_methods.o: pw_methods.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
@@ -1128,6 +1128,6 @@ xc.o: xc.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-endif
+#endif
 endif
 endif
