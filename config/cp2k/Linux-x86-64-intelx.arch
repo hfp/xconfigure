@@ -156,12 +156,14 @@ endif
 #FPCMODEL := fast=2
 #FPFMODEL := fast=2
 
-# FP compiler flags
-ifeq (1,$(INTEL))
-  FPFLAGS += -complex-limited-range
-  #FPFLAGS += -nostandard-realloc-lhs
-  #FPFLAGS += -fimf-domain-exclusion=1
-  #FPFLAGS += -fast-transcendentals
+# advanced compiler flags
+ifneq (0,$(INTEL))
+  ifeq (1,$(INTEL))
+    FCFLAGS += -complex-limited-range
+    #FCFLAGS += -fimf-domain-exclusion=1
+    #FCFLAGS += -fast-transcendentals
+  endif
+  #FCFLAGS += -nostandard-realloc-lhs
 endif
 
 SCALAPACK ?= $(MPI)
