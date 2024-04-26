@@ -217,7 +217,7 @@ XFC := $(FC)
 OCL ?= 0
 CUDA ?= 0
 ifeq (opencl,$(USE_ACCEL))
-  OCL := 1
+  OCL := 2
 else ifeq (cuda,$(USE_ACCEL))
   CUDA := 1
 else ifneq (,$(USE_ACCEL))
