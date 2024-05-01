@@ -335,7 +335,7 @@ ifneq (0,$(NDEBUG))
 endif
 
 # Diagnostic message to be turned off
-DIAG_DISABLE := 8290,8291,10010,10212,10411,11060
+DIAG_DISABLE := 8290,8291,10010,10212,10411,10448,11060
 
 # Make C Compiler version number available
 CC_VERSION := $(shell $(CC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
