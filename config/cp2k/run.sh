@@ -119,7 +119,7 @@ else
 fi
 
 if [ "${I_MPI_ROOT}" ]; then
-  export I_MPI_FABRICS=shm
+  #export I_MPI_FABRICS=shm:ofi
   export I_MPI_COLL_INTRANODE=pt2pt
   export I_MPI_DYNAMIC_CONNECTION=1
   export I_MPI_ADJUST_REDUCE=1
