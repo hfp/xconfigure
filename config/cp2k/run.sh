@@ -175,12 +175,14 @@ fi
 cd "$(dirname "${WORKLOAD}")" || exit
 echo "${EXEDIR}"
 ldd "${EXE}"
-if [ "$(command -v numactl)" ]; then numactl -H; fi
-echo "${RUN}"
 echo
 
 # print environment
 env | grep "^LD_PRELOAD\|^LIBXSMM_\|^CUDA_\|^I_MPI_\|^PMI_\|^MPICH_\|^OMPI_\|^OMP_\|^ZEX_\|^IGC_\|^ACC_\|^DBM_\|^MKL_" | sort
+echo
+
+# print final command
+echo "${RUN}" | xargs
 echo
 
 # finally evaluate/run
