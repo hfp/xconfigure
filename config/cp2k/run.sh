@@ -11,7 +11,7 @@ if [ ! "${MAXNT}" ]; then
   MAXNT=1
 fi
 
-# consider the following in your .bashrc
+# consider the following in .bashrc
 # ulimit -s unlimited
 # ulimit -c0
 
@@ -25,6 +25,14 @@ fi
 if [ ! "${ACC_OPENCL_VERBOSE}" ]; then
   export ACC_OPENCL_VERBOSE=1
 fi
+
+# adjust default memory allocator
+if [ "0" != "${TBBMALLOC}" ] && [ ! "${LD_PRELOAD}" ] && \
+   [ -e "${TBBROOT}/lib/libtbbmalloc_proxy.so" ];
+then
+  export LD_PRELOAD=${TBBROOT}/lib/libtbbmalloc_proxy.so
+fi
+
 if [ ! "${EXEVER}" ]; then
   EXEVER=exe
 fi
