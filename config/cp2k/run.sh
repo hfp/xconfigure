@@ -27,8 +27,8 @@ if [ ! "${ACC_OPENCL_VERBOSE}" ]; then
 fi
 
 # adjust default memory allocator
-if [ "0" != "${TBBMALLOC}" ] && [ ! "${LD_PRELOAD}" ] && [ "${TBBROOT}" ] && \
-   [ -e "${TBBROOT}/lib/libtbbmalloc_proxy.so" ];
+if [ "${TBBMALLOC}" ] && [ "0" != "${TBBMALLOC}" ] && [ "${TBBROOT}" ] && \
+   [ ! "${LD_PRELOAD}" ] && [ -e "${TBBROOT}/lib/libtbbmalloc_proxy.so" ];
 then
   export LD_PRELOAD=${TBBROOT}/lib/libtbbmalloc_proxy.so
 fi
