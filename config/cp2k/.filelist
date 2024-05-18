@@ -2,6 +2,7 @@ Linux-x86-64-intelx.arch arch
 Linux-x86-64-intelx.psmp arch
 Linux-x86-64-intelx.ssmp arch
 multirun.sh
+clean.sh
 plan.sh
 info.sh
 run.sh
