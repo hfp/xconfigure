@@ -186,7 +186,7 @@ ldd "${EXE}"
 echo
 
 # print environment
-env | grep "^LD_PRELOAD\|^LIBXSMM_\|^CUDA_\|^I_MPI_\|^PMI_\|^MPICH_\|^OMPI_\|^OMP_\|^ZEX_\|^IGC_\|^ACC_\|^DBM_\|^MKL_" | sort
+env | grep "^LD_PRELOAD\|^LIBXSMM_\|^CUDA_\|^I_MPI_\|^PMI_\|^MPICH_\|^OMPI_\|^OMP_\|^ZEX_\|^IGC_\|^ACC_\|^DBM_\|^MKL_\|^OPENCL_" | sort
 echo
 
 # print final command
