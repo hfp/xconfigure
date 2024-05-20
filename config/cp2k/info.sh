@@ -9,8 +9,7 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
-
-PATTERN="*.txt"
+PATTERNS="*.txt *.out"
 
 BEST=0
 if [ "-best" = "$1" ]; then
@@ -37,12 +36,14 @@ else
 fi
 EXTRA=$1
 
-NUMFILES=$(find ${FILEPATH} -maxdepth ${DEPTH} ! -type d -name "${PATTERN}" | wc -l)
-if [ "0" = "${NUMFILES}" ]; then
-  PATTERN="*"
+for PATTERN in ${PATTERNS}; do
+  FILES+="$(find ${FILEPATH} -maxdepth ${DEPTH} ! -type d -name "${PATTERN}" | grep -v "..*\.sh\|CMakeLists\.txt") "
+done
+FILES=$(xargs -n1 <<<"${FILES}")
+if [ ! "${FILES}" ]; then
+  >&2 echo "WARNING: '${PATTERNS}' does not match any logfile."
 fi
 
-FILES=$(find ${FILEPATH} -maxdepth ${DEPTH} ! -type d -name "${PATTERN}" | grep -v "..*\.sh\|CMakeLists\.txt")
 FILE0=$(head -n1 <<<"${FILES}")
 NUMFILES=0
 if [ "${FILE0}" ]; then
