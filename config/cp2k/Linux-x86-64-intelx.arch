@@ -235,7 +235,7 @@ CUDA_PATH := $(if $(CUDA_FILE),$(NVCC_PATH)/../cuda,$(NVCC_PATH))
 CUDA_LIBS := $(if $(wildcard $(CUDA_PATH)/lib64),lib64,lib)
 
 # MKL_MPIRTL: intelmpi, openmpi
-MKL_MPIRTL ?= intelmpi
+MKL_MPIRTL ?= $(if $(I_MPI_ROOT),intelmpi,openmpi)
 ifneq (0,$(BLAS))
   ifneq (Darwin,$(UNAME))
     MKL_PLATFORM := linux
@@ -356,24 +356,31 @@ ifeq (0,$(LEGACY))
   ifeq (0,$(INTEL))
   ifneq (0,$(MPI))
   ifneq (0,$(GNU))
-    ifeq (,$(GNUVER))
-      GNUVERS := $(shell echo "$(notdir \
-        $(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/*) \
-        $(wildcard $(I_MPI_ROOT)/include/gfortran/*))" \
-        | xargs -n1 | sort -t. -n -k1,1 -k2,2 -k3,3)
-      GNUVINT := $(foreach GNUVER,$(GNUVERS),$(call version, \
-        $(shell echo "$(GNUVER)" | cut -d. -f1), \
-        $(shell echo "$(GNUVER)" | cut -d. -f2), \
-        $(shell echo "$(GNUVER)" | cut -d. -f3)))
-      ifneq (0,$(shell echo "$$(($(lastword $(GNUVINT))<$(FC_VERSION_NUM)))"))
-        GNUVER := $(lastword $(GNUVERS))
+    ifneq (,$(I_MPI_ROOT))
+      ifeq (,$(GNUVER))
+        GNUVERS := $(shell echo "$(notdir \
+          $(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/*) \
+          $(wildcard $(I_MPI_ROOT)/include/gfortran/*))" \
+          | xargs -n1 | sort -t. -n -k1,1 -k2,2 -k3,3)
+        GNUVINT := $(foreach GNUVER,$(GNUVERS),$(call version, \
+          $(shell echo "$(GNUVER)" | cut -d. -f1), \
+          $(shell echo "$(GNUVER)" | cut -d. -f2), \
+          $(shell echo "$(GNUVER)" | cut -d. -f3)))
+        ifneq (0,$(shell echo "$$(($(lastword $(GNUVINT))<$(FC_VERSION_NUM)))"))
+          GNUVER := $(lastword $(GNUVERS))
+        endif
       endif
-    endif
-    ifneq (,$(GNUVER))
-      ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
-        IFLAGS += $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
-      else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
-        IFLAGS += $(I_MPI_ROOT)/include/gfortran/$(GNUVER)
+      ifneq (,$(GNUVER))
+        ifneq (,$(wildcard $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)))
+          IFLAGS += $(I_MPI_ROOT)/include/mpi/gfortran/$(GNUVER)
+        else ifneq (,$(wildcard $(I_MPI_ROOT)/include/gfortran/$(GNUVER)))
+          IFLAGS += $(I_MPI_ROOT)/include/gfortran/$(GNUVER)
+        endif
+      endif
+    else
+      MPIROOT=$dir $(dir $(call which,$(FC))))
+      ifneq (,$(wildcard $(MPIROOT)/lib/*.mod))
+        IFLAGS += $(MPIROOT)/lib
       endif
     endif
   endif
