@@ -140,14 +140,14 @@ if [ "${I_MPI_ROOT}" ]; then
   MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_DEBUG 4"
   MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_PIN_DOMAIN auto"
   MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_PIN_ORDER bunch"
-  NPERNODE=-perhost
+  MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
   ENVFLAG=-genv
   ENVEQ=' '
 else
   HOSTS=$(sed 's/^\(..*[^,]\),*$/\1/' <<<"${HOSTS}" | sed -e "s/,/:${NC},/g" -e "s/$/:${NC}/")
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
-  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by slot:PE=${NC}"
-  NPERNODE=-npernode
+  #MPIRUNFLAGS="${MPIRUNFLAGS} --map-by slot:PE=${NC}"
+  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:${NRANKS}:node"
   ENVFLAG=-x
   ENVEQ='='
 fi
@@ -157,8 +157,7 @@ if [ "0" != "${MYNODES}" ]; then
 fi
 
 RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
-  -np $((NRANKS*NUMNODES)) ${NPERNODE} ${NRANKS} \
-  ${NUMACTL} ${PREFX} \
+  -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
 ${EXE} ${WORKLOAD} ${ARGS}"
 
 # setup OpenMP environment
