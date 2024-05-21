@@ -146,8 +146,7 @@ if [ "${I_MPI_ROOT}" ]; then
 else
   HOSTS=$(sed 's/^\(..*[^,]\),*$/\1/' <<<"${HOSTS}" | sed -e "s/,/:${NC},/g" -e "s/$/:${NC}/")
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
-  #MPIRUNFLAGS="${MPIRUNFLAGS} --map-by slot:PE=${NC}"
-  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:${NRANKS}:node"
+  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
   ENVFLAG=-x
   ENVEQ='='
 fi
