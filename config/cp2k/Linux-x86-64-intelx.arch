@@ -545,7 +545,7 @@ else # GNU GCC
       ifeq (,$(NVCC))
         FCFLAGS += -Werror=uninitialized -Werror=unused-dummy-argument -Wno-maybe-uninitialized
       endif
-      FCFLAGS += -std=f2008 -Werror=realloc-lhs-all
+      FCFLAGS += -std=f2008 #-Werror=realloc-lhs-all
     endif
     OPT ?= 0
   endif
