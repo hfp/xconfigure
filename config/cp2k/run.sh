@@ -15,16 +15,9 @@ fi
 # ulimit -s unlimited
 # ulimit -c0
 
-if [ ! "${CP2K_DATA_DIR}" ]; then
-  export CP2K_DATA_DIR=${ROOT}/data
-fi
-
+export CP2K_DATA_DIR=${CP2K_DATA_DIR:-${ROOT}/data}
+export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
 #NUMACTL="numactl --preferred=1"
-#export MPICH_ASYNC_PROGRESS=1
-#export LIBXSMM_VERBOSE=1
-if [ ! "${ACC_OPENCL_VERBOSE}" ]; then
-  export ACC_OPENCL_VERBOSE=1
-fi
 
 # adjust default memory allocator
 if [ "${TBBMALLOC}" ] && [ "0" != "${TBBMALLOC}" ] && [ "${TBBROOT}" ] && \
@@ -127,22 +120,27 @@ else
 fi
 
 if [ "${I_MPI_ROOT}" ]; then
-  #export I_MPI_FABRICS=shm:ofi
-  export I_MPI_COLL_INTRANODE=pt2pt
-  export I_MPI_DYNAMIC_CONNECTION=1
-  export I_MPI_ADJUST_REDUCE=1
-  export I_MPI_ADJUST_BCAST=1
-  export I_MPI_SHM_HEAP=1
-  #
   MPIRUNFLAGS="-genvall"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
   MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_DEBUG 4"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_PIN_DOMAIN auto"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -genv I_MPI_PIN_ORDER bunch"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
   ENVFLAG=-genv
   ENVEQ=' '
+  #
+  #export I_MPI_FABRICS=shm:ofi
+  export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
+  export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
+  export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
+  export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
+  export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
+  #
+  export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
+  export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
+  export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
+  #
+  if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
+    export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
+  fi
 else
   HOSTS=$(sed 's/^\(..*[^,]\),*$/\1/' <<<"${HOSTS}" | sed -e "s/,/:${NC},/g" -e "s/$/:${NC}/")
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
@@ -173,9 +171,7 @@ if [ ! "${OMP_NUM_THREADS}" ]; then
   fi
 fi
 # OMP_PROC_BIND: default
-if [ ! "${OMP_PROC_BIND}" ]; then
-  export OMP_PROC_BIND=close
-fi
+export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
 
 # print some system info and commands
 cd "$(dirname "${WORKLOAD}")" || exit
