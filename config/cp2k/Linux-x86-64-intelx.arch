@@ -845,13 +845,17 @@ ifneq (,$(LIBXSMMROOT))
     ifeq (0,$(GNU))
       DFLAGS += _OPENMP_SIMD
       OPTFLAGS += -qopenmp-simd
-    else ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
-    # GNU: https://github.com/cp2k/dbcsr/issues/217
-      DFLAGS += _OPENMP_SIMD
-      OPTFLAGS += -fopenmp-simd
+    else
+      ifneq (0,$(DBG))
+      # suppress "Fortran runtime warning:"
+        LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
+      endif
+      ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
+      # GNU: https://github.com/cp2k/dbcsr/issues/217
+        DFLAGS += _OPENMP_SIMD
+        OPTFLAGS += -fopenmp-simd
+      endif
     endif
-    # investigate __HAS_smm_vec
-    #DFLAGS += __HAS_smm_vec
 
     # link libxsmmext (needed at least in case of WRAP)
     LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmf.a
@@ -985,10 +989,6 @@ OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
 ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
   ifneq (0,$(OCL))
     DFLAGS += __ACC __DBCSR_ACC
-    ifneq (0,$(DBG))
-      # suppress "Fortran runtime warning:"
-      LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
-    endif
     ifneq (1,$(OCL))
       OPENCL_DBM_CMN := $(wildcard $(DBCSRSRC)/acc/opencl/common/*.h)
       OPENCL_DBM_SRC := $(CP2KHOME)/src/dbm/dbm_multiply_opencl.cl
