@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2001,SC2034
+# shellcheck disable=SC2001
 #
 ROOT=${PWD}
 ROOT=$(cd "$(dirname "$0")" && pwd -P)
@@ -50,21 +50,17 @@ if [ "${JOBID}" ]; then  # cleanup
   JOBID=$(cut -d. -f1 <<<"${JOBID}")
 fi
 
-#MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk "
-PREFX=${HPCWL_COMMAND_PREFIX}
-#PREFX="${PREFX} -gtool 'amplxe-cl -r vtune -data-limit 0 -collect hotspots -knob sampling-mode=hw -knob enable-stack-collection=true:0=exclusive'"
-#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=survey:4=exclusive'"
-#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=tripcounts --flop:4=exclusive'"
-#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=roofline:4=exclusive'"
-#PREFX="${PREFX} ${ROOT}/multirun.sh 2"
-#MPIRUNPREFX="numactl --cpunodebind=0 --membind=0 --"
-ARGS=""
-
-if [ "$1" ] && [ -f "$1" ]; then
-  WORKLOAD=$1
+if [ "$1" ]; then
+  if [ -f "$1" ]; then
+    WORKLOAD=$1
+  else
+    >&2 echo "ERROR: $1 not found!"
+    exit 1
+  fi
   shift
 else
-  WORKLOAD=${ROOT}/tests/QS/benchmark/H2O-32.inp
+  >&2 echo "Please use: $0 /file/to/workload.inp [num-nodes [ranks-per-node]]"
+  exit 1
 fi
 WORKLOAD=$(cd "$(dirname "${WORKLOAD}")" && pwd -P)/$(basename "${WORKLOAD}")
 
@@ -80,7 +76,6 @@ if [ -e "${ROOT}/mynodes.sh" ] && [ "0" != "${MYNODES}" ]; then
 fi
 HOSTS=$(cut -d, -f1-${NUMNODES} <<<"${HOSTS}")
 if [ ! "${HOSTS}" ]; then HOSTS=localhost; fi
-HOST=$(cut -d, -f1 <<<"${HOSTS}")
 
 if [ "$(command -v lscpu)" ]; then
   NS=$(lscpu | grep -m1 "Socket(s)" | tr -d " " | cut -d: -f2)
@@ -123,13 +118,21 @@ else
   NRANKS=${NC}
 fi
 
+#MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk "
+PREFX=${HPCWL_COMMAND_PREFIX}
+#PREFX="${PREFX} -gtool 'amplxe-cl -r vtune -data-limit 0 -collect hotspots -knob sampling-mode=hw -knob enable-stack-collection=true:0=exclusive'"
+#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=survey:4=exclusive'"
+#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=tripcounts --flop:4=exclusive'"
+#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=roofline:4=exclusive'"
+#PREFX="${PREFX} ${ROOT}/multirun.sh 2"
+#MPIRUNPREFX="numactl --cpunodebind=0 --membind=0 --"
+ARGS="$*"
+
 if [ "${I_MPI_ROOT}" ]; then
   MPIRUNFLAGS="-genvall"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
   MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
-  ENVFLAG=-genv
-  ENVEQ=' '
   #
   #export I_MPI_FABRICS=shm:ofi
   export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
@@ -149,8 +152,6 @@ else
   HOSTS=$(sed 's/^\(..*[^,]\),*$/\1/' <<<"${HOSTS}" | sed -e "s/,/:${NC},/g" -e "s/$/:${NC}/")
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
-  ENVFLAG=-x
-  ENVEQ='='
 fi
 
 if [ "0" != "${MYNODES}" ]; then
