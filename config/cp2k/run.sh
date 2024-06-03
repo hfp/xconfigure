@@ -30,13 +30,6 @@ then
   fi
 fi
 
-if [ ! "${EXEVER}" ]; then
-  EXEVER=exe
-fi
-
-EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
-EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
-
 if [ "${LSB_JOBID}" ]; then
   JOBID=${LSB_JOBID};
 elif [ "${PBS_JOBID}" ]; then
@@ -118,14 +111,14 @@ else
   NRANKS=${NC}
 fi
 
-#MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk "
 PREFX=${HPCWL_COMMAND_PREFIX}
-#PREFX="${PREFX} -gtool 'amplxe-cl -r vtune -data-limit 0 -collect hotspots -knob sampling-mode=hw -knob enable-stack-collection=true:0=exclusive'"
-#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=survey:4=exclusive'"
-#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=tripcounts --flop:4=exclusive'"
-#PREFX="${PREFX} -gtool 'advixe-cl -project-dir=advisor --collect=roofline:4=exclusive'"
-#PREFX="${PREFX} ${ROOT}/multirun.sh 2"
+#MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk"
 #MPIRUNPREFX="numactl --cpunodebind=0 --membind=0 --"
+#PREFX="${PREFX} -gtool 'vtune -r vtune -data-limit 0 -collect hotspots -knob sampling-mode=hw -knob enable-stack-collection=true:$((NRANKS/2))=exclusive'"
+#PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=survey:$((NRANKS/2))=exclusive'"
+#PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=tripcounts --flop:$((NRANKS/2))=exclusive'"
+#PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=roofline:$((NRANKS/2))=exclusive'"
+#PREFX="${PREFX} ${ROOT}/multirun.sh 2"
 ARGS="$*"
 
 if [ "${I_MPI_ROOT}" ]; then
@@ -158,6 +151,8 @@ if [ "0" != "${MYNODES}" ]; then
   HST="-host ${HOSTS}"
 fi
 
+EXEVER=${EXEVER:-exe}
+EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
 RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
   -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
 ${EXE} ${WORKLOAD} ${ARGS}"
@@ -180,7 +175,7 @@ export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
 
 # print some system info and commands
 cd "$(dirname "${WORKLOAD}")" || exit
-echo "${EXEDIR}"
+echo "$(cd "$(dirname "${EXE}")" && pwd -P)"
 ldd "${EXE}"
 echo
 
