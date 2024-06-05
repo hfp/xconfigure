@@ -750,11 +750,6 @@ ifeq (0,$(GNU))
     CFLAGS += -D_Float128=__float128
     FPCMODEL ?= precise
     FPFMODEL ?= source
-    # Workaround (see bottom of this file); disabled for older
-    # versions of CP2K (use recommended toolchain!) due to
-    # fypp preprocessed files, renamed translation units, etc.
-    #
-    BEEP ?= $(if $(FYPP),1,0)
   endif
   ifneq (,$(strip $(FPCMODEL)))
     FPCMODEL := -fp-model $(FPCMODEL)
@@ -763,8 +758,7 @@ ifeq (0,$(GNU))
     FPFMODEL := -fp-model $(FPFMODEL)
   endif
 endif
-# default if not set earlier
-BEEP ?= 0
+BEEP ?= 1
 
 ifneq (0,$(OMP))
   ifeq (0,$(GNU))
@@ -1131,7 +1125,7 @@ endif
 
 ifneq (,$(filter 0,$(GNU)))
 ifneq (,$(filter-out 0 1,$(INTEL)))
-#ifneq (,$(filter-out 0,$(BEEP)))
+ifneq (,$(filter-out 0,$(BEEP)))
 pw_methods.o: pw_methods.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
@@ -1140,6 +1134,6 @@ xc.o: xc.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-#endif
+endif
 endif
 endif
