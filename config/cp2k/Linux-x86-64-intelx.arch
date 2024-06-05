@@ -47,6 +47,12 @@ version = $(shell echo "$$(( \
 WHICH := $(shell which which 2>/dev/null || echo "command -v")
 which = $(shell $(WHICH) 2>/dev/null $(firstword $1))
 
+SED := $(call which,gsed)
+# GNU sed is desired (macOS)
+ifeq (,$(SED))
+  SED := $(call which,sed)
+endif
+
 prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 
@@ -322,7 +328,7 @@ ifneq (0,$(NDEBUG))
   ifneq (1,$(NDEBUG)) # CP2K and DBCSR
   else # only DBCSR
     ifeq (,$(wildcard $(CP2KHOME)/.inject.sh))
-      INJECT := $(shell printf '$(CHAR_HASH)!/usr/bin/env bash\nif [ "$$4" ]; then\n\tif [ "$$(echo "$${@:4}" | sed -n "/$$1/p" 2>/dev/null)" ]; then\n\t\texec $$3 $$2 "$${@:4}"\n\telif [ "$$1" ]; then\n\t\texec $$3 "$${@:4}"\n\telse\n\t\texec $$3 $$2 "$${@:4}"\n\tfi\nelse\n\texec $$3\nfi\n' >$(CP2KHOME)/.inject.sh)
+      INJECT := $(shell printf '$(CHAR_HASH)!/usr/bin/env bash\nif [ "$$4" ]; then\n\tif [ "$$(echo "$${@:4}" | $(SED) -n "/$$1/p" 2>/dev/null)" ]; then\n\t\texec $$3 $$2 "$${@:4}"\n\telif [ "$$1" ]; then\n\t\texec $$3 "$${@:4}"\n\telse\n\t\texec $$3 $$2 "$${@:4}"\n\tfi\nelse\n\texec $$3\nfi\n' >$(CP2KHOME)/.inject.sh)
     endif
     ifneq (,$(wildcard $(CP2KHOME)/.inject.sh))
       INJECT := $(shell chmod +x $(CP2KHOME)/.inject.sh)
@@ -334,15 +340,25 @@ endif
 # Diagnostic message to be turned off
 DIAG_DISABLE := 8290,8291,10010,10212,10411,10448,11060
 
+REVERSION0 := [0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*
+REVERSION1 := s/..* \($(REVERSION0)\)[ \S]*.*/\1/
+REVERSION2 := s/..* \([0-9]\{5\}[0-9]*\)[ \S]*.*/\1/
+
 # Make C Compiler version number available
-CC_VERSION := $(shell $(CC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+CC_VERSION := $(shell $(CC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION1)p")
+ifeq (,$(CC_VERSION))
+  CC_VERSION := $(shell $(CC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION2)p")
+endif
 CC_VERSION_NUM := $(call version, \
   $(shell echo "$(CC_VERSION)" | cut -d. -f1), \
   $(shell echo "$(CC_VERSION)" | cut -d. -f2), \
   $(shell echo "$(CC_VERSION)" | cut -d. -f3))
 
 # Make Fortran Compiler version number available
-FC_VERSION := $(shell $(FC) --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION1)p")
+ifeq (,$(FC_VERSION))
+  FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION2)p")
+endif
 FC_VERSION_NUM := $(call version, \
   $(shell echo "$(FC_VERSION)" | cut -d. -f1), \
   $(shell echo "$(FC_VERSION)" | cut -d. -f2), \
