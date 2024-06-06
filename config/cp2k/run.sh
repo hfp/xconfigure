@@ -173,8 +173,10 @@ fi
 # OMP_PROC_BIND: default
 export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
 
-# print some system info and commands
+# change into workload directory
 cd "$(dirname "${WORKLOAD}")" || exit
+
+# print some system info and commands
 echo "$(cd "$(dirname "${EXE}")" && pwd -P)"
 ldd "${EXE}"
 echo
