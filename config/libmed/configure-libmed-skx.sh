@@ -44,10 +44,14 @@ export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 
 FC="ifx"; CC="icx"; CXX="icpx"
-if [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ]; then
+if [ "1" = "${INTEL}" ] || 
+   [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
+then
   FC="ifort"
-  CC="icc"
-  CXX="icpc"
+  if [ "1" != "${INTEL}" ]; then
+    CC="icc"
+    CXX="icpc"
+  fi
 fi
 
 export AR="xiar"
