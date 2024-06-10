@@ -464,6 +464,7 @@ ifeq (0,$(GNU)) # Intel
       LDFLAGS += -no-ipo
     endif
   else # debug
+    FCFLAGS += -heap-arrays
     ifeq (1,$(INTEL))
       CXXFLAGS += -debug
       FCFLAGS  += -debug
