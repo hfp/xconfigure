@@ -29,7 +29,7 @@ if [ ! "${SED}" ]; then
 fi
 
 TIMEOUT_ARGS="--foreground 10s"
-BASEURL=https://github.com/hfp/xconfigure/raw/master/config
+BASEURL=https://github.com/hfp/xconfigure/raw/main/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
 #NBACKUPS=3
