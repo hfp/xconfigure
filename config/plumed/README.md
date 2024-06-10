@@ -7,7 +7,7 @@ wget --content-disposition --no-check-certificate https://github.com/plumed/plum
 tar xvf plumed2-2.8.0.tar.gz
 cd plumed2-2.8.0
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh plumed
 ```

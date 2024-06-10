@@ -7,7 +7,7 @@ wget --content-disposition --no-check-certificate https://files.salome-platform.
 tar xvf med-4.1.0.tar.gz
 cd med-4.1.0
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libmed
 ```

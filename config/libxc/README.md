@@ -7,7 +7,7 @@ wget --content-disposition --no-check-certificate https://www.tddft.org/programs
 tar xvf libxc-6.2.2.tar.gz
 cd libxc-6.2.2
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```

@@ -7,7 +7,7 @@ XCONFIGURE is a collection of configure wrapper scripts for various HPC applicat
 Each application (or library) is hosted in a separate directory. To configure (and ultimately build) an application, one can rely on a single script which then downloads a specific wrapper into the current working directory (of the desired application).
 
 ```bash
-wget --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 
 echo "EXAMPLE: recipe for Quantum Espresso"
@@ -19,7 +19,7 @@ On systems without access to the Internet, one can [download](https://github.com
 ## Documentation
 
 * [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm), [QE](https://github.com/hfp/xconfigure/tree/master/config/qe), and [TF](https://github.com/hfp/xconfigure/tree/master/config/tf).
-* [**PDF**](https://github.com/hfp/xconfigure/raw/master/xconfigure.pdf): a single documentation file.
+* [**PDF**](https://github.com/hfp/xconfigure/raw/main/xconfigure.pdf): a single documentation file.
 
 ## Related Projects
 

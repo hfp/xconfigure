@@ -82,6 +82,6 @@ The plan-script also suggests close-by configurations (lower and higher node-cou
 
 ## References
 
-[https://github.com/hfp/xconfigure/raw/master/config/cp2k/plan.sh](https://github.com/hfp/xconfigure/raw/master/config/cp2k/plan.sh)  
+[https://github.com/hfp/xconfigure/raw/main/config/cp2k/plan.sh](https://github.com/hfp/xconfigure/raw/main/config/cp2k/plan.sh)  
 [https://xconfigure.readthedocs.io/cp2k/](https://xconfigure.readthedocs.io/cp2k/)  
 [https://software.intel.com/content/www/us/en/develop/articles/pinning-simulator-for-intel-mpi-library.html](https://software.intel.com/content/www/us/en/develop/articles/pinning-simulator-for-intel-mpi-library.html)

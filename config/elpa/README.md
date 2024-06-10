@@ -12,7 +12,7 @@ wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/soft
 tar xvf elpa-2021.11.002.tar.gz
 cd elpa-2021.11.002
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -61,7 +61,7 @@ wget --content-disposition --no-check-certificate https://www.cp2k.org/static/do
 tar xvf elpa-2020.11.001.tar.gz
 cd elpa-2020.11.001
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -101,7 +101,7 @@ wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/soft
 tar xvf elpa-2019.11.001.tar.gz
 cd elpa-2019.11.001
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -147,7 +147,7 @@ wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/soft
 tar xvf elpa-2017.11.001.tar.gz
 cd elpa-2017.11.001
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```

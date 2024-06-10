@@ -7,7 +7,7 @@ wget --content-disposition --no-check-certificate http://glaros.dtc.umn.edu/gkho
 tar xvf metis-5.1.0.tar.gz
 cd metis-5.1.0
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh metis
 ```

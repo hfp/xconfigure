@@ -41,7 +41,7 @@ To unpack the archive and to download the configure wrapper (lmax6-version is as
 tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 cd libint-v2.6.0-cp2k-lmax-6
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
@@ -71,7 +71,7 @@ wget --content-disposition --no-check-certificate https://github.com/evaleev/lib
 tar xvf release-1-1-6.tar.gz
 cd libint-release-1-1-6
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```

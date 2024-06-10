@@ -7,7 +7,7 @@ wget --content-disposition --no-check-certificate https://support.hdfgroup.org/f
 tar xvf hdf5-1.12.1.tar.bz2
 cd hdf5-1.12.1
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/master/configure-get.sh
+wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh hdf5
 ```
