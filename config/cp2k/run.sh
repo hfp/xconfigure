@@ -52,23 +52,10 @@ if [ "$1" ]; then
   fi
   shift
 else
-  >&2 echo "Please use: $0 /file/to/workload.inp [num-nodes [ranks-per-node]]"
+  >&2 echo "Please use: $0 /file/to/workload.inp [ranks-per-node [num-nodes]]"
   exit 1
 fi
 WORKLOAD=$(cd "$(dirname "${WORKLOAD}")" && pwd -P)/$(basename "${WORKLOAD}")
-
-if [ "$1" ]; then
-  NUMNODES=$1
-  shift
-else
-  NUMNODES=1
-fi
-
-if [ -e "${ROOT}/mynodes.sh" ] && [ "0" != "${MYNODES}" ]; then
-  HOSTS=$("${ROOT}/mynodes.sh" 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
-fi
-HOSTS=$(cut -d, -f1-${NUMNODES} <<<"${HOSTS}")
-if [ ! "${HOSTS}" ]; then HOSTS=localhost; fi
 
 if [ "$(command -v lscpu)" ]; then
   NS=$(lscpu | grep -m1 "Socket(s)" | tr -d " " | cut -d: -f2)
@@ -110,6 +97,19 @@ if [ "$1" ]; then
 else
   NRANKS=${NC}
 fi
+
+if [ "$1" ]; then
+  NUMNODES=$1
+  shift
+else
+  NUMNODES=1
+fi
+
+if [ -e "${ROOT}/mynodes.sh" ] && [ "0" != "${MYNODES}" ]; then
+  HOSTS=$("${ROOT}/mynodes.sh" 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
+fi
+HOSTS=$(cut -d, -f1-${NUMNODES} <<<"${HOSTS}")
+if [ ! "${HOSTS}" ]; then HOSTS=localhost; fi
 
 PREFX=${HPCWL_COMMAND_PREFIX}
 #MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk"
