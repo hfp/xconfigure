@@ -429,7 +429,9 @@ ifeq (0,$(GNU)) # Intel
       else
         TARGET := -xCORE-AVX512
         ifeq (1,$(INTEL))
-          TARGET += -qopt-zmm-usage=$(if $(filter-out 0,$(VMAX)),high,low)
+        ifneq (0,$(VMAX))
+          TARGET += -qopt-zmm-usage=$(if $(filter-out -%,$(VMAX)),high,low)
+        endif
         endif
         TGT := skx
       endif
@@ -439,7 +441,9 @@ ifeq (0,$(GNU)) # Intel
       TARGET := -xHost
       ifneq (,$(shell grep -om1 '\bavx512vl\b' /proc/cpuinfo))
         ifeq (1,$(INTEL))
-          TARGET += -qopt-zmm-usage=$(if $(filter-out 0,$(VMAX)),high,low)
+        ifneq (0,$(VMAX))
+          TARGET += -qopt-zmm-usage=$(if $(filter-out -%,$(VMAX)),high,low)
+        endif
         endif
         TGT := skx
       else ifneq (,$(shell grep -om1 '\bavx2\b' /proc/cpuinfo))
