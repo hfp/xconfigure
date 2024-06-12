@@ -69,9 +69,7 @@ for FILE in ${FILES}; do
   if [ ! "${NODERANKS}" ]; then
     for TOKEN in $(tr -s "[=_=][=-=]" " " <<<"${BASENAME}"); do
       NODES=$(sed -n "s/^\([0-9][0-9]*\)\(x[0-9][0-9]*\)*$/\1/p;s/^\([0-9][0-9]*\)n$/\1/p;s/^n\([0-9][0-9]*\)$/\1/p" <<<"${TOKEN}")
-      if [ "${NODES}" ]; then
-        break
-      fi
+      if [ "${NODES}" ]; then break; fi
     done
     NODERANKS=${RANKS}
     if [ "${NODES}" ] && [ "0" != "${NODES}" ] && [ "0" != "$((NODES<=NODERANKS))" ]; then
