@@ -9,12 +9,12 @@ OFFLOAD_FLAGS = $(NULL)
 #DFLAGS        = __NO_IPI_DRIVER __DBCSR_DISABLE_WORKSHARE
 #CSTD          = -std=c99
 #CSTD          = -std=c11
-CFLAGS        = $(CSTD)
-IFLAGS        = $(NULL)
-CXXFLAGS      = $(NULL)
-FCFLAGS       = $(NULL)
-LDFLAGS       = $(NULL)
+CFLAGS        = $(CSTD) -fPIC
+CXXFLAGS      = $(NULL) -fPIC
+FCFLAGS       = $(NULL) -fPIC
+LDFLAGS       = $(NULL) -fPIC
 ACCFLAGS      = $(NULL)
+IFLAGS        = $(NULL)
 LIBS          = $(NULL)
 LIBDIRNAME    = lib
 OBJDIRNAME    = obj
@@ -108,19 +108,19 @@ OMP ?= 1
 DBG ?= 0
 SYM ?= $(DBG)
 FPE ?= 0
+IPO ?= 0
 VMAX ?= 0
 MKL_DIRECT ?= 0
 MKL_STATIC ?= 1
 BEEP ?= 1
 
+OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
+#MATMUL ?= $(if $(filter-out 1,$(INTEL)),1,0)
+
 # NDEBUG=0: keep all assertions active
 # NDEBUG=1: apply to DBCSR (should be fine)
 # NDEBUG=2: plus CP2K (regtests may fail)
-ifeq (0,$(DBG)) # production code
-  NDEBUG ?= 1
-else
-  NDEBUG ?= 0
-endif
+NDEBUG ?= $(if $(filter-out 0,$(DBG)),0,1)
 
 EXTSHOME ?= $(CP2KHOME)/$(EXTSDIR)
 EXTDBCSR ?= $(EXTSHOME)/dbcsr
@@ -134,22 +134,6 @@ ifeq (0,$(LEGACY))
 else # legacy
   ELPA ?= 201705
 endif
-
-ifneq (,$(LIBXSMM))
-ifneq (0,$(shell echo "$$((2 < $(LIBXSMM)))"))
-  IPO ?= 0
-endif
-endif
-ifeq (0,$(GNU))
-  OMPRT ?= iomp5
-  ifeq (1,$(INTEL))
-    MATMUL ?= 0
-  endif
-else # GNU
-  OMPRT ?= gomp
-endif
-MATMUL ?= 1
-IPO ?= 0
 
 ifneq (0,$(OMP))
   MKL ?= 2
