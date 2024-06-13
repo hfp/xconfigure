@@ -460,7 +460,9 @@ ifeq (0,$(GNU)) # Intel
     OPT ?= 2
     #OPTFLAGS += -qoverride_limits
     ifeq (0,$(MATMUL))
+    ifneq (,$(filter-out 0 1,$(OPT)))
       OPTFLAGS += -qopt-matmul
+    endif
     endif
     ifneq (0,$(IPO))
       IPOFLAGS += -ipo
