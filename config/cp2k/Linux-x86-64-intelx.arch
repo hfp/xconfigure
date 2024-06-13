@@ -11,7 +11,7 @@ OFFLOAD_FLAGS = $(NULL)
 #CSTD          = -std=c11
 CFLAGS        = $(CSTD) -fPIC
 CXXFLAGS      = $(NULL) -fPIC
-FCFLAGS       = $(NULL) -fPIC
+FCFLAGS       = $(NULL) -fPIC #-parallel
 LDFLAGS       = $(NULL) -fPIC
 ACCFLAGS      = $(NULL)
 IFLAGS        = $(NULL)
@@ -20,6 +20,8 @@ LIBDIRNAME    = lib
 OBJDIRNAME    = obj
 EXTSDIR       = exts
 
+# general debug flag
+DBG_FLAG := -g
 # Special characters
 CHAR_HASH := \#
 
@@ -394,7 +396,13 @@ ifeq (0,$(LEGACY))
   endif
   endif
 else # legacy
-  DFLAGS += __HAS_NO_MPI_MOD
+  DFLAGS += __HAS_ISO_C_BINDING __HAS_NO_MPI_MOD
+  ifneq (0,$(OMP))
+  ifeq (0,$(GNU))
+    FCFLAGS += -threads
+    LDFLAGS += -threads
+  endif
+  endif
 endif
 
 MIC ?= 0
@@ -575,6 +583,24 @@ else
   XCFGOMP := $(XCFG)
 endif
 
+OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
+OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
+
+ifneq (0,$(SYM))
+  LDFLAGS += -Wl,--export-dynamic
+  ifeq (0,$(GNU))
+  ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
+    DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
+    OPTFLAGS += -traceback
+  endif
+  endif
+  OPTFLAGS += $(DBG_FLAG)
+endif
+
+ifneq (0,$(OMP))
+  OPTFLAGS += $(if $(filter-out 0,$(INTEL)),-qopenmp,-fopenmp)
+endif
+
 $(info ================================================================================)
 $(info Using the following libraries:)
 ifneq (0,$(MKL)) # incl. undefined
@@ -729,34 +755,6 @@ endif
 endif
 $(info ================================================================================)
 
-DBG_FLAG := -g
-OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
-OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
-
-SYM ?= $(DBG)
-ifneq (0,$(SYM))
-  LDFLAGS += -Wl,--export-dynamic
-  ifeq (0,$(GNU))
-  ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
-    DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
-    OPTFLAGS += -traceback
-  endif
-  endif
-  OPTFLAGS += $(DBG_FLAG)
-endif
-
-ifneq (0,$(OMP))
-  ifeq (0,$(GNU))
-    FCFLAGS += -threads #-parallel
-    LDFLAGS += -threads
-  endif
-  ifneq (0,$(INTEL))
-    OPTFLAGS += -qopenmp
-  else
-    OPTFLAGS += -fopenmp
-  endif
-endif
-
 ifneq (,$(LIBINTROOT))
   DFLAGS += __LIBINT __MAX_CONTR=4
   IFLAGS += $(LIBINTROOT)/include
@@ -886,10 +884,6 @@ always-build:
   endif
 endif
 
-ifeq (1,$(MKL_DIRECT))
-  DFLAGS += MKL_DIRECT_CALL_SEQ
-endif
-
 ifeq (1,$(MKL)) # sequential
   MKL_THREADS := sequential
 else ifneq (0,$(MKL)) # multi-threaded
@@ -900,6 +894,7 @@ else ifneq (0,$(MKL)) # multi-threaded
 endif
 ifneq (0,$(MKL))
   DFLAGS += __MKL __FFTW3
+  DFLAGS += $(if $(filter 1,$(MKL_DIRECT)),MKL_DIRECT_CALL_SEQ)
   ifeq (,$(MKL_INCFILE))
     IFLAGS += $(MKLROOT)/include
     ifneq (,$(wildcard $(MKLROOT)/include/fftw))
@@ -946,12 +941,6 @@ ifneq (0,$(MKL))
   endif
   LIBS += -Wl,--no-as-needed
 endif
-
-ifneq (0,$(LEGACY))
-  DFLAGS += __HAS_ISO_C_BINDING
-endif
-# general include paths
-#IFLAGS +=
 
 # Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
 # toggles code using this symbol, but of course the cpp preprocessor is not defining this symbol.
