@@ -23,6 +23,9 @@ EXTSDIR       = exts
 # Special characters
 CHAR_HASH := \#
 
+# Fortran Python based preprocessor
+FYPP := $(wildcard $(TOOLSRC)/build_utils/fypp)
+
 # LIBXSMM (https://github.com/hfp/libxsmm)
 #LIBXSMMROOT := /path/to/libxsmm
 
@@ -108,6 +111,7 @@ FPE ?= 0
 VMAX ?= 0
 MKL_DIRECT ?= 0
 MKL_STATIC ?= 1
+BEEP ?= 1
 
 # NDEBUG=0: keep all assertions active
 # NDEBUG=1: apply to DBCSR (should be fine)
@@ -155,22 +159,34 @@ else
   MKL ?= 2
 endif
 
-# consider more accurate FP-model
+# Intel FP-model
 #FPCMODEL := fast=2
+#FPCMODEL := precise
 #FPFMODEL := fast=2
+FPFMODEL := source
 
 # advanced compiler flags
 ifneq (0,$(INTEL))
+  FPCMODEL := $(if $(strip $(FPCMODEL)),-fp-model $(FPCMODEL),$(NULL))
+  FPFMODEL := $(if $(strip $(FPFMODEL)),-fp-model $(FPFMODEL),$(NULL))
   ifeq (1,$(INTEL))
+  ifeq (,$(strip $(FPFMODEL)))
     FCFLAGS += -complex-limited-range
     #FCFLAGS += -fimf-domain-exclusion=1
     #FCFLAGS += -fast-transcendentals
+  endif
   endif
   #FCFLAGS += -nostandard-realloc-lhs
 endif
 
 SCALAPACK ?= $(MPI)
 ifneq (0,$(MPI))
+  DFLAGS += __parallel
+  ifneq (1,$(MPI))
+    DFLAGS += __MPI_VERSION=$(MPI)
+  else # default MPI std. version
+    DFLAGS += __MPI_VERSION=3
+  endif
   ifeq (0,$(GNU))
     ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
       CXX := mpiicpc $(if $(call which,icpc),$(NULL),-cxx=icpx)
@@ -188,12 +204,6 @@ ifneq (0,$(MPI))
     CC  := mpicc
     FC  := mpif90
     LD  := mpif90
-  endif
-  DFLAGS += __parallel
-  ifneq (1,$(MPI))
-    DFLAGS += __MPI_VERSION=$(MPI)
-  else # default MPI std. version
-    DFLAGS += __MPI_VERSION=3
   endif
 else ifeq (0,$(GNU))
   ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
@@ -454,15 +464,14 @@ ifeq (0,$(GNU)) # Intel
     endif
   endif
   ifeq (0,$(DBG))
-    FCFLAGS  += -align array64byte     $(FPFMODEL) $(FPFLAGS)
-    CFLAGS   += -fno-alias -ansi-alias $(FPCMODEL) $(FPFLAGS)
-    CXXFLAGS += -fno-alias -ansi-alias $(FPCMODEL) $(FPFLAGS)
+    FCFLAGS  += $(if $(filter-out 0,$(ALIGN)),-align array64byte)
+    FCFLAGS  += $(FPFMODEL) $(FPFLAGS)
+    CFLAGS   += $(FPCMODEL) $(FPFLAGS)
+    CXXFLAGS += $(FPCMODEL) $(FPFLAGS)
     OPT ?= 2
     #OPTFLAGS += -qoverride_limits
     ifeq (0,$(MATMUL))
-    ifneq (,$(filter-out 0 1,$(OPT)))
-      OPTFLAGS += -qopt-matmul
-    endif
+      OPTFLAGS += $(if $(filter-out 0 1,$(OPT)),-qopt-matmul)
     endif
     ifneq (0,$(IPO))
       IPOFLAGS += -ipo
@@ -481,9 +490,10 @@ ifeq (0,$(GNU)) # Intel
   ifneq (0,$(FPE))
     FCFLAGS += -fpe0 # debugging NaNs
   endif
-  FCFLAGS += -free -fpp
+  FCFLAGS += -free -fpp -fpscomp logicals
   DFLAGS += __INTEL
   ifneq (0,$(LEGACY))
+    FCFLAGS += -std08
     DFLAGS += __F2008
   endif
   MKL_OMPRTL := intel
@@ -505,23 +515,17 @@ else # GNU GCC
       TGT := snb
     else ifeq (2,$(AVX))
       TARGET := -march=core-avx2
+      TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=256)
       TGT := hsw
-      ifneq (0,$(VMAX))
-        TARGET += -mprefer-vector-width=256
-      endif
     else ifeq (3,$(AVX))
       TARGET := -mfma -mavx512f -mavx512cd
       ifneq (,$(filter-out 0,$(MIC))) # AVX512/MIC
         TARGET += -mavx512pf -mavx512er
-        ifneq (0,$(VMAX))
-          TARGET += -mprefer-vector-width=512
-        endif
+        TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=512)
         TGT := knl
       else # AVX512/Core
         TARGET += -mavx512dq -mavx512bw -mavx512vl
-        ifneq (0,$(VMAX))
-          TARGET += -mprefer-vector-width=512
-        endif
+        TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=512)
         TGT := skx
       endif
     else ifneq (0,$(SSE))
@@ -529,14 +533,10 @@ else # GNU GCC
     else
       TARGET := -march=native -mtune=native
       ifneq (,$(shell grep -om1 '\bavx512vl\b' /proc/cpuinfo))
-        ifneq (0,$(VMAX))
-          TARGET += -mprefer-vector-width=512
-        endif
+        TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=512)
         TGT := skx
       else ifneq (,$(shell grep -om1 '\bavx2\b' /proc/cpuinfo))
-        ifneq (0,$(VMAX))
-          TARGET += -mprefer-vector-width=256
-        endif
+        TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=256)
         TGT := hsw
       else ifneq (,$(shell grep -om1 '\bavx\b' /proc/cpuinfo))
         TGT := snb
@@ -748,40 +748,18 @@ $(info =========================================================================
 DBG_FLAG := -g
 OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
-ifeq (0,$(ATTRIBS))
-  DFLAGS += CP_DISABLE_ATTRIBS
-endif
 
 SYM ?= $(DBG)
 ifneq (0,$(SYM))
   LDFLAGS += -Wl,--export-dynamic
   ifeq (0,$(GNU))
   ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
-    ifneq (0,$(LEGACY))
-      DFLAGS += __USE_CP2K_TRACE
-    endif
+    DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
     OPTFLAGS += -traceback
   endif
   endif
   OPTFLAGS += $(DBG_FLAG)
 endif
-
-FYPP := $(wildcard $(TOOLSRC)/build_utils/fypp)
-ifeq (0,$(GNU))
-  # workaround for certain bits introduced by GCC 7.0
-  ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
-    CFLAGS += -D_Float128=__float128
-    FPCMODEL ?= precise
-    FPFMODEL ?= source
-  endif
-  ifneq (,$(strip $(FPCMODEL)))
-    FPCMODEL := -fp-model $(FPCMODEL)
-  endif
-  ifneq (,$(strip $(FPFMODEL)))
-    FPFMODEL := -fp-model $(FPFMODEL)
-  endif
-endif
-BEEP ?= 1
 
 ifneq (0,$(OMP))
   ifeq (0,$(GNU))
@@ -1084,12 +1062,18 @@ FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call pref
 LDFLAGS   += $(OPTFLAGS) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
 
 ifeq (0,$(GNU))
-  CXXFLAGS  += -diag-disable $(DIAG_DISABLE)
-  CFLAGS    += -diag-disable $(DIAG_DISABLE)
+ifneq (0,$(INTEL))
+  # workaround for certain bits introduced by GCC 7.0
+  ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
+    CFLAGS += -D_Float128=__float128
+  endif
+  CXXFLAGS  += -fno-alias -ansi-alias -diag-disable $(DIAG_DISABLE)
+  CFLAGS    += -fno-alias -ansi-alias -diag-disable $(DIAG_DISABLE)
   FCFLAGS   += -diag-disable $(DIAG_DISABLE)
   LDFLAGS   += -diag-disable $(DIAG_DISABLE)
   # consider -nofor_main for legacy compiler
   LDFLAGS_C += -nofor-main
+endif
 endif
 
 # Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
