@@ -136,7 +136,7 @@ if [ "${I_MPI_ROOT}" ]; then
   #
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
-  export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
+  #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
   #
   if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
     export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
