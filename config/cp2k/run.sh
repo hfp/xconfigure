@@ -135,7 +135,7 @@ if [ "${I_MPI_ROOT}" ]; then
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
   #
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
-  export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
+  #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
   #
   if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
