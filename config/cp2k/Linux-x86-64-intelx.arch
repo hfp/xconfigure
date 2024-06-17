@@ -1106,6 +1106,10 @@ endif
 ifneq (,$(filter 0,$(GNU)))
 ifneq (,$(filter-out 0,$(BEEP)))
 ifneq (,$(filter-out 0 1,$(INTEL)))
+mp2_ri_gpw.o: mp2_ri_gpw.F
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(MAKE_FYPP)
+	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 pw_methods.o: pw_methods.F
 	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
 	$(MAKE_FYPP)
