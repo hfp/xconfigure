@@ -215,15 +215,17 @@ XFC := $(FC)
 
 OCL ?= 0
 CUDA ?= 0
-ifeq (opencl,$(USE_ACCEL))
-  OCL := 2
-else ifeq (cuda,$(USE_ACCEL))
-  CUDA := 1
-else ifneq (,$(USE_ACCEL))
-  $(info ============================)
-  $(info USE_ACCEL=$(USE_ACCEL) not supported!)
-  $(info ============================)
-  $(error USE_ACCEL)
+ifneq (,$(USE_ACCEL))
+  DFLAGS += __ACC __DBCSR_ACC
+  ifeq (opencl,$(USE_ACCEL))
+    OCL := 2
+  else ifeq (cuda,$(USE_ACCEL))
+    CUDA := 1
+  else
+    $(info ================================================================================)
+    $(info USE_ACCEL=$(USE_ACCEL) not fully supported!)
+    $(info --------------------------------------------------------------------------------)
+  endif
 endif
 
 NVCC_FILE := $(call which,nvcc)
@@ -953,7 +955,6 @@ OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
 
 ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
   ifneq (0,$(OCL))
-    DFLAGS += __ACC __DBCSR_ACC
     ifneq (1,$(OCL))
       OPENCL_DBM_CMN := $(wildcard $(DBCSRSRC)/acc/opencl/common/*.h)
       OPENCL_DBM_SRC := $(CP2KHOME)/src/dbm/dbm_multiply_opencl.cl
@@ -992,14 +993,14 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
     ACCFLAGS += $(CFLAGS)
     USE_ACCEL := opencl
     ACC := $(CC)
-  else #ifneq (0,$(CUDA))
+  else ifneq (0,$(CUDA))
     ifneq (,$(CUDA_PATH))
       ifneq (undefined,$(origin GPUVER))
         ifneq (0,$(SYM))
           ACCFLAGS += $(DBG_FLAG)
         endif
         IFLAGS += $(CUDA_PATH)/include
-        DFLAGS += __ACC __DBCSR_ACC __CUDA __OFFLOAD_CUDA __GRID_CUDA __DBM_CUDA __PW_GPU __PW_CUDA
+        DFLAGS += __CUDA __OFFLOAD_CUDA __GRID_CUDA __DBM_CUDA __PW_GPU __PW_CUDA
         LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lcufft -lnvrtc -lcuda
         # consider omitting opt-level entirely due to extreme compilation time even when flag targets only the host compiler
         ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(call prefix_dflags,$(DFLAGS))
@@ -1019,6 +1020,17 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
       $(info NVCC not found!)
       $(info ===============)
       $(error NVCC)
+    endif
+  else ifneq (0,$(HIP))
+    ifneq (undefined,$(origin GPUVER))
+      DFLAGS += __CUDA __OFFLOAD_HIP
+      USE_ACCEL := hip
+      IPO := 0
+    else
+      $(info ===================)
+      $(info GPUVER not defined!)
+      $(info ===================)
+      $(error GPUVER)
     endif
   endif
 else # ACC off
