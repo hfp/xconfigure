@@ -152,7 +152,7 @@ if [ "0" != "${MYNODES}" ]; then
 fi
 
 EXEVER=${EXEVER:-exe}
-EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
+EXE=$(cd "${ROOT}/${EXEVER}/${BUILD}" && pwd -P)/cp2k.${VERSION}
 RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
   -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
 ${EXE} ${WORKLOAD} ${ARGS}"
@@ -177,7 +177,17 @@ export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
 cd "$(dirname "${WORKLOAD}")" || exit
 
 # print some system info and commands
-echo "$(cd "$(dirname "${EXE}")" && pwd -P)"
+HOSTNAME=$(hostname)
+echo "HOST: ${HOSTNAME}"
+if [ "$(command -v sinfo)" ] && [ "$(command -v head)" ]; then
+  NODEINFO=$(sinfo -N -n "${HOSTNAME}" --noheader -o "%P %f" | head -n1)
+fi
+if [ "${NODEINFO}" ] && [ "$(command -v cut)" ]; then
+  echo "PARTITION: $(cut -d' ' -f1 <<<"${NODEINFO}")"
+  echo "HOSTINFO: $(cut -d' ' -f2 <<<"${NODEINFO}")"
+fi
+echo
+echo "EXE: ${EXE}"
 ldd "${EXE}"
 echo
 
