@@ -111,14 +111,18 @@ fi
 HOSTS=$(cut -d, -f1-${NUMNODES} <<<"${HOSTS}")
 if [ ! "${HOSTS}" ]; then HOSTS=localhost; fi
 
-PREFX=${HPCWL_COMMAND_PREFIX}
+#HPCWL_COMMAND_PREFIX="aps -c mpi,omp"
 #MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk"
 #MPIRUNPREFX="numactl --cpunodebind=0 --membind=0 --"
+
+PREFX=${HPCWL_COMMAND_PREFIX}
 #PREFX="${PREFX} -gtool 'vtune -r vtune -data-limit 0 -collect hotspots -knob sampling-mode=hw -knob enable-stack-collection=true:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=survey:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=tripcounts --flop:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=roofline:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} ${ROOT}/multirun.sh 2"
+
+# additional command-line arguments
 ARGS="$*"
 
 if [ "${I_MPI_ROOT}" ]; then
