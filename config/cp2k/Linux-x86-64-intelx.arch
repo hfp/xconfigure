@@ -215,16 +215,13 @@ XFC := $(FC)
 
 OCL ?= 0
 CUDA ?= 0
-ifneq (,$(USE_ACCEL))
-  DFLAGS += __ACC __DBCSR_ACC
-  ifeq (opencl,$(USE_ACCEL))
-    OCL := 2
-  else ifeq (cuda,$(USE_ACCEL))
-    CUDA := 1
-  else
-    $(info ================================================================================)
-    $(info USE_ACCEL=$(USE_ACCEL) not fully supported!)
-  endif
+ifeq (opencl,$(USE_ACCEL))
+  OCL := 2
+else ifeq (cuda,$(USE_ACCEL))
+  CUDA := 1
+else ifneq (,$(USE_ACCEL))
+  $(info ================================================================================)
+  $(info USE_ACCEL=$(USE_ACCEL) not fully supported!)
 endif
 
 NVCC_FILE := $(call which,nvcc)
@@ -952,7 +949,8 @@ endif
 # finalize flags common to CXX, CC, and FC
 OPTFLAGS := $(TARGET) $(OPTFLAGS) -O$(OPT)
 
-ifneq (,$(filter-out 0,$(OCL) $(CUDA)))
+ifneq (,$(filter-out 0,$(OCL) $(CUDA) $(HIP)))
+  DFLAGS += __ACC __DBCSR_ACC
   ifneq (0,$(OCL))
     ifneq (1,$(OCL))
       OPENCL_DBM_CMN := $(wildcard $(DBCSRSRC)/acc/opencl/common/*.h)
