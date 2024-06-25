@@ -179,6 +179,11 @@ ifneq (0,$(MPI))
       CC  := mpiicc  $(if $(call which,icc),$(NULL),-cc=icx)
       FC  := mpiifort
       LD  := mpiifort
+    else ifneq (,$(call which,mpiifx))
+      CXX := mpiicpx
+      CC  := mpiicx
+      FC  := mpiifx
+      LD  := mpiifx
     else
       CXX := mpiicpc  -cxx=icpx
       CC  := mpiicc   -cc=icx
