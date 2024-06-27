@@ -126,8 +126,8 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 ARGS="$*"
 
 if [ "${I_MPI_ROOT}" ]; then
-  MPIRUNFLAGS="-genvall"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
+  MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
   MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
   #
