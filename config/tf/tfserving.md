@@ -27,4 +27,3 @@ bazel build --verbose_failures -c opt --cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0 \
 ```
 
 If specific target flags are desired (instead of `-mfma -mavx2`), please refer to the [TensorFlow with LIBXSMM](https://libxsmm.readthedocs.io/tensorflow#specific-codepath) document. This document can be referred for more details in general.
-

@@ -2,31 +2,30 @@
 
 This document describes building CP2K with several (optional) libraries, which may be beneficial for functionality or performance.
 
-* [**LIBXSMM**](https://github.com/libxsmm/libxsmm) targets DBCSR, DBM/DBT, GRID, and other components
-* [**LIBINT**](../libint/README.md#libint) enables a wide range of workloads (almost necessary)
-* [**LIBXC**](../libxc/README.md#libxc) enables exchange-correlation functionals for DFT
-* **MPI** is auto-detected (Intel MPI and OpenMPI supported)
-* **MKL** or Intel Math Kernel Library (also per Linux distro's package manager):
+* [LIBXSMM](https://github.com/libxsmm/libxsmm) targets DBCSR, DBM/DBT, GRID, and other components
+* [LIBINT](../libint/README.md#libint) enables a wide range of workloads (almost necessary)
+* [LIBXC](../libxc/README.md#libxc) enables exchange-correlation functionals for DFT
+* MPI is auto-detected (Intel MPI and OpenMPI supported)
+* MKL or Intel Math Kernel Library:
     * Provides LAPACK/BLAS and ScaLAPACK library
     * Provides FFTw library
-* [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) for matrix diagonalization
 
-For functionality and performance, all **bold** dependencies are almost necessary or highly recommended. For instance, [LIBXSMM](../libxsmm/README.md#libxsmm) (see also [https://libxsmm.readthedocs.io](https://libxsmm.readthedocs.io)) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) and enables high performance in several components of CP2K. The ELPA library eventually improves the performance over ScaLAPACK (also refer to `PREFERRED_DIAG_LIBRARY` in [CP2K's Input Reference](https://manual.cp2k.org/trunk/CP2K_INPUT.html)).
+For functionality and performance, the dependencies are almost necessary or highly recommended. For instance, [LIBXSMM](../libxsmm/README.md#libxsmm) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) and enables high performance in several components of CP2K. The optional [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) library for matrix diagonalization eventually improves the performance over ScaLAPACK (also refer to `PREFERRED_DIAG_LIBRARY` in [CP2K's Input Reference](https://manual.cp2k.org/trunk/CP2K_INPUT.html)).
 
-**Note**: CP2K's `install_cp2k_toolchain.sh` (under `tools/toolchain`) as well as CMake based builds are out of scope in this document (see [official guide](https://www.cp2k.org/howto:compile)).
+**Note**: CP2K's `install_cp2k_toolchain.sh` (under `tools/toolchain`) as well as CMake based builds are out of scope in this document (see official [CP2K guide](https://www.cp2k.org/howto:compile)).
 
-For CP2K, XCONFIGURE provides a collection of helper scripts, optional patches, and an ARCH-file supporting:
+XCONFIGURE provides a collection of helper scripts, optional patches, and an ARCH-file supporting:
 
-* GNU Compiler Collection (default if `ifx` or `ifort` are not available, explicit with `make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1`)
-* Intel Compiler (default if `ifx` is available, explicit with `make ARCH=Linux-x86-64-intelx VERSION=psmp INTEL=2`)
+* GNU Compiler Collection (default, if `ifx` or `ifort` are not available, explicit with `make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1`)
+* Intel Compiler (default, if `ifx` is available, explicit with `make ARCH=Linux-x86-64-intelx VERSION=psmp INTEL=2`)
 
-**Note**: Intel Classic Compiler is used by default if `ifort` is available but `ifx` or `gfortran` are not available, and it can be explicitly selected with `make ARCH=Linux-x86-64-intelx VERSION=psmp INTEL=1`).
+**Note**: Intel Classic Compiler is used by default, if `ifort` is available but `ifx` or `gfortran` are not available, and it can be explicitly selected with `make ARCH=Linux-x86-64-intelx VERSION=psmp INTEL=1`).
 
 ## Step-by-step Guide<a name="current-release"></a>
 
 This step-by-step guide assumes the GNU Compiler Collection (GNU&#160;Fortran), Intel&#160;MPI and Intel&#160;MKL as prerequisites (adding an Intel repository to the Linux distribution's package manager, installing Intel MKL and Intel MPI or supporting an HPC fabric is out of scope in this document. is not subject of this document). Building LIBXSMM, LIBINT, and LIBXC is part of the steps.
 
-<a name="offline-environment"></a>**Note**: in an offline-environment, it is best to [download](https://github.com/hfp/xconfigure/archive/refs/heads/main.zip) the entire XCONFIGURE project upfront and upload to the target system. Offline limitations can be worked around and overcome with additional steps. This step-by-step guide assumes Internet connectivity.
+<a name="offline-environment"></a>**Note**: in an offline environment, it is best to [download](https://github.com/hfp/xconfigure/archive/refs/heads/main.zip) the entire XCONFIGURE project upfront and to upload it to the target system. Offline limitations can be worked around and overcome with additional steps. This step-by-step guide assumes Internet connectivity.
 
 **1**) <a name="getting-started"></a>First, please download `configure-get.sh` to any location and make the prerequisites available (GNU Compiler Collection, Intel MPI and Intel MKL):
 
@@ -98,7 +97,7 @@ It can be useful to build LIBXSMM also in a separate fashion (see last/commented
 
 **5**) <a name="getting-the-source-code"></a>This last step builds CP2K and LIBXSMM inside of CP2K's source directory. A serial version `VERSION=ssmp` as opposed to `VERSION=psmp` is possible, however OpenMP remains a requirement of CP2K's code base.
 
-<a name="missing-git-submodules"></a>Downloading GitHub-generated assets from from [https://github.com/cp2k/cp2k/releases](https://github.com/cp2k/cp2k/releases) like "*Source code (zip)*" or "*Source code (tar.gz)*" will miss submodules which are subsequently missed when building CP2K.
+<a name="missing-git-submodules"></a>Downloading GitHub-generated assets from [https://github.com/cp2k/cp2k/releases](https://github.com/cp2k/cp2k/releases) like "*Source code (zip)*" or "*Source code (tar.gz)*" will miss submodules which are subsequently missed when building CP2K.
 
 ```bash
 cd $HOME && git clone https://github.com/cp2k/cp2k.git
@@ -108,15 +107,21 @@ cd $HOME/cp2k/exts/dbcsr && git checkout develop && git pull
 cd $HOME/cp2k && /path/to/configure-get.sh cp2k
 ```
 
-Applying XCONFIGURE for CP2K in an offline-environment is out of scope here, but one can `cp /path/to/xconfigure/config/cp2k/*.sh /path/to/cp2k`, `cp /path/to/xconfigure/config/cp2k/Linux-x86-64-intelx.* /path/to/cp2k/arch`, and eventually `git apply cpassert.git.diff`.
+**Offline environment**: no Internet connectivity is out of scope in this guide (`configure-get.sh`), but one can:
+
+```bash
+cd $HOME/cp2k
+cp /path/to/xconfigure/config/cp2k/*.sh .
+cp /path/to/xconfigure/config/cp2k/Linux-x86-64-intelx.* arch
+# git apply cpassert.git.diff
+```
 
 <a name="build-instructions"></a>Building CP2K proceeds with:
 
 ```bash
-rm -rf exe lib obj
-make -j $(nproc) \
-  ARCH=Linux-x86-64-intelx VERSION=psmp cp2k \
-  GNU=1
+cd $HOME/cp2k
+# rm -rf exe lib obj
+make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 cp2k -j $(nproc)
 ```
 
 The initial output of the build looks like:
@@ -142,13 +147,13 @@ $ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
   LIBXSMM_TARGET: spr
 ```
 
-The ARCH-file attempts to auto-detect optional libraries using `I_MPI_ROOT`, `MKLROOT` environment variables as well as searching certain standard locations. LIBXSMM, LIBINT, and LIBXC are expected in directories parallel to CP2K's root directory. In general, build-keys such as `LIBXSMMMROOT`, `LIBINTROOT`, `LIBXCROOT`, `ELPAROOT`, and others are supported.
+The ARCH-file attempts to auto-detect optional libraries using `I_MPI_ROOT`, `MKLROOT` environment variables as well as searching certain standard locations. LIBXSMM, LIBINT, and LIBXC are expected in directories parallel to CP2K's root directory. In general, build-keys such as `LIBXSMMMROOT`, `LIBINTROOT`, `LIBXCROOT`, `ELPAROOT`, and others are supported. There are several other build-keys to customize the build (e.g., `SYM=1`, `DBG=1`, `OPT=2`, `NDEBUG=0`, `AVX=2`, or `IMPI=0`).
 
 ## CP2K on GPUs
 
-Please simply apply `USE_ACCEL=opencl` (like `USE_ACCEL=cuda` for CUDA) to XCONFIGURE's [build instructions](#build-instructions). The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component.
+Please apply `USE_ACCEL=opencl` (like `USE_ACCEL=cuda` for CUDA) to XCONFIGURE's [build instructions](#build-instructions). The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component.
 
-Further, DBCSR can be built stand-alone and used to exercise and test GPU accleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a stand-alone fashion (does not even rely on DBCSR's build system; see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The OpenCL backend in DBCSR provides [pretuned kernels](https://github.com/cp2k/dbcsr/tree/develop/src/acc/opencl/smm/params) for CP2K. Similarly, CP2K's DBM component (`/path/to/cp2k/src/dbm`) can be built and exercised in a stand-alone fashion.
+Further, DBCSR can be built stand-alone and used to exercise and test GPU acceleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a stand-alone fashion (does not even rely on DBCSR's build system; see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The OpenCL backend in DBCSR provides [tuned kernels](https://github.com/cp2k/dbcsr/tree/develop/src/acc/opencl/smm/params) for CP2K. Similarly, CP2K's DBM component (`/path/to/cp2k/src/dbm`) can be built and exercised in a stand-alone fashion.
 
 The OpenCL backend has comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific kernels.
 

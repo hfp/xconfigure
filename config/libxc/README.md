@@ -31,4 +31,3 @@ make -j; make install
 ## References
 
 [https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2k-libxc-optional-wider-choice-of-xc-functionals](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2k-libxc-optional-wider-choice-of-xc-functionals)
-

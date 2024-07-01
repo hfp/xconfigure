@@ -118,4 +118,3 @@ make clean
 [https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2g-libint-optional-enables-methods-including-hf-exchange](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2g-libint-optional-enables-methods-including-hf-exchange)  
 [https://github.com/evaleev/libint/releases/tag/release-1-1-6](https://github.com/evaleev/libint/releases/tag/release-1-1-6)  
 [https://github.com/cp2k/libint-cp2k/releases/latest](https://github.com/cp2k/libint-cp2k/releases/latest)
-

@@ -78,4 +78,3 @@ Please note that the number of cases per day (Cases/d) are currently calculated 
 
 [https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor](https://software.intel.com/en-us/articles/quantum-espresso-for-the-intel-xeon-phi-processor)  
 [https://www.quantum-espresso.org/Doc/user_guide/node1.html](https://www.quantum-espresso.org/Doc/user_guide/node1.html)
-

@@ -177,4 +177,3 @@ Even if ELPA was just unpacked (and never built before), `make clean` is recomme
 [https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2l-elpa-optional-improved-performance-for-diagonalization](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2l-elpa-optional-improved-performance-for-diagonalization)  
 [https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html)  
 [https://www.cp2k.org/static/downloads](https://www.cp2k.org/static/downloads)
-

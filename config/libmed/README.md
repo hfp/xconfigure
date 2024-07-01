@@ -33,4 +33,3 @@ make -j; make install
 [https://salome-platform.org/downloads/](https://salome-platform.org/downloads/)  
 [http://wiki.opentelemac.org/doku.php?id=installation_linux_med](http://wiki.opentelemac.org/doku.php?id=installation_linux_med)  
 [http://opentelemac.org/](http://opentelemac.org/)
-

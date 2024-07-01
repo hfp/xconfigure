@@ -34,4 +34,3 @@ make -j; make install
 [https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2o-plumed-optional-enables-various-enhanced-sampling-methods](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2o-plumed-optional-enables-various-enhanced-sampling-methods)  
 [https://www.cp2k.org/howto:install_with_plumed](https://www.cp2k.org/howto:install_with_plumed)  
 [https://www.plumed.org/](https://www.plumed.org/)
-

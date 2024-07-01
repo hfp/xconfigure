@@ -30,4 +30,3 @@ cd build; make -j; make install
 
 [https://github.com/VcDevel/Vc/releases](https://github.com/VcDevel/Vc/releases)  
 [https://github.com/VcDevel/Vc](https://github.com/VcDevel/Vc)
-

@@ -7,9 +7,7 @@ BUILD=Linux-x86-64-intelx
 VERSION=psmp
 
 # Threads per core
-if [ ! "${MAXNT}" ]; then
-  MAXNT=1
-fi
+MAXNT=${MAXNT:-1}
 
 # consider the following in .bashrc
 # ulimit -s unlimited
@@ -28,6 +26,12 @@ then
   else
     export LD_PRELOAD=${TBBROOT}/lib/libtbbmalloc_proxy.so
   fi
+fi
+
+if [ "${GLIBC_TUNABLES}" ]; then
+  export GLIBC_TUNABLES="${GLIBC_TUNABLES}:glibc.cpu.hwcaps=-AVX2"
+else
+  export GLIBC_TUNABLES="glibc.cpu.hwcaps=-AVX2" 
 fi
 
 if [ "${LSB_JOBID}" ]; then
@@ -109,7 +113,7 @@ if [ -e "${ROOT}/mynodes.sh" ] && [ "0" != "${MYNODES}" ]; then
   HOSTS=$("${ROOT}/mynodes.sh" 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
 fi
 HOSTS=$(cut -d, -f1-${NUMNODES} <<<"${HOSTS}")
-if [ ! "${HOSTS}" ]; then HOSTS=localhost; fi
+HOSTS=${HOSTS:-localhost}
 
 #HPCWL_COMMAND_PREFIX="aps -c mpi,omp"
 #MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk"

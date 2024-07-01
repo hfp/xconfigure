@@ -27,4 +27,3 @@ On systems without access to the Internet, one can [download](https://github.com
 * EasyBuild / EasyConfig (University of Gent): [https://github.com/easybuilders](https://github.com/easybuilders)
 
 Please note that XCONFIGURE has a narrower scope when compared to the above package managers.
-
