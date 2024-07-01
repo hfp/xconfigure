@@ -51,7 +51,7 @@ There are spurious issues about specific target flags requiring a build-system a
 ```bash
 make distclean
 ./configure-libint-skx.sh
-make -j; make install
+make -j $(nproc); make install
 ```
 
 Make sure to run `make distclean` before reconfiguring a different variant, e.g., GNU and Intel variant. Further, for different targets (instruction set extensions) or different compilers, the configure-wrapper scripts support an additional argument ("default" is the default tagname):
@@ -81,7 +81,7 @@ For example, to configure and make for an Intel Xeon&#160;E5v4 processor (former
 ```bash
 make distclean
 ./configure-libint-hsw.sh
-make -j; make install
+make -j $(nproc); make install
 ```
 
 The version 1.x line of LIBINT does not support to cross-compile for an architecture. If cross-compilation is necessary, one can rely on the [Intel Software Development Emulator](https://software.intel.com/en-us/articles/intel-software-development-emulator) (Intel SDE) to compile LIBINT for targets, which cannot execute on the compile-host.
@@ -91,6 +91,27 @@ The version 1.x line of LIBINT does not support to cross-compile for an architec
 ```
 
 To speed-up compilation, "make" might be carried out in phases: after "printing the code" (c-files), the make execution continues with building the object-file where no SDE needed. The latter phase can be sped up by interrupting "make" and executing it without SDE. The root cause of the entire problem is that the driver printing the c-code is (needlessly) compiled using the architecture-flags that are not supported on the host.
+
+## Boostrap for CP2K
+
+LIBINT consists of a compiler specializing the library by generating source files according to the needs of the desired application:
+
+```bash
+wget https://github.com/evaleev/libint/archive/refs/tags/v2.9.0.tar.gz
+tar xvf v2.9.0.tar.gz && rm v2.9.0.tar.gz
+
+cd libint-2.9.0 && ./autogen.sh && ./configure \
+  --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 \
+  --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 --with-opt-am=3 \
+  --with-libint-exportdir=libint-cp2k --disable-unrolling --enable-fma \
+  --with-real-type=libint2::simd::VectorAVXDouble \
+  --with-cxxgen-optflags="-march=native -mtune=native"
+
+make -j $(nproc) export
+make clean
+```
+
+**Note**: for example `VectorAVXDouble` is permitted by `--with-cxxgen-optflags` according to CPU features on the system bootstrapping LIBINT. This requires special care to avoid discrepancies between the compilation host and the desired target system (cross-compilation).
 
 ## References
 
