@@ -111,6 +111,8 @@ make -j $(nproc) export
 make clean
 ```
 
+The above build instructions will leave a compressed Tarball inside of the directory (`libint-cp2k.tar.gz`). The archive can be unpacked and built the usual way.
+
 **Note**: for example `VectorAVXDouble` is permitted by `--with-cxxgen-optflags` according to CPU features on the system bootstrapping LIBINT. This requires special care to avoid discrepancies between the compilation host and the desired target system (cross-compilation).
 
 ## References
