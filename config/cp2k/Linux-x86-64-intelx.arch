@@ -150,7 +150,7 @@ endif
 #FPCMODEL := fast=2
 #FPCMODEL := precise
 #FPFMODEL := fast=2
-FPFMODEL := source
+#FPFMODEL := source
 
 # advanced compiler flags
 ifneq (0,$(INTEL))
