@@ -27,6 +27,15 @@ This step-by-step guide assumes the GNU Compiler Collection (GNU&#160;Fortran), 
 
 <a name="offline-environment"></a>**Note**: in an offline environment, it is best to [download](https://github.com/hfp/xconfigure/archive/refs/heads/main.zip) the entire XCONFIGURE project upfront and to upload it to the target system. Offline limitations can be worked around and overcome with additional steps. This step-by-step guide assumes Internet connectivity.
 
+For the following steps, it is necessary to place LIBINT, LIBXC, LIBXSMM, and CP2K into a common directory (`$HOME` is assumed). The resulting folder structure looks like:
+
+* libint-v2.6.0-cp2k-lmax-6
+* libint/gnu
+* libxc-6.2.2
+* libxc/gnu
+* libxsmm
+* cp2k
+
 **1**) <a name="getting-started"></a>First, please download `configure-get.sh` to any location and make the prerequisites available (GNU Compiler Collection, Intel MPI and Intel MKL):
 
 ```bash
@@ -36,8 +45,6 @@ chmod +x configure-get.sh
 source /opt/intel/oneapi/mpi/latest/env/vars.sh
 source /opt/intel/oneapi/mkl/latest/env/vars.sh
 ```
-
-For the following steps, it is necessary to place LIBINT, LIBXC, LIBXSMM, and CP2K into a common directory (`$HOME` is assumed).
 
 **2**) <a name="libint-and-libxc-dependencies"></a>The second step builds a LIBINT which is already [preconfigured](https://github.com/cp2k/libint-cp2k/releases) for CP2K. To fully [bootstrap LIBINT](../libint/README.md#boostrap-for-cp2k) is out of scope for this step.
 
@@ -89,8 +96,8 @@ During configuration, please disregard any messages suggesting `libtoolize --for
 ```bash
 #cd $HOME && git clone https://github.com/libxsmm/libxsmm.git && cd libxsmm && git checkout develop
 cd $HOME && wget https://github.com/libxsmm/libxsmm/archive/refs/heads/develop.zip
-mkdir libxsmm && cd libxsmm && unzip $HOME/libxsmm-develop.zip
-#make GNU=1 -j $(nproc)
+unzip $HOME/libxsmm-develop.zip && ln -s libxsmm-develop libxsmm
+#cd $HOME/libxsmm && make GNU=1 -j $(nproc)
 ```
 
 It can be useful to build LIBXSMM also in a separate fashion (see last/commented line above). This can be useful for building a stand-alone reproducer in DBCSR's GPU backend as well as CP2K's DBM reproducer.
