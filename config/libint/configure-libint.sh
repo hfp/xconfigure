@@ -105,15 +105,12 @@ if [ -e "${HERE}/configure" ] || [ -e "${HERE}/autogen.sh" ]; then
     --with-real-type=libint2::simd::VectorAVXDouble \
     "$@"
 else # preconfigured
-  if [ -e "${HERE}/CMakeLists.txt" ]; then
-    if [ ! "$(command -v cmake)" ]; then
-      echo "Error: XCONFIGURE requires CMake to build LIBINT!"
-      exit 1
-    fi
-    rm -f "${HERE}/CMakeCache.txt"
-    cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
-      -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-      -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
-  else
+  if [ ! -e "${HERE}/CMakeLists.txt" ] || [ ! "$(command -v cmake)" ]; then
+    echo "Error: XCONFIGURE requires CMake to build LIBINT!"
+    exit 1
   fi
+  rm -f "${HERE}/CMakeCache.txt"
+  cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
 fi
