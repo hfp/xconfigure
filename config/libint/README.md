@@ -2,21 +2,13 @@
 
 ## Overview
 
-For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or any later version cannot be used). For CP2K&#160;7.x and onwards, LIBINT&#160;2.5 (or later) is needed.
-
-Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
-
-```bash
-source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
-```
-
-**Note**: CP2K&#160;6.1 (and earlier) depends on [LIBINT&#160;1.1.x](#version1x) and a newer version of LIBINT cannot be used! CP2K&#160;7.x (and later) rely on LIBINT&#160;2.5 (or later) and cannot use the preconfigured library as provided on [LIBINT's home page](https://github.com/evaleev/libint).
+For CP2K&#160;7.x and onwards, LIBINT&#160;2.5 (or later) is needed. For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or any later version cannot be used).
 
 ## Version&#160;2.5 (and later)
 
-LIBINT generates code according to a configuration and an extent that is often specific to the application. The downloads from [LIBINT's home page](https://github.com/evaleev/libint) are not configured for CP2K and hence cannot be used. Please [download](https://github.com/cp2k/libint-cp2k/releases/latest) (take "lmax-6" if unsure), unpack LIBINT, and make the configure wrapper scripts available in LIBINT's root folder.
+LIBINT generates code to an extent that is often specific to the application. The downloads from [LIBINT's home page](https://github.com/evaleev/libint/releases) are not configured for CP2K, which can be handled by XCONFIGURE. LIBINT configured for CP2K, can be [downloaded](https://github.com/cp2k/libint-cp2k/releases/latest) as well (take "lmax-6" if unsure).
 
-To just determine the download-URL of the latest version (a suitable variant can be "lmax-6"):
+To just determine the download-URL of an already configured package:
 
 ```bash
 curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
@@ -31,6 +23,12 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | grep "browser_download_url" | grep "lmax-6" \
 | sed "s/..*: \"\(..*[^\"]\)\".*/url \1/" \
 | curl -LOK-
+```
+
+To download the latest version of LIBINT:
+
+```bash
+wget https://github.com/evaleev/libint/archive/refs/tags/v2.9.0.tar.gz
 ```
 
 **Note**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
