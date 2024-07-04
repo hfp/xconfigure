@@ -14,8 +14,8 @@ if [ "" = "$1" ]; then PRFX=gnu-; else PRFX=$1-; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../libint/${PRFX}skx
 
-if [[ ((! -e "${HERE}/configure.in") && (! -e "${HERE}/configure.ac") && (! -e "${HERE}/CMakeLists.txt")) \
-    || ("${HERE}" != "$(pwd -P)") ]];
+if [[ ((! -e "${HERE}/configure.in") && (! -e "${HERE}/autogen.sh") && (! -e "${HERE}/CMakeLists.txt")) \
+   || ("${HERE}" != "$(pwd -P)") ]];
 then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
@@ -49,7 +49,7 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
-if [ -e "${HERE}/configure" ] || [ -e "${HERE}/autogen.sh" ]; then
+if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
   if [ -e "${HERE}/fortran/Makefile" ] || [ -e "${HERE}/fortran/Makefile.in" ]; then
     sed -i '/fortran_example:/!b;n;s/CXX/FC/g' "${HERE}"/fortran/Makefile*
   fi
