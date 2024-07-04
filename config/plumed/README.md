@@ -3,11 +3,11 @@
 To [download](https://www.plumed.org/download), configure, build, and install [Plumed](https://github.com/plumed/plumed2/releases/latest)&#160;2.x (CP2K requires Plumed2), one may proceed as shown below. See also [How to compile CP2K with Plumed](https://www.cp2k.org/howto:install_with_plumed).
 
 ```bash
-wget --content-disposition --no-check-certificate https://github.com/plumed/plumed2/archive/v2.8.0.tar.gz
+wget --content-disposition https://github.com/plumed/plumed2/archive/v2.8.0.tar.gz
 tar xvf plumed2-2.8.0.tar.gz
 cd plumed2-2.8.0
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh plumed
 ```

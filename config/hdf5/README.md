@@ -3,11 +3,11 @@
 To [download](https://support.hdfgroup.org/ftp/HDF5/releases/), configure, build, and install HDF5, one may proceed as shown below.
 
 ```bash
-wget --content-disposition --no-check-certificate https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2
+wget --content-disposition https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2
 tar xvf hdf5-1.12.1.tar.bz2
 cd hdf5-1.12.1
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh hdf5
 ```

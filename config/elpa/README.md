@@ -7,12 +7,12 @@
 [Download](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. Consider CP2K's download area (cache) as an [alternative source](https://www.cp2k.org/static/downloads) for downloading ELPA.
 
 ```bash
-echo "wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2021.11.002.tar.gz"
-wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.11.002/elpa-2021.11.002.tar.gz
+echo "wget --content-disposition https://www.cp2k.org/static/downloads/elpa-2021.11.002.tar.gz"
+wget --content-disposition https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2021.11.002/elpa-2021.11.002.tar.gz
 tar xvf elpa-2021.11.002.tar.gz
 cd elpa-2021.11.002
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -56,12 +56,12 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 [Download](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder. Consider CP2K's download area (cache) as an [alternative source](https://www.cp2k.org/static/downloads) for downloading ELPA.
 
 ```bash
-echo "wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
-wget --content-disposition --no-check-certificate https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
+echo "wget --content-disposition https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2020.11.001/elpa-2020.11.001.tar.gz"
+wget --content-disposition https://www.cp2k.org/static/downloads/elpa-2020.11.001.tar.gz
 tar xvf elpa-2020.11.001.tar.gz
 cd elpa-2020.11.001
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -97,11 +97,11 @@ Even if ELPA was just unpacked (and never built before), `make clean` is recomme
 [Download](https://elpa.mpcdf.mpg.de/software/tarball-archive/ELPA_TARBALL_ARCHIVE.html) and unpack ELPA and make the configure wrapper scripts available in ELPA's root folder.
 
 ```bash
-wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2019.11.001/elpa-2019.11.001.tar.gz
+wget --content-disposition https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2019.11.001/elpa-2019.11.001.tar.gz
 tar xvf elpa-2019.11.001.tar.gz
 cd elpa-2019.11.001
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
@@ -143,11 +143,11 @@ Please use [ELPA&#160;2017.11.001](#elpa-2017) for CP2K&#160;6.1. For CP2K&#160;
 **Note**: In Quantum Espresso, the __ELPA_2018 interface must be used for ELPA 2017.11 (`-D__ELPA_2018`). The __ELPA_2017 preprocessor definition triggers the ELPA1 legacy interface (get_elpa_row_col_comms, etc.), which was removed in ELPA&#160;2017.11. This is already considered when using XCONFIGURE's wrapper scripts.
 
 ```bash
-wget --content-disposition --no-check-certificate https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2017.11.001/elpa-2017.11.001.tar.gz
+wget --content-disposition https://elpa.mpcdf.mpg.de/software/tarball-archive/Releases/2017.11.001/elpa-2017.11.001.tar.gz
 tar xvf elpa-2017.11.001.tar.gz
 cd elpa-2017.11.001
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```

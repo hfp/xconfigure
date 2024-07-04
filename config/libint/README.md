@@ -41,7 +41,7 @@ To unpack the archive and to download the configure wrapper (lmax6-version is as
 tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
 cd libint-v2.6.0-cp2k-lmax-6
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
@@ -67,11 +67,11 @@ As shown above, an arbitrary "tagname" can be given (without editing the script)
 [Download](https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz) and unpack LIBINT and make the configure wrapper scripts available in LIBINT's root folder. Please note that the "automake" package is a prerequisite.
 
 ```bash
-wget --content-disposition --no-check-certificate https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
+wget --content-disposition https://github.com/evaleev/libint/archive/release-1-1-6.tar.gz
 tar xvf release-1-1-6.tar.gz
 cd libint-release-1-1-6
 
-wget --content-disposition --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
@@ -94,26 +94,9 @@ To speed-up compilation, "make" might be carried out in phases: after "printing 
 
 ## Boostrap for CP2K
 
-LIBINT consists of a compiler specializing the library by generating source files according to the needs of the desired application:
+LIBINT consists of a compiler specializing the library by generating source files according to the needs of the desired application. XCONFIGURE scripts support both preconfigured LIBINT as well as the generic source code.
 
-```bash
-wget https://github.com/evaleev/libint/archive/refs/tags/v2.9.0.tar.gz
-tar xvf v2.9.0.tar.gz && rm v2.9.0.tar.gz
-
-cd libint-2.9.0 && ./autogen.sh && CXX=g++ CC=gcc ./configure \
-  --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 \
-  --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 --with-opt-am=3 \
-  --with-libint-exportdir=libint-2.9.0-cp2k-lmax-6 --disable-unrolling --enable-fma \
-  --with-real-type=libint2::simd::VectorAVXDouble --with-cxxgen=g++ \
-  --with-cxxgen-optflags="-march=native -mtune=native"
-
-make -j $(nproc) export
-make clean
-```
-
-The above build instructions will leave a compressed Tarball inside of the directory (`libint-cp2k.tar.gz`). The archive can be unpacked and built the usual way.
-
-**Note**: for example `VectorAVXDouble` is permitted by `--with-cxxgen-optflags` according to CPU features on the system bootstrapping LIBINT. This requires special care to avoid discrepancies between the compilation host and the desired target system (cross-compilation).
+After running the desired XCONFIGURE script on the generic source code, `make export` will create a compressed Tarball inside of the directory (`libint-cp2k-lmax6.tgz`). The exported code was generated for CP2K's requirements, can be unarchived, compiled, and installed the usual way.
 
 ## References
 
