@@ -29,7 +29,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--with-libderiv-max-am1=5 --with-libint-max-am=6 --enable-fortran --disable-libtool --with-cc-optflags=\"\${CFLAGS}\""
 TARGET="-march=native -mtune=native"
 
 export FLAGS="-O3 ${TARGET}"
@@ -49,36 +49,37 @@ export CXX="g++"
 export F77=${FC}
 export F90=${FC}
 
-if [ -e "${HERE}/CMakeLists.txt" ] && [ ! -e "${HERE}/configure.in" ] && [ ! -e "${HERE}/configure.ac" ]; then
-  if [ ! "$(command -v cmake)" ]; then
-    echo "Error: XCONFIGURE requires CMake to build LIBINT!"
-    exit 1
-  fi
-  rm -f "${HERE}/CMakeCache.txt"
-  cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
-    -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
-else
+if [ -e "${HERE}/configure" ] || [ -e "${HERE}/autogen.sh" ]; then
   if [ -e "${HERE}/fortran/Makefile" ] || [ -e "${HERE}/fortran/Makefile.in" ]; then
     sed -i '/fortran_example:/!b;n;s/CXX/FC/g' "${HERE}"/fortran/Makefile*
   fi
-  # broken build system incl. "make -f "${HERE}/fortran/Makefile" distclean"
   if [ -e "${HERE}/fortran/Makefile" ]; then
     cd "${HERE}/fortran" || exit 1
     make distclean
     cd "${HERE}" || exit 1
   fi
-
-  if [ ! -e "${HERE}/configure" ]; then
+  if [ -e "${HERE}/autogen.sh" ]; then
+    ${HERE}/autogen.sh
+  elif [ ! -e "${HERE}/configure" ]; then
     autoconf
   fi
-
   ./configure --prefix=${DEST} ${CONFOPTS} \
-    --with-cc-optflags="${CFLAGS}" \
-    --with-cxx-optflags="${CXXFLAGS}" \
-    --with-libderiv-max-am1=5 \
-    --with-libint-max-am=6 \
-    --disable-libtool \
-    --enable-fortran \
+    --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 \
+    --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 --with-opt-am=3 \
+    --with-libint-exportdir=libint-cp2k-lmax6 --disable-unrolling --enable-fma \
+    --with-cxxgen-optflags="${CXXFLAGS}" --with-cxx-optflags="${CXXFLAGS}" \
+    --with-real-type=libint2::simd::VectorAVXDouble \
     "$@"
+else # preconfigured
+  if [ -e "${HERE}/CMakeLists.txt" ]; then
+    if [ ! "$(command -v cmake)" ]; then
+      echo "Error: XCONFIGURE requires CMake to build LIBINT!"
+      exit 1
+    fi
+    rm -f "${HERE}/CMakeCache.txt"
+    cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
+      -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+      -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
+  else
+  fi
 fi
