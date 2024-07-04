@@ -100,11 +100,11 @@ LIBINT consists of a compiler specializing the library by generating source file
 wget https://github.com/evaleev/libint/archive/refs/tags/v2.9.0.tar.gz
 tar xvf v2.9.0.tar.gz && rm v2.9.0.tar.gz
 
-cd libint-2.9.0 && ./autogen.sh && ./configure \
+cd libint-2.9.0 && ./autogen.sh && CXX=g++ CC=gcc ./configure \
   --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 \
   --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 --with-opt-am=3 \
-  --with-libint-exportdir=libint-cp2k --disable-unrolling --enable-fma \
-  --with-real-type=libint2::simd::VectorAVXDouble \
+  --with-libint-exportdir=libint-2.9.0-cp2k-lmax-6 --disable-unrolling --enable-fma \
+  --with-real-type=libint2::simd::VectorAVXDouble --with-cxxgen=g++ \
   --with-cxxgen-optflags="-march=native -mtune=native"
 
 make -j $(nproc) export
