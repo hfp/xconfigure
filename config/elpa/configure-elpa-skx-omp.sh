@@ -47,7 +47,7 @@ FPFLAGS="-fp-model fast=2 -complex-limited-range"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
-TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
+TARGET="-xCORE-AVX512"
 FLAGS="-O2 ${TARGET} -I${MKLROOT}/include"
 #FLAGS+="" #-ipo-separate
 

@@ -30,7 +30,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS="--with-libderiv-max-am1=5 --with-libint-max-am=6 --enable-fortran --disable-libtool --with-cc-optflags=\"\${CFLAGS}\""
-TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
+TARGET="-xCORE-AVX512"
 
 # consider more accurate FP-model
 #FPCMODEL = -fp-model precise

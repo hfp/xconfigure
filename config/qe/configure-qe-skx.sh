@@ -10,7 +10,7 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
+TARGET="-xCORE-AVX512"
 OMPFLAG="-qopenmp -qoverride_limits"
 #IPO="-ipo-separate"
 # consider more accurate -fp-model (C/C++: precise, Fortran: source)

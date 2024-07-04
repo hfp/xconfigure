@@ -34,7 +34,7 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS="openmp=1"
-TARGET="-xCORE-AVX512 -qopt-zmm-usage=high"
+TARGET="-xCORE-AVX512"
 
 # consider more accurate FP-model
 #FPCMODEL = -fp-model precise
