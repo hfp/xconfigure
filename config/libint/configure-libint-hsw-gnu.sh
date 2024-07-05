@@ -64,19 +64,26 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     autoconf
   fi
   ./configure --prefix=${DEST} ${CONFOPTS} \
-    --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 \
-    --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 --with-opt-am=3 \
-    --with-libint-exportdir=libint-cp2k-lmax6 --disable-unrolling --enable-fma \
-    --with-cxxgen-optflags="${CXXFLAGS}" --with-cxx-optflags="${CXXFLAGS}" \
-    --with-real-type=libint2::simd::VectorAVXDouble \
+    --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 --with-opt-am=3 \
+    --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 \
+    --with-libint-exportdir=libint-cp2k-lmax6 --disable-unrolling \
+    --with-real-type=libint2::simd::VectorAVXDouble --enable-fma \
+    --with-cxxgen-optflags="${CXXFLAGS}" \
     "$@"
-else # preconfigured
-  if [ ! -e "${HERE}/CMakeLists.txt" ] || [ ! "$(command -v cmake)" ]; then
-    echo "Error: XCONFIGURE requires CMake to build LIBINT!"
-    exit 1
+  if [ -e "${HERE}/autogen.sh" ]; then
+    make export
+    tar -xf libint-cp2k-lmax6.tgz --strip-components=1 --overwrite
+  else
+    exit 0
   fi
-  rm -f "${HERE}/CMakeCache.txt"
-  cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
-    -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
 fi
+
+# preconfigured
+if [ ! -e "${HERE}/CMakeLists.txt" ] || [ ! "$(command -v cmake)" ]; then
+  echo "Error: XCONFIGURE requires CMake to build LIBINT!"
+  exit 1
+fi
+rm -f "${HERE}/CMakeCache.txt"
+cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
+  -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+  -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
