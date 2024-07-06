@@ -2,9 +2,13 @@
 
 ## Overview
 
+LIBINT consists of a compiler specializing the library by generating source files according to the needs of the desired application. XCONFIGURE scripts support both preconfigured LIBINT as well as starting from generic source code.
+
+<a name="boostrap-for-cp2k"></a>After running the desired XCONFIGURE script on the generic source code, a compressed Tarball is left behind inside of the original directory (`libint-cp2k-lmax6.tgz`). The exported code (as generated for CP2K's requirements), can be unarchived, compiled, and installed using the XCONFIGURE scripts again (but faster because generating the source code is omitted).
+
 For CP2K&#160;7.x and onwards, LIBINT&#160;2.5 (or later) is needed. For CP2K&#160;6.1 (and earlier), LIBINT&#160;1.1.x is required (1.2.x, 2.x, or any later version cannot be used).
 
-## Version&#160;2.5 (and later)
+## Version&#160;2.x<a name="version-25-and-later"></a>
 
 LIBINT generates code to an extent that is often specific to the application. The downloads from [LIBINT's home page](https://github.com/evaleev/libint/releases) are not configured for CP2K, which can be handled by XCONFIGURE. LIBINT configured for CP2K, can be [downloaded](https://github.com/cp2k/libint-cp2k/releases/latest) as well (take "lmax-6" if unsure).
 
@@ -25,26 +29,26 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 | curl -LOK-
 ```
 
-To download the latest version of LIBINT:
+**Note**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
+
+To download the latest generic source code package of LIBINT (small package but full [bootstrap for CP2K](README.md#boostrap-for-cp2k) applies):
 
 ```bash
 wget https://github.com/evaleev/libint/archive/refs/tags/v2.9.0.tar.gz
 ```
 
-**Note**: A rate limit applies to GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request by using a GitHub account (`-u "user:password"`).
-
-To unpack the archive and to download the configure wrapper (lmax6-version is assumed):
+Unpack the archive of choice and download the XCONFIGURE scripts:
 
 ```bash
-tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
-cd libint-v2.6.0-cp2k-lmax-6
+# tar xvf libint-v2.6.0-cp2k-lmax-6.tgz && cd libint-v2.6.0-cp2k-lmax-6
+tar v2.9.0.tar.gz && cd v2.9.0
 
 wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-There are spurious issues about specific target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build system that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX"):
+There can be issues with target flags requiring a build-system able to execute a binary compiled with the flags of choice. To avoid cross-compilation (not supported here), please rely on a build system that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX") using, e.g., Intel Compiler:
 
 ```bash
 make distclean
@@ -52,13 +56,21 @@ make distclean
 make -j $(nproc); make install
 ```
 
-Make sure to run `make distclean` before reconfiguring a different variant, e.g., GNU and Intel variant. Further, for different targets (instruction set extensions) or different compilers, the configure-wrapper scripts support an additional argument ("default" is the default tagname):
+To build native code for the system running the scripts using, e.g., GNU Compiler:
+
+```bash
+make distclean
+./configure-libint-gnu.sh
+make -j $(nproc); make install
+```
+
+Make sure to run `make distclean` before reconfiguring for a different variant, e.g., changing between GNU and Intel compiler. Further, for different compiler versions, different targets (instruction set extensions), or any other difference, the configure-wrapper scripts support an additional argument (a "tagname"):
 
 ```bash
 ./configure-libint-hsw.sh tagname
 ```
 
-As shown above, an arbitrary "tagname" can be given (without editing the script). This might be used to build multiple variants of the LIBINT library.
+As shown above, an arbitrary "tagname" can be given (without editing the script). This might be useful when building multiple variants of the LIBINT library.
 
 ## Version&#160;1.x
 
@@ -81,20 +93,6 @@ make distclean
 ./configure-libint-hsw.sh
 make -j $(nproc); make install
 ```
-
-The version 1.x line of LIBINT does not support to cross-compile for an architecture. If cross-compilation is necessary, one can rely on the [Intel Software Development Emulator](https://software.intel.com/en-us/articles/intel-software-development-emulator) (Intel SDE) to compile LIBINT for targets, which cannot execute on the compile-host.
-
-```bash
-/software/intel/sde/sde -knl -- make
-```
-
-To speed-up compilation, "make" might be carried out in phases: after "printing the code" (c-files), the make execution continues with building the object-file where no SDE needed. The latter phase can be sped up by interrupting "make" and executing it without SDE. The root cause of the entire problem is that the driver printing the c-code is (needlessly) compiled using the architecture-flags that are not supported on the host.
-
-## Boostrap for CP2K
-
-LIBINT consists of a compiler specializing the library by generating source files according to the needs of the desired application. XCONFIGURE scripts support both preconfigured LIBINT as well as the generic source code.
-
-After running the desired XCONFIGURE script on the generic source code, `make export` will create a compressed Tarball inside of the directory (`libint-cp2k-lmax6.tgz`). The exported code was generated for CP2K's requirements, can be unarchived, compiled, and installed the usual way.
 
 ## References
 
