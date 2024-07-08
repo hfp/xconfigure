@@ -9,6 +9,7 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
+# shellcheck disable=SC2089
 
 if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
@@ -62,7 +63,7 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     if [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/include" ]; then
       export CPATH=${BOOST_ROOT}/include:${CPATH}
     fi
-    ${HERE}/autogen.sh
+    "${HERE}/autogen.sh"
   elif [ ! -e "${HERE}/configure" ]; then
     autoconf
   fi
@@ -74,7 +75,7 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     --with-cxxgen-optflags="${CXXFLAGS}" \
     "$@"
   if [ -e "${HERE}/autogen.sh" ]; then
-    make export -j $(nproc)
+    make export -j "$(nproc)"
     tar -xf libint-cp2k-lmax6.tgz --strip-components=1 --overwrite
   else
     exit 0

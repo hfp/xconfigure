@@ -32,13 +32,13 @@ fi
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
   if [ "" != "${MKL_INCFILE}" ]; then
-    MKLROOT=$(dirname ${MKL_INCFILE})/..
+    MKLROOT=$(dirname "${MKL_INCFILE}")/..
   fi
 fi
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /usr/include/mkl/mkl.h 2>/dev/null | head -n1)
   if [ "" != "${MKL_INCFILE}" ]; then
-    MKLROOT=$(dirname ${MKL_INCFILE})/../..
+    MKLROOT=$(dirname "${MKL_INCFILE}")/../..
   fi
 fi
 
@@ -85,7 +85,7 @@ export MPIF77=${F77}
 export MPIF90=${F90}
 export MPICXX=${CXX}
 
-CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
 CC_VERSION_MINOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f2)
 CC_VERSION_PATCH=$(echo "${CC_VERSION_STRING}" | cut -d"." -f3)

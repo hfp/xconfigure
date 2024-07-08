@@ -35,7 +35,7 @@ if [ "0" = "${NUMFILES}" ]; then
 fi
 
 PROJECT=$(basename $(find ${FILEPATH} -maxdepth 1 -type f -name "${PATTERN}" -exec grep "Reading input from" {} \; \
-                   | sed -n "s/..*\/\([^\s][^\s]*\)/\1/p" | head -n1) .in 2> /dev/null | tr [:lower:] [:upper:])
+                   | sed -n "s/..*\/\([^\s][^\s]*\)/\1/p" | head -n1) .in 2>/dev/null | tr [:lower:] [:upper:])
 if [ ".IN" = "${PROJECT}" ]; then
   PROJECT=$(basename $(cd ${FILEPATH}; pwd -P) | tr [:lower:] [:upper:])
 fi

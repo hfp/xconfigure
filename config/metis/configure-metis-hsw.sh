@@ -20,7 +20,7 @@ if [ "" = "${CMAKE}" ]; then
   exit 1
 fi
 
-if [ ! -e ${HERE}/BUILD.txt ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/BUILD.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
@@ -64,4 +64,4 @@ export AR="xiar"
 export FC CC CXXexport F77=${FC}
 export F90=${FC}
 
-make config prefix=${DEST} cc=${CC} ${CONFOPTS} "$@"
+make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"

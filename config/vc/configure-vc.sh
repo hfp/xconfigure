@@ -32,7 +32,7 @@ if [ "${HERE}" = "${DEST}" ]; then
     exit 1
   fi
 else
-  rm -f ${HERE}/CMakeCache.txt
+  rm -f "${HERE}/CMakeCache.txt"
 fi
 
 CONFOPTS="-DBUILD_TESTING=OFF"
@@ -41,6 +41,6 @@ rm -rf "${HERE}/build"
 mkdir -p "${HERE}/build"
 cd "${HERE}/build" || exit 1
 
-cmake -DCMAKE_INSTALL_PREFIX=${DEST} -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} "$@" ${HERE}
+cmake -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} "$@" "${HERE}"
 echo
 echo "Remember to \"cd build\" before \"make; make install\""

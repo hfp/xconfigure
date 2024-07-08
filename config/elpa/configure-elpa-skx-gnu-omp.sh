@@ -32,13 +32,13 @@ fi
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
   if [ "" != "${MKL_INCFILE}" ]; then
-    MKLROOT=$(dirname ${MKL_INCFILE})/..
+    MKLROOT=$(dirname "${MKL_INCFILE}")/..
   fi
 fi
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /usr/include/mkl/mkl.h 2>/dev/null | head -n1)
   if [ "" != "${MKL_INCFILE}" ]; then
-    MKLROOT=$(dirname ${MKL_INCFILE})/../..
+    MKLROOT=$(dirname "${MKL_INCFILE}")/../..
   fi
 fi
 

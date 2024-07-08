@@ -9,6 +9,7 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
+# shellcheck disable=SC2089
 
 if [ "" = "$1" ]; then PRFX=intel-; else PRFX=$1-; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
@@ -62,7 +63,7 @@ export FC CC CXX
 export F77=${FC}
 export F90=${FC}
 
-CC_VERSION_STRING=$(${CC} --version 2> /dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
+CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
 CC_VERSION_MINOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f2)
 CC_VERSION_PATCH=$(echo "${CC_VERSION_STRING}" | cut -d"." -f3)
@@ -96,7 +97,7 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     if [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/include" ]; then
       export CPATH=${BOOST_ROOT}/include:${CPATH}
     fi
-    ${HERE}/autogen.sh
+    "${HERE}/autogen.sh"
   elif [ ! -e "${HERE}/configure" ]; then
     autoconf
   fi
@@ -108,7 +109,7 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     --with-cxxgen-optflags="${CXXFLAGS}" \
     "$@"
   if [ -e "${HERE}/autogen.sh" ]; then
-    make export -j $(nproc)
+    make export -j "$(nproc)"
     tar -xf libint-cp2k-lmax6.tgz --strip-components=1 --overwrite
   else
     exit 0
