@@ -59,11 +59,14 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     cd "${HERE}" || exit 1
   fi
   if [ -e "${HERE}/autogen.sh" ]; then
+    if [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/include" ]; then
+      export CPATH=${BOOST_ROOT}/include:${CPATH}
+    fi
     ${HERE}/autogen.sh
   elif [ ! -e "${HERE}/configure" ]; then
     autoconf
   fi
-  ./configure --prefix=${DEST} ${CONFOPTS} \
+  ./configure --prefix="${DEST}" ${CONFOPTS} \
     --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 --with-opt-am=3 \
     --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 \
     --with-libint-exportdir=libint-cp2k-lmax6 --disable-unrolling \
@@ -71,7 +74,7 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     --with-cxxgen-optflags="${CXXFLAGS}" \
     "$@"
   if [ -e "${HERE}/autogen.sh" ]; then
-    make export
+    make export -j $(nproc)
     tar -xf libint-cp2k-lmax6.tgz --strip-components=1 --overwrite
   else
     exit 0
