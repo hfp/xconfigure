@@ -87,7 +87,7 @@ fi
   --disable-dependency-tracking \
   --host=x86_64-unknown-linux-gnu \
   --disable-mpi-module \
-  --prefix=${DEST} ${CONFOPTS} "$@"
+  --prefix="${DEST}" ${CONFOPTS} "$@"
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \

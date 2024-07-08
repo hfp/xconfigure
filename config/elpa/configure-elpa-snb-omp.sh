@@ -124,7 +124,7 @@ fi
   --disable-mpi-module \
   --disable-avx512 \
   --disable-avx2 \
-  --prefix=${DEST} ${CONFOPTS} "$@"
+  --prefix="${DEST}" ${CONFOPTS} "$@"
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \

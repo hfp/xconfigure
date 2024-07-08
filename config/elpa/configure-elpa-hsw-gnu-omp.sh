@@ -88,7 +88,7 @@ fi
   --host=x86_64-unknown-linux-gnu \
   --disable-mpi-module \
   --disable-avx512 \
-  --prefix=${DEST} ${CONFOPTS} "$@"
+  --prefix="${DEST}" ${CONFOPTS} "$@"
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \

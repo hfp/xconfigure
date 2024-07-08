@@ -44,7 +44,7 @@ fi
 
 if [ -e /proc/cpuinfo ] && [ "" = "$(grep -m1 flags /proc/cpuinfo | grep avx512f)" ]; then
   CONFOPTS="--disable-avx512"
-elif [ "Darwin" = "$(uname)" ] && [ "x86_64" = "$(uname) -m" ] && \
+elif [ "Darwin" = "$(uname)" ] && [ "x86_64" = "$(uname -m)" ] && \
      [ "" = "$(sysctl -a machdep.cpu.leaf7_features | grep AVX512F)" ];
 then
   CONFOPTS="--disable-avx512"
@@ -95,7 +95,7 @@ fi
   --disable-dependency-tracking \
   --host=x86_64-unknown-linux-gnu \
   --disable-mpi-module \
-  --prefix=${DEST} ${CONFOPTS} "$@"
+  --prefix="${DEST}" ${CONFOPTS} "$@"
 
 sed -i \
   -e "s/-openmp/-qopenmp -qoverride_limits/" \
