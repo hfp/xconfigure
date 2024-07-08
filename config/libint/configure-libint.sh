@@ -9,7 +9,6 @@
 ###############################################################################
 # Hans Pabst (Intel Corp.)
 ###############################################################################
-# shellcheck disable=SC2089
 
 if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
@@ -101,13 +100,13 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
   elif [ ! -e "${HERE}/configure" ]; then
     autoconf
   fi
-  ./configure --prefix="${DEST}" ${CONFOPTS} \
+  eval "./configure --prefix=${DEST} ${CONFOPTS} \
     --enable-eri=1 --enable-eri2=1 --enable-eri3=1 --with-max-am=6 --with-opt-am=3 \
     --with-eri-max-am=6,5 --with-eri2-max-am=8,7 --with-eri3-max-am=8,7 \
     --with-libint-exportdir=libint-cp2k-lmax6 --disable-unrolling \
     --with-real-type=libint2::simd::VectorAVXDouble --enable-fma \
-    --with-cxxgen-optflags="${CXXFLAGS}" \
-    "$@"
+    --with-cxxgen-optflags=\"${CXXFLAGS}\" \
+    $*"
   if [ -e "${HERE}/autogen.sh" ]; then
     make export -j "$(nproc)"
     tar -xf libint-cp2k-lmax6.tgz --strip-components=1 --overwrite
