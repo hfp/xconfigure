@@ -77,7 +77,7 @@ aclocal
 autoconf
 
 ./configure \
-  --prefix=${DEST} ${CONFOPTS} \
+  --prefix="${DEST}" ${CONFOPTS} \
   --host=x86_64-unknown-linux-gnu \
   "$@"
 
