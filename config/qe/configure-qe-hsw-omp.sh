@@ -115,10 +115,10 @@ export SCALAPACK_LIBS="${MKLROOT}/lib/intel64/libmkl_scalapack_lp64.a"
 export FFT_LIBS="${BLAS_LIBS}"
 
 rm -f make.sys make.inc
-./configure ${OPENMP} --with-scalapack=intel --with-elpa="${ELPAROOT}" \
-  --with-elpa-include="-I${ELPAROOT}/include/elpa/modules" \
-  --with-elpa-lib="${ELPAROOT}/lib/libelpa.a" \
-  "$@"
+eval "./configure ${OPENMP} --with-scalapack=intel --with-elpa=${ELPAROOT} \
+  --with-elpa-include=-I${ELPAROOT}/include/elpa/modules \
+  --with-elpa-lib=${ELPAROOT}/lib/libelpa.a \
+  $*"
 
 if [ -e "${HERE}/make.inc" ]; then
   INCFILE=${HERE}/make.inc

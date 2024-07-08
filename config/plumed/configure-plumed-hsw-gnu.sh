@@ -65,8 +65,7 @@ aclocal
 #automake -a
 autoconf
 
-./configure \
-  --prefix="${DEST}" ${CONFOPTS} \
+eval "./configure \
+  --prefix=${DEST} ${CONFOPTS} \
   --host=x86_64-unknown-linux-gnu \
-  "$@"
-
+  $*"
