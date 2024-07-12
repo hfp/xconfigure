@@ -147,6 +147,7 @@ if [ "${I_MPI_ROOT}" ]; then
   export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
   export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
+  export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
   #
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
