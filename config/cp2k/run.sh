@@ -143,8 +143,10 @@ if [ "${I_MPI_ROOT}" ]; then
       MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
     fi
   fi
-  if command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL; then
-    export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
+  if [ ! "${ACC_OPENCL_DEVIDS}" ] && [ ! "${CUDA_VISIBLE_DEVICES}" ]; then
+    if command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL; then
+      export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
+    fi
   fi
   export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
   export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
