@@ -129,6 +129,9 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 # additional command-line arguments
 ARGS="$*"
 
+EXEVER=${EXEVER:-exe}
+EXE=$(cd "${ROOT}/${EXEVER}/${BUILD}" && pwd -P)/cp2k.${VERSION}
+
 if [ "${I_MPI_ROOT}" ]; then
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
@@ -140,18 +143,19 @@ if [ "${I_MPI_ROOT}" ]; then
       MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
     fi
   fi
-  #
-  #export I_MPI_FABRICS=shm:ofi
+  if command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL; then
+    export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
+  fi
   export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
   export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
   export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
   export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
-  export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
   #
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
+  #export I_MPI_FABRICS=shm:tcp
   #
   if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
     export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
@@ -166,8 +170,6 @@ if [ "0" != "${MYNODES}" ]; then
   HST="-host ${HOSTS}"
 fi
 
-EXEVER=${EXEVER:-exe}
-EXE=$(cd "${ROOT}/${EXEVER}/${BUILD}" && pwd -P)/cp2k.${VERSION}
 RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
   -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
 ${EXE} ${WORKLOAD} ${ARGS}"
