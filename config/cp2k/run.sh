@@ -131,9 +131,15 @@ ARGS="$*"
 
 if [ "${I_MPI_ROOT}" ]; then
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
+  #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
+  if [ "0" != "${BOOTSTRAP}" ]; then
+    if [ "${BOOTSTRAP}" ]; then
+      MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ${BOOTSTRAP}"
+    else
+      MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
+    fi
+  fi
   #
   #export I_MPI_FABRICS=shm:ofi
   export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
