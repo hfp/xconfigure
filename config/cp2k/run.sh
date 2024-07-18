@@ -143,6 +143,9 @@ if [ "${I_MPI_ROOT}" ]; then
       MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
     fi
   fi
+  if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
+    export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
+  fi
   if [ ! "${ACC_OPENCL_DEVIDS}" ] && command -v ldd >/dev/null && \
        ldd "${EXE}" | grep -q libOpenCL;
   then
@@ -150,20 +153,18 @@ if [ "${I_MPI_ROOT}" ]; then
   else
     export I_MPI_OFFLOAD=0
   fi
-  export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
-  export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
-  export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
-  export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
+  if [ ! "${MPI_OPT}" ] || [ "0" != "${MPI_OPT}" ]; then
+    export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
+    export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
+    export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
+    export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
+  fi
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
-  #
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
+  #
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
   #export I_MPI_FABRICS=shm:tcp
-  #
-  if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
-    export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
-  fi
 else
   HOSTS=$(sed 's/^\(..*[^,]\),*$/\1/' <<<"${HOSTS}" | sed -e "s/,/:${NC},/g" -e "s/$/:${NC}/")
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
