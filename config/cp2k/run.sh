@@ -102,18 +102,22 @@ else
   NRANKS=${NC}
 fi
 
-if [ "$1" ]; then
-  NUMNODES=$1
-  shift
+if [ -e "${ROOT}/mynodes.sh" ]; then
+  HOSTS=$("${ROOT}/mynodes.sh" 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
 else
-  NUMNODES=1
+  HOSTS=${HOSTS:-localhost}
 fi
 
-if [ -e "${ROOT}/mynodes.sh" ] && [ "0" != "${MYNODES}" ]; then
-  HOSTS=$("${ROOT}/mynodes.sh" 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
+if [ "$1" ]; then
+  HOSTS=$(cut -d, -f"1-$1" <<<"${HOSTS}")
+  NUMNODES=$1
+  shift
+elif [ "${SLURM_JOB_NUM_NODES}" ]; then
+  NUMNODES=${SLURM_JOB_NUM_NODES}
+else
+  NUMCOMMA=$(tr -cd ',' <<<"${HOSTS}" | wc -c)
+  NUMNODES=$((NUMCOMMA+1))
 fi
-HOSTS=$(cut -d, -f1-${NUMNODES} <<<"${HOSTS}")
-HOSTS=${HOSTS:-localhost}
 
 #HPCWL_COMMAND_PREFIX="aps -c mpi,omp"
 #MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk"
@@ -166,12 +170,11 @@ if [ "${I_MPI_ROOT}" ]; then
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
   #export I_MPI_FABRICS=shm:tcp
 else
-  HOSTS=$(sed 's/^\(..*[^,]\),*$/\1/' <<<"${HOSTS}" | sed -e "s/,/:${NC},/g" -e "s/$/:${NC}/")
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
 fi
 
-if [ "0" != "${MYNODES}" ]; then
+if [ -e "${ROOT}/mynodes.sh" ]; then
   HST="-host ${HOSTS}"
 fi
 
