@@ -147,7 +147,7 @@ if [ "${I_MPI_ROOT}" ]; then
       MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
     fi
   fi
-  if [[ "${MPIRUNFLAGS}" =~ "-rdma" ]]; then
+  if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
     export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
   fi
   if [ ! "${ACC_OPENCL_DEVIDS}" ] && command -v ldd >/dev/null && \
@@ -225,4 +225,7 @@ echo "${RUN}" | xargs
 echo
 
 # finally evaluate/run
+if [ "${WAIT}" ] && [ "0" != "$((0<WAIT))" ] && command -v sleep >/dev/null; then
+  sleep "${WAIT}"
+fi
 eval "${RUN}"
