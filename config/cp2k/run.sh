@@ -184,7 +184,7 @@ ${EXE} ${WORKLOAD} ${ARGS}"
 
 # setup OpenMP environment
 if [ ! "${OMP_NUM_THREADS}" ]; then
-  NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NT}" ]; then NR=1; fi
+  NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
   MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
   MT=$((HT<=MAXNT?HT:MAXNT))
   NTHREADS=$((MC*MT))
