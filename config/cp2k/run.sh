@@ -150,8 +150,8 @@ if [ "${I_MPI_ROOT}" ]; then
   if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
     export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
   fi
-  if [ ! "${ACC_OPENCL_DEVIDS}" ] && command -v ldd >/dev/null && \
-       ldd "${EXE}" | grep -q libOpenCL;
+  if [ ! "${ACC_OPENCL_DEVIDS}" ] && [ ! "${ACC_OPENCL_DEVTYPE}" ] && \
+       command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
   then
     export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
   else
