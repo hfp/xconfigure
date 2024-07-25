@@ -176,16 +176,22 @@ ifneq (0,$(MPI))
   endif
   ifeq (0,$(GNU))
     ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
+      RANLIB := xiar -s
+      AR  := xiar -r
       CXX := mpiicpc $(if $(call which,icpc),$(NULL),-cxx=icpx)
       CC  := mpiicc  $(if $(call which,icc),$(NULL),-cc=icx)
       FC  := mpiifort
       LD  := mpiifort
     else ifneq (,$(call which,mpiifx))
+      #RANLIB := ar -s
+      #AR  := ar -r
       CXX := mpiicpx
       CC  := mpiicx
       FC  := mpiifx
       LD  := mpiifx
     else
+      RANLIB := xiar -s
+      AR  := xiar -r
       CXX := mpiicpc  -cxx=icpx
       CC  := mpiicc   -cc=icx
       FC  := mpiifort -fc=ifx
@@ -199,11 +205,15 @@ ifneq (0,$(MPI))
   endif
 else ifeq (0,$(GNU))
   ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
+    RANLIB := xiar -s
+    AR  := xiar -r
     CXX := $(if $(call which,icpc),icpc,icpx)
     CC  := $(if $(call which,icc),icc,icx)
     FC  := ifort
     LD  := ifort
   else
+    #RANLIB := ar -s
+    #AR  := ar -r
     CXX := icpx
     CC  := icx
     FC  := ifx
@@ -494,8 +504,6 @@ ifeq (0,$(GNU)) # Intel
   endif
   MKL_OMPRTL := intel
   MKL_FCRTL := intel
-  RANLIB := xiar -s
-  AR := xiar -r
 else # GNU GCC
   ifeq (,$(MKLROOT))
     $(info ================================================================================)
