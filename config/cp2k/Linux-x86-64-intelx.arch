@@ -183,8 +183,8 @@ ifneq (0,$(MPI))
       FC  := mpiifort
       LD  := mpiifort
     else ifneq (,$(call which,mpiifx))
-      #RANLIB := ar -s
-      #AR  := ar -r
+      RANLIB := ar -s
+      AR  := ar -r
       CXX := mpiicpx
       CC  := mpiicx
       FC  := mpiifx
@@ -198,6 +198,8 @@ ifneq (0,$(MPI))
       LD  := mpiifort -fc=ifx
     endif
   else # GNU
+    RANLIB := gcc-ranlib
+    AR  := gcc-ar -r
     CXX := mpicxx
     CC  := mpicc
     FC  := mpif90
@@ -212,14 +214,16 @@ else ifeq (0,$(GNU))
     FC  := ifort
     LD  := ifort
   else
-    #RANLIB := ar -s
-    #AR  := ar -r
+    RANLIB := ar -s
+    AR  := ar -r
     CXX := icpx
     CC  := icx
     FC  := ifx
     LD  := ifx
   endif
 else # GNU
+  RANLIB := gcc-ranlib
+  AR  := gcc-ar -r
   CXX := g++
   CC  := gcc
   FC  := gfortran
@@ -580,8 +584,6 @@ else # GNU GCC
   MKL_OMPRTL := gnu
   MKL_FCRTL := gf
   INTEL ?= 0
-  RANLIB := gcc-ranlib
-  AR := gcc-ar -r
 endif
 
 ifneq (,$(TGT))
