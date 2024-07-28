@@ -112,8 +112,9 @@ SYM ?= $(DBG)
 FPE ?= 0
 IPO ?= 0
 VMAX ?= 0
+STATIC ?= 1
 MKL_DIRECT ?= 0
-MKL_STATIC ?= 1
+MKL_STATIC ?= $(STATIC)
 BEEP ?= 1
 
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
@@ -856,10 +857,7 @@ ifneq (,$(LIBXSMMROOT))
   ifneq (0,$(LIBXSMM))
     LIBXSMM_DSTDIR := $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm
     DFLAGS += __LIBXSMM=$(LIBXSMM)
-    ifeq (0,$(GNU))
-      DFLAGS += _OPENMP_SIMD
-      OPTFLAGS += -qopenmp-simd
-    else
+    ifneq (0,$(GNU))
       ifneq (0,$(DBG))
       # suppress "Fortran runtime warning:"
         LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
@@ -869,13 +867,21 @@ ifneq (,$(LIBXSMMROOT))
         DFLAGS += _OPENMP_SIMD
         OPTFLAGS += -fopenmp-simd
       endif
+    else
+      DFLAGS += _OPENMP_SIMD
+      OPTFLAGS += -qopenmp-simd
     endif
+    IFLAGS += $(LIBXSMM_DSTDIR)/include
 
     # link libxsmmext (needed at least in case of WRAP)
-    LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmf.a
-    LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmext.a
-    LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmm.a
-    IFLAGS += $(LIBXSMM_DSTDIR)/include
+    ifneq (0,$(STATIC))
+      LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmf.a
+      LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmext.a
+      LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmm.a
+    else
+      LIBS += -L$(LIBXSMM_DSTDIR)/lib
+      LIBS += -lxsmmf -lxsmmext -lxsmm
+    endif
 
     # account for OpenMP-enabled libxsmmext routines
     ifeq (0,$(OMP))
@@ -891,6 +897,7 @@ ifneq (,$(LIBXSMMROOT))
       BIGVERNUM := echo "99" > version.txt
       # substitute all GEMM calls with LIBXSMM
       WRAP ?= $(shell echo "$$(((2<$(LIBXSMM))*($(LIBXSMM)-2)))")
+      ifneq (0,$(STATIC))
       ifneq (0,$(WRAP))
         ifneq (0,$(shell echo "$$((2<$(WRAP)))"))
           LDFLAGS += -Wl,--wrap=dgemm_,--wrap=sgemm_,--wrap=dgemv_,--wrap=sgemv_
@@ -900,6 +907,7 @@ ifneq (,$(LIBXSMMROOT))
         else
           LDFLAGS += -Wl,--wrap=dgemm_,--wrap=sgemm_
         endif
+      endif
       endif
     else
       BIGVERNUM := rm -f version.txt
@@ -917,7 +925,7 @@ always-build:
 	@$(MAKE) -C $(LIBXSMM_DSTDIR) \
 		-f "$(LIBXSMMROOT)/Makefile" --no-print-directory \
 		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" WERROR=0 \
-		STATIC=1 JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
+		STATIC=$(STATIC) JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 VTUNE=0 \
 		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) INTEL=$(INTEL) GNU=$(GNU) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
