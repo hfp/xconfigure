@@ -789,6 +789,38 @@ ifneq (0,$(ELPA)) # incl. undefined
     $(info ELPAROOT=$(ELPAROOT))
   endif
 endif
+ifneq (0,$(LIBGRPP)) # incl. undefined
+  ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/$(XCFG)))
+    LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/$(XCFG))
+  else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/$(XCFG)))
+    LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/$(XCFG))
+  else ifneq (,$(wildcard $(HOME)/libgrpp/$(XCFG)))
+    LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(XCFG))
+  else ifneq (0,$(GNU))
+    ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/gnu))
+      LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/gnu)
+    else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/gnu))
+      LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/gnu)
+    else ifneq (,$(wildcard $(HOME)/libgrpp/gnu))
+      LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/gnu)
+    endif
+  else ifneq (0,$(INTEL))
+    ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/intel))
+      LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/intel)
+    else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/intel))
+      LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/intel)
+    else ifneq (,$(wildcard $(HOME)/libgrpp/intel))
+      LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/intel)
+    endif
+  endif
+  ifeq (/,$(LIBGRPPROOT))
+    LIBGRPPROOT := $(NULL)
+  endif
+  ifneq (,$(LIBGRPPROOT))
+    $(info LIBGRPPROOT=$(LIBGRPPROOT))
+  endif
+endif
+#
 ifneq (0,$(COSMA)) # incl. undefined
 ifneq (,$(COSMAROOT))
   $(info COSMAROOT=$(COSMAROOT))
@@ -821,6 +853,14 @@ ifneq (,$(LIBXCROOT))
     LIBS += $(LIBXCROOT)/lib64/libxc.a
   else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxc.a))
     LIBS += $(LIBXCROOT)/lib/libxc.a
+  endif
+endif
+
+ifneq (,$(LIBGRPPROOT))
+  ifneq (,$(wildcard $(LIBGRPPROOT)/lib/liblibgrpp.a))
+    LIBS += $(LIBGRPPROOT)/lib/liblibgrpp.a
+    IFLAGS += $(LIBGRPPROOT)/include
+    DFLAGS += __LIBGRPP
   endif
 endif
 
