@@ -97,6 +97,14 @@ for FILE in ${FILES}; do
         NDEVS=$(grep -m1 " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
       fi
       if [ "${NDEVS}" ]; then
+        DEVIDS=$(grep -m1 "ACC_OPENCL_DEVIDS" "${FILE}" | sed -n "s/..*=\(\w\)/\1/p" | tr -cd ,)
+        if [ ! "${DEVIDS}" ]; then
+          DEVIDS=$(grep -m1 "CUDA_VISIBLE_DEVICES" "${FILE}" | sed -n "s/..*=\(\w\)/\1/p" | tr -cd ,)
+        fi
+        if [ "${DEVIDS}" ]; then
+          DEVIDS=$(wc -c <<<"${DEVIDS}")
+          NDEVS=$((DEVIDS<NDEVS?(DEVIDS+1):NDEVS))
+        fi
         echo -e -n "\t\t${NDEVS} ACC"
       fi
       echo
