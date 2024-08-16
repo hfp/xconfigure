@@ -115,7 +115,7 @@ VMAX ?= 0
 STATIC ?= 1
 MKL_DIRECT ?= 0
 MKL_STATIC ?= $(STATIC)
-BEEP ?= 1
+BEEP ?= 0
 
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
 OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
