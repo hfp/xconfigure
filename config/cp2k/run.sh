@@ -216,8 +216,9 @@ ldd "${EXE}"
 echo
 
 # print environment
-env | grep "^LD_PRELOAD\|^GLIBC_\|^LIBXSMM_\|^CUDA_\|^DBCSR_\|^ACC_\|^DBM_\|^MKL\|^OPENCL_\|^SLURM_\| \
-            ^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_" | sort
+ENVPAT="^LD_PRELOAD\|^GLIBC_\|^LIBXSMM_\|^CUDA_\|^DBCSR_\|^ACC_\|^DBM_\|^MKL\|^OPENCL_\|^SLURM_"
+ENVPAT+="\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_"
+env | grep "${ENVPAT}" | sort
 echo
 
 # print final command
