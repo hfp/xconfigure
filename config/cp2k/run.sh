@@ -206,9 +206,9 @@ HOSTNAME=$(hostname)
 if [ "$(command -v sinfo)" ] && [ "$(command -v head)" ]; then
   NODEINFO=$(sinfo -N -n "${HOSTNAME}" --noheader -o "%P %f" | head -n1)
 fi
-if [ "${NODEINFO}" ] && [ "$(command -v cut)" ]; then
-  echo "HOSTINFO: $(cut -d' ' -f2 <<<"${NODEINFO}")"
-  echo "PARTITION: $(cut -d' ' -f1 <<<"${NODEINFO}")"
+if [ "${NODEINFO}" ] && [ "$(command -v sed)" ]; then
+  echo "HOSTINFO: $(sed "s/..* ,*//" <<<"${NODEINFO}")"
+  echo "PARTITION: $(sed "s/ .*//" <<<"${NODEINFO}")"
 fi
 echo
 echo "EXE: ${EXE}"
