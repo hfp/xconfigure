@@ -113,8 +113,8 @@ FPE ?= 0
 IPO ?= 0
 VMAX ?= 0
 STATIC ?= 1
+BLAS_STATIC ?= $(STATIC)
 MKL_DIRECT ?= 0
-MKL_STATIC ?= $(STATIC)
 BEEP ?= 0
 
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
@@ -126,10 +126,10 @@ OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
 # NDEBUG=2: plus CP2K (regtests may fail)
 NDEBUG ?= $(if $(filter-out 0,$(DBG)),0,1)
 
-# MKL=0: disabled even if found
-# MKL=1: use sequential variant
-# MKL=2: use OpenMP variant
-MKL ?= 2
+# BLAS=0: disabled even if found
+# BLAS=1: use sequential variant
+# BLAS=2: use OpenMP variant
+BLAS ?= 2
 
 # Intel FP-model
 #FPCMODEL := fast=2
@@ -247,18 +247,13 @@ endif
 
 # MKL_MPIRTL: intelmpi, openmpi
 MKL_MPIRTL ?= $(if $(filter-out 0,$(IMPI)),intelmpi,openmpi)
-ifneq (0,$(BLAS))
-  ifneq (Darwin,$(UNAME))
-    MKL_PLATFORM := linux
-  else # OSX
-    MKL_PLATFORM := mac
-  endif
-endif
 
 # enable Intel MKL if available
+MKL := 0
+ifneq (0,$(BLAS))
 ifneq (,$(filter x86_64,$(MNAME)))
   ifeq (,$(strip $(MKLROOT)))
-    MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/$(MKL_PLATFORM)/mkl/include/mkl.h))))
+    MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h))))
     ifneq (,$(MKL_INCFILE))
       MKLROOT := $(abspath $(dir $(MKL_INCFILE))/..)
     endif
@@ -269,10 +264,13 @@ ifneq (,$(filter x86_64,$(MNAME)))
       MKLROOT := $(abspath $(dir $(MKL_INCFILE))/../..)
     endif
   endif
+  ifeq (/,$(MKLROOT))
+    MKL_INCFILE := $(NULL)
+    MKLROOT := $(NULL)
+  else
+    MKL := $(BLAS)
+  endif
 endif
-ifeq (/,$(MKLROOT))
-  MKL_INCFILE := $(NULL)
-  MKLROOT := $(NULL)
 endif
 
 # COSMA section must appear before SCALAPACK section
@@ -505,14 +503,6 @@ ifeq (0,$(GNU)) # Intel
   MKL_OMPRTL := intel
   MKL_FCRTL := intel
 else # GNU GCC
-  ifeq (,$(MKLROOT))
-    $(info ================================================================================)
-    $(info This ARCH file relies on Intel Libraries. Please try the following:)
-    $(info $$ source /opt/intel/oneapi/mkl/latest/env/vars.sh)
-    $(info $$ source /opt/intel/oneapi/mpi/latest/env/vars.sh)
-    $(info ================================================================================)
-    $(error Intel MKL not found!)
-  endif
   ifneq (0,$(shell echo "$$((2 > $(DBG)))"))
     ifeq (1,$(AVX))
       TARGET := -mavx
@@ -552,8 +542,10 @@ else # GNU GCC
   ifeq (0,$(DBG))
     OPTFLAGS += -funroll-loops -ftree-vectorize
     #FCFLAGS += -fstack-arrays
+    ifneq (0,$(BLAS))
     ifeq (0,$(MATMUL))
       FCFLAGS += -fexternal-blas -fblas-matmul-limit=4
+    endif
     endif
     ifneq (0,$(IPO))
       IPOFLAGS += -flto -Wl,-flto -Wno-lto-type-mismatch
@@ -620,7 +612,7 @@ endif
 
 $(info ================================================================================)
 $(info Using the following libraries:)
-ifneq (0,$(MKL)) # incl. undefined
+ifneq (0,$(BLAS)) # incl. undefined
 ifneq (,$(MKLROOT))
   $(info MKLROOT=$(MKLROOT))
 endif
@@ -928,9 +920,9 @@ ifneq (,$(LIBXSMMROOT))
     # account for OpenMP-enabled libxsmmext routines
     ifeq (0,$(OMP))
       DFLAGS += DBCSR_LIBXSMM_GEMM_BATCH=libxsmm_gemm_batch_omp
-      ifeq (1,$(MKL))
+      ifeq (1,$(BLAS))
         LIBS += -l$(OMPRT)
-      else ifeq (0,$(MKL))
+      else ifeq (0,$(BLAS))
         LIBS += -l$(OMPRT)
       endif
     endif
@@ -974,14 +966,6 @@ always-build:
   endif
 endif
 
-ifeq (1,$(MKL)) # sequential
-  MKL_THREADS := sequential
-else ifneq (0,$(MKL)) # multi-threaded
-  MKL_THREADS := $(MKL_OMPRTL)_thread
-  ifeq (0,$(OMP))
-    LIBS += -l$(OMPRT)
-  endif
-endif
 ifneq (0,$(MKL))
   DFLAGS += __MKL __FFTW3
   DFLAGS += $(if $(filter 1,$(MKL_DIRECT)),MKL_DIRECT_CALL_SEQ)
@@ -996,7 +980,15 @@ ifneq (0,$(MKL))
       IFLAGS += $(dir $(MKL_INCFILE))/fftw
     endif
   endif
-  ifeq (0,$(MKL_STATIC))
+  ifeq (1,$(MKL)) # sequential
+    MKL_THREADS := sequential
+  else ifneq (0,$(MKL)) # multi-threaded
+    MKL_THREADS := $(MKL_OMPRTL)_thread
+    ifeq (0,$(OMP))
+      LIBS += -l$(OMPRT)
+    endif
+  endif
+  ifeq (0,$(BLAS_STATIC))
     LIBS += -L$(MKLROOT)/lib/intel64
     ifneq (0,$(MPI))
       LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_lp64 -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_lp64
@@ -1030,6 +1022,26 @@ ifneq (0,$(MKL))
     LIBS += -lm
   endif
   LIBS += -Wl,--no-as-needed
+else ifneq (0,$(BLAS)) # generic
+  ifneq (,$(AOCL_ROOT))
+    ifeq (0,$(BLAS_STATIC)) # shared
+      ifeq (1,$(BLAS)) # sequential
+        LIBS += -L$(AOCL_ROOT)/lib -lblis
+      else # multi-threaded
+        LIBS += -L$(AOCL_ROOT)/lib -lblis-mt
+      endif
+    else # static
+      ifeq (1,$(BLAS)) # sequential
+        LIBS += $(AOCL_ROOT)/lib/libblis.so
+      else # multi-threaded
+        LIBS += $(AOCL_ROOT)/lib/libblis-mt.so
+      endif
+    endif
+  else ifneq (1,$(BLAS))
+    LIBS += -lopenblas
+  else
+    LIBS += -lblas
+  endif
 endif
 
 # Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
