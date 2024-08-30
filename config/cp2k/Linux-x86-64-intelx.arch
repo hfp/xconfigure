@@ -130,7 +130,8 @@ EXTSHOME ?= $(CP2KHOME)/$(EXTSDIR)
 EXTDBCSR ?= $(EXTSHOME)/dbcsr
 DBCSRSRC ?= $(EXTDBCSR)/src
 LEGACY ?= $(if $(wildcard $(EXTDBCSR)),0,1)
-UNAME ?= $(shell uname 2>/dev/null)
+UNAME ?= $(shell uname    2>/dev/null)
+MNAME ?= $(shell uname -m 2>/dev/null)
 
 ifeq (0,$(LEGACY))
   IFLAGS += $(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/exts/dbcsr
@@ -263,16 +264,18 @@ ifneq (0,$(BLAS))
 endif
 
 # enable MKL if available
-ifeq (,$(strip $(MKLROOT)))
-  MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/$(MKL_PLATFORM)/mkl/include/mkl.h))))
-  ifneq (,$(MKL_INCFILE))
-    MKLROOT := $(abspath $(dir $(MKL_INCFILE))/..)
+ifneq (,$(filter x86_64,$(MNAME)))
+  ifeq (,$(strip $(MKLROOT)))
+    MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/$(MKL_PLATFORM)/mkl/include/mkl.h))))
+    ifneq (,$(MKL_INCFILE))
+      MKLROOT := $(abspath $(dir $(MKL_INCFILE))/..)
+    endif
   endif
-endif
-ifeq (,$(strip $(MKLROOT)))
-  MKL_INCFILE := $(strip $(wildcard /usr/include/mkl/mkl.h))
-  ifneq (,$(MKL_INCFILE))
-    MKLROOT := $(abspath $(dir $(MKL_INCFILE))/../..)
+  ifeq (,$(strip $(MKLROOT)))
+    MKL_INCFILE := $(strip $(wildcard /usr/include/mkl/mkl.h))
+    ifneq (,$(MKL_INCFILE))
+      MKLROOT := $(abspath $(dir $(MKL_INCFILE))/../..)
+    endif
   endif
 endif
 ifeq (/,$(MKLROOT))
