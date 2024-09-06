@@ -236,7 +236,7 @@ else ifneq (,$(USE_ACCEL))
   $(info USE_ACCEL=$(USE_ACCEL) not fully supported!)
 endif
 
-ifneq (,$(USE_ACCEL))
+ifneq (,$(filter-out 0,$(CUDA) $(OCL)))
   NVCC_FILE := $(call which,nvcc)
   NVCC := $(notdir $(NVCC_FILE))
   NVCC_PATH := $(if $(NVCC_FILE),$(wildcard $(dir $(NVCC_FILE))/..))
