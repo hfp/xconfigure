@@ -153,8 +153,9 @@ if [ "${I_MPI_ROOT}" ]; then
   if [ ! "${ACC_OPENCL_DEVIDS}" ] && [ ! "${ACC_OPENCL_DEVTYPE}" ] && \
        command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
   then
-    export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-0}
+    export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
     export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
+    export PSM3_DEBUG_FILENAME=/dev/null
   else
     export I_MPI_OFFLOAD=0
   fi
