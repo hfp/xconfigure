@@ -104,6 +104,8 @@ fi
 
 if [ -e "${ROOT}/mynodes.sh" ]; then
   HOSTS=$("${ROOT}/mynodes.sh" 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
+elif [ "${SLURM_NODELIST}" ] && command -v scontrol >/dev/null; then
+  HOSTS=$(scontrol show hostnames 2>/dev/null | tr -s '\n ' ',' | sed 's/^\(..*[^,]\),*$/\1/')
 else
   HOSTS=${HOSTS:-localhost}
 fi
@@ -226,8 +228,25 @@ echo
 echo "${RUN}" | xargs
 echo
 
-# finally evaluate/run
-if [ "${WAIT}" ] && [ "0" != "$((0<WAIT))" ] && command -v sleep >/dev/null; then
-  sleep "${WAIT}"
+# prolog
+PROLOG=${PROLOG:-${CHECK}}
+if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
+  echo "*** PROLOG ***"
+  if command -v clinfo >/dev/null; then
+    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l
+  fi
+  echo "**************"
 fi
+
+# evaluate/run job
 eval "${RUN}"
+
+# epilog
+EPILOG=${EPILOG:-${CHECK}}
+if [ "${EPILOG}" ] && [ "0" != "${EPILOG}" ] && [ "${HOSTS}" ]; then
+  echo "*** EPILOG ***"
+  if command -v clinfo >/dev/null; then
+    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l
+  fi
+  echo "**************"
+fi
