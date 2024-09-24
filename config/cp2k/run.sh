@@ -233,7 +233,7 @@ PROLOG=${PROLOG:-${CHECK}}
 if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
   echo "*** PROLOG ***"
   if command -v clinfo >/dev/null; then
-    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l
+    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l 2>/dev/null
   fi
   echo "**************"
 fi
@@ -246,7 +246,7 @@ EPILOG=${EPILOG:-${CHECK}}
 if [ "${EPILOG}" ] && [ "0" != "${EPILOG}" ] && [ "${HOSTS}" ]; then
   echo "*** EPILOG ***"
   if command -v clinfo >/dev/null; then
-    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l
+    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l 2>/dev/null
   fi
   echo "**************"
 fi
