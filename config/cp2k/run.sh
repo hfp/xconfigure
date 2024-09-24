@@ -155,7 +155,6 @@ if [ "${I_MPI_ROOT}" ]; then
   then
     export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
     export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
-    export PSM3_DEBUG_FILENAME=/dev/null
   else
     export I_MPI_OFFLOAD=0
   fi
