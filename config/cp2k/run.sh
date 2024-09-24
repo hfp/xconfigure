@@ -224,10 +224,6 @@ ENVPAT+="\|^SLURM_\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\
 env | grep "${ENVPAT}" | sort
 echo
 
-# print final command
-echo "${RUN}" | xargs
-echo
-
 # prolog
 PROLOG=${PROLOG:-${CHECK}}
 if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
@@ -238,6 +234,9 @@ if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
   echo "**************"
 fi
 
+# print job command
+echo "${RUN}" | xargs
+echo
 # evaluate/run job
 eval "${RUN}"
 
