@@ -166,6 +166,9 @@ if [ "${I_MPI_ROOT}" ]; then
     export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
     export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
   fi
+  if [ ! "${I_MPI_OFI_PROVIDER}" ]; then
+    export I_MPI_OFI_PROVIDER=psm3
+  fi
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   #
