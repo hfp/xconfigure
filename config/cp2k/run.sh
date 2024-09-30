@@ -142,8 +142,8 @@ if [ "${I_MPI_ROOT}" ]; then
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
-  if [ "0" != "${BOOTSTRAP}" ]; then
-    if [ "${BOOTSTRAP}" ]; then
+  if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
+    if ! [[ ${BOOTSTRAP} =~ ^[+-]?[0-9]+$ ]]; then
       MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ${BOOTSTRAP}"
     else
       MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
@@ -180,7 +180,7 @@ else
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
 fi
 
-if [ -e "${ROOT}/mynodes.sh" ]; then
+if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ]; then
   HST="-host ${HOSTS}"
 fi
 
