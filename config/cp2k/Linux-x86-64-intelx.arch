@@ -538,7 +538,7 @@ else # GNU GCC
     endif
   endif
   FCFLAGS += -ffree-form -ffree-line-length-none
-  FCFLAGS += -Wno-argument-mismatch #-fallow-argument-mismatch
+  FCFLAGS += -Wno-argument-mismatch -fallow-argument-mismatch
   ifeq (0,$(DBG))
     OPTFLAGS += -funroll-loops -ftree-vectorize
     #FCFLAGS += -fstack-arrays
