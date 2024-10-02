@@ -231,6 +231,10 @@ echo
 PROLOG=${PROLOG:-${CHECK}}
 if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
   echo "*** PROLOG ***"
+  if command -v numactl >/dev/null; then
+    mpirun -host "${HOSTS}" -np ${NUMNODES} numactl -H 2>/dev/null
+    echo
+  fi
   if command -v clinfo >/dev/null; then
     mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l 2>/dev/null
   fi
