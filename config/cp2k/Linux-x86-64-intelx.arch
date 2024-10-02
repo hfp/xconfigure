@@ -113,6 +113,7 @@ FPE ?= 0
 IPO ?= 0
 VMAX ?= 0
 STATIC ?= 1
+DYNAMIC ?= 1
 BLAS_STATIC ?= $(STATIC)
 MKL_DIRECT ?= 0
 BEEP ?= 0
@@ -589,7 +590,6 @@ OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
 
 ifneq (0,$(SYM))
-  LDFLAGS += -Wl,--export-dynamic
   ifeq (0,$(GNU))
   ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
     DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
@@ -601,6 +601,10 @@ endif
 
 ifneq (0,$(OMP))
   OPTFLAGS += $(if $(filter-out 0,$(INTEL)),-qopenmp,-fopenmp)
+endif
+
+ifneq (0,$(DYNAMIC))
+  LDFLAGS += -Wl,--export-dynamic
 endif
 
 ifeq (0,$(LEGACY))
