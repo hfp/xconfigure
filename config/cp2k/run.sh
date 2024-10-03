@@ -177,7 +177,7 @@ if [ "${I_MPI_ROOT}" ]; then
   #export I_MPI_FABRICS=shm:tcp
 else
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
-  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
+  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
 fi
 
 if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ]; then
