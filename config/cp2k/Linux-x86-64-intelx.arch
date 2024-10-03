@@ -551,6 +551,8 @@ else # GNU GCC
     endif
     ifneq (0,$(IPO))
       IPOFLAGS += -flto -Wl,-flto -Wno-lto-type-mismatch
+    else
+      IPOFLAGS += -fno-lto
     endif
     OPT ?= 3
   else # debug
