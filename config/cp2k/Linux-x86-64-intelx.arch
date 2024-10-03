@@ -310,25 +310,31 @@ ifneq (0,$(MPI))
   endif
   ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
     ifneq (-1,$(SCALAPACK))
-      ifneq (1,$(SCALAPACK))
-        DFLAGS += __SCALAPACK$(SCALAPACK)
-      endif
-    else
-      SCALAPACKDIR := $(HOME)/scalapack-2.0.2
+    ifneq (1,$(SCALAPACK))
+      DFLAGS += __SCALAPACK$(SCALAPACK)
     endif
-    ifeq (,$(SCALAPACKDIR))
+    endif
+    ifneq (,$(MKLROOT))
       SCALAPACKDIR := $(MKLROOT)/lib/intel64
       SCALAPACKLIB := mkl_scalapack_lp64
-    else
-      ifeq (,$(SCALAPACKLIB))
-        SCALAPACKLIB := scalapack
-      endif
-      LIBS += -L$(SCALAPACKDIR)
     endif
   else # NaN
     SCALAPACKDIR := $(SCALAPACK)
-    SCALAPACKLIB := scalapack
-    LIBS += -L$(SCALAPACKDIR)
+  endif
+  ifeq (,$(MKLROOT))
+    ifeq (,$(SCALAPACKLIB))
+      ifneq (0,$(IMPI))
+        SCALAPACKLIB := scalapack
+      else
+        SCALAPACKLIB := scalapack-openmpi
+      endif
+    endif
+    ifneq (,$(SCALAPACKDIR))
+      LIBS += -L$(SCALAPACKDIR)
+    endif
+    ifneq (,$(SCALAPACKLIB))
+      LIBS += -l$(SCALAPACKLIB)
+    endif
   endif
 endif
 endif
