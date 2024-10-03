@@ -65,6 +65,7 @@ prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13
 # or pickup the Intel Compiler (if available).
 GNU ?= 0
 ifeq (0,$(GNU))
+  XIAR := $(if $(call which,xiar),xiar,ar)
   ifeq (,$(shell echo "$${FC}"))
     ifneq (,$(filter ifx ifx2,$(notdir $(call which,ifx))$(INTEL)))
       FC := ifx
@@ -169,8 +170,8 @@ ifneq (0,$(MPI))
   endif
   ifeq (0,$(GNU))
     ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
-      RANLIB := xiar -s
-      AR  := xiar -r
+      RANLIB := $(XIAR) -s
+      AR  := $(XIAR) -r
       CXX := mpiicpc $(if $(call which,icpc),$(NULL),-cxx=icpx)
       CC  := mpiicc  $(if $(call which,icc),$(NULL),-cc=icx)
       FC  := mpiifort
@@ -183,8 +184,8 @@ ifneq (0,$(MPI))
       FC  := mpiifx
       LD  := mpiifx
     else
-      RANLIB := xiar -s
-      AR  := xiar -r
+      RANLIB := $(XIAR) -s
+      AR  := $(XIAR) -r
       CXX := mpiicpc  -cxx=icpx
       CC  := mpiicc   -cc=icx
       FC  := mpiifort -fc=ifx
@@ -200,8 +201,8 @@ ifneq (0,$(MPI))
   endif
 else ifeq (0,$(GNU))
   ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
-    RANLIB := xiar -s
-    AR  := xiar -r
+    RANLIB := $(XIAR) -s
+    AR  := $(XIAR) -r
     CXX := $(if $(call which,icpc),icpc,icpx)
     CC  := $(if $(call which,icc),icc,icx)
     FC  := ifort
