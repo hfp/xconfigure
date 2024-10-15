@@ -180,7 +180,7 @@ else
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
 fi
 
-if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ]; then
+if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ] && [ ! "${SLURM_NODELIST}" ]; then
   HST="-host ${HOSTS}"
 fi
 
@@ -232,11 +232,11 @@ PROLOG=${PROLOG:-${CHECK}}
 if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
   echo "*** PROLOG ***"
   if command -v numactl >/dev/null; then
-    mpirun -host "${HOSTS}" -np ${NUMNODES} numactl -H 2>/dev/null
+    eval "mpirun ${HST} -np ${NUMNODES} numactl -H 2>/dev/null"
     echo
   fi
   if command -v clinfo >/dev/null; then
-    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l 2>/dev/null
+    eval "mpirun ${HST} -np ${NUMNODES} clinfo -l 2>/dev/null"
   fi
   echo "**************"
 fi
@@ -252,7 +252,7 @@ EPILOG=${EPILOG:-${CHECK}}
 if [ "${EPILOG}" ] && [ "0" != "${EPILOG}" ] && [ "${HOSTS}" ]; then
   echo "*** EPILOG ***"
   if command -v clinfo >/dev/null; then
-    mpirun -host "${HOSTS}" -np ${NUMNODES} clinfo -l 2>/dev/null
+    eval "mpirun ${HST} -np ${NUMNODES} clinfo -l 2>/dev/null"
   fi
   echo "**************"
 fi
