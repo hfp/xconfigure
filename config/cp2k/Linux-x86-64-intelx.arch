@@ -104,11 +104,12 @@ endif
 
 # DEFAULTS
 #
+DUMPAST ?= 0
 SSE ?= 0
 AVX ?= 0
 MPI ?= 1
 OMP ?= 1
-DBG ?= 0
+DBG ?= $(DUMPAST)
 SYM ?= $(DBG)
 FPE ?= 0
 IPO ?= 0
@@ -562,7 +563,7 @@ else # GNU GCC
     endif
     OPT ?= 3
   else # debug
-    FCFLAGS += \
+    FCFLAGS += -fstrict-aliasing -fbacktrace -fbounds-check \
       -fimplicit-none -fsanitize=leak -fcheck=all -finit-derived -finit-real=snan -finit-integer=-42 -finline-matmul-limit=0 \
       -Werror=aliasing -Werror=ampersand -Werror=c-binding-type -Werror=intrinsics-std -Werror=line-truncation -Werror=tabs \
       -Werror=target-lifetime -Werror=underflow -Werror=unused-but-set-variable -Werror=conversion -Werror=unused-variable \
@@ -574,6 +575,11 @@ else # GNU GCC
       FCFLAGS += -std=f2008 #-Werror=realloc-lhs-all
     endif
     OPT ?= 0
+  endif
+  ifneq (0,$(DUMPAST))
+    FCFLAGS += -fdump-fortran-original
+    FCLOGPIPE = >$(notdir $<).ast
+    export LC_ALL=C
   endif
   ifneq (0,$(FPE))
     FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
