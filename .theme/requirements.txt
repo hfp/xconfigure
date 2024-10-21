@@ -1,1 +1,1 @@
-imkdocs>=1.6.1
+mkdocs>=1.6.1
