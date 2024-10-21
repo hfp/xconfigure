@@ -10,9 +10,9 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=intel-; else PRFX=$1-; shift; fi
+if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../metis/${PRFX}skx
+DEST=${HERE}/../metis/${PRFX}-skx
 CMAKE=$(command -v cmake)
 
 if [ "" = "${CMAKE}" ]; then

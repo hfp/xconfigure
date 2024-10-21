@@ -10,9 +10,9 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=intel-; else PRFX=$1-; shift; fi
+if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../libint/${PRFX}skx
+DEST=${HERE}/../libint/${PRFX}-skx
 
 if [[ ((! -e "${HERE}/configure.in") && (! -e "${HERE}/autogen.sh") && (! -e "${HERE}/CMakeLists.txt")) \
    || ("${HERE}" != "$(pwd -P)") ]];
