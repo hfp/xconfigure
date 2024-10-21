@@ -42,7 +42,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS="--disable-avx512"
+CONFOPTS="--disable-avx512 --enable-openmp --without-threading-support-check-during-build"
 FPFLAGS="-fp-model fast=2 -complex-limited-range"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
@@ -154,4 +154,3 @@ if [ -e "${HERE}/config.h" ]; then
     ln -fs libelpa.a libelpa_mt.a
   fi
 fi
-
