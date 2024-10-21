@@ -73,6 +73,7 @@ export MPICXX=${CXX}
 
 # Development versions may require autotools mechanics
 if [ -e "${HERE}/autogen.sh" ]; then
+  if command -v libtoolize >/dev/null; then libtoolize; fi
   ./autogen.sh
 fi
 
