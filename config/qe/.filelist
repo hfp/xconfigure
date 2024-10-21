@@ -1,6 +1,0 @@
-configure-qe-dspev_drv.patch
-configure-qe-setup_pw.patch
-configure-qe-zhpev_drv.patch
-configure-qe-libxsmm.mak
-configure-qe-tbbmalloc.mak
-info.sh

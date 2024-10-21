@@ -1,7 +1,0 @@
-707c707,710
-< #if defined(__ELPA_2017)
----
-> #if defined(__ELPA_2018)
->      ierr = elpa_get_communicators(ortho_comm, my_prow, my_pcol, mpi_comm_rows, mpi_comm_cols)
->      success = elpa_solve_evp_real_1stage_double(n, n, s, lds, w, vv, lds, SIZE(s,2), nb, mpi_comm_rows, mpi_comm_cols, ortho_comm)
-> #elif defined(__ELPA_2017)

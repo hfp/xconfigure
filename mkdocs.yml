@@ -31,8 +31,6 @@ nav:
   - METIS: metis/README.md
   - HDF5: hdf5/README.md
   - ELPA: elpa/README.md
-  - TF: tf/README.md
-  - QE: qe/README.md
   - Vc: vc/README.md
 - About:
   - Contributing: CONTRIBUTING.md
