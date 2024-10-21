@@ -125,10 +125,12 @@ fi
   --disable-avx512 \
   --prefix="${DEST}" ${CONFOPTS} "$@"
 
-sed -i \
-  -e "s/-openmp/-qopenmp -qoverride_limits/" \
-  -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-  Makefile
+if [ -e "${HERE}/Makefile" ]; then
+  sed -i \
+    -e "s/-openmp/-qopenmp -qoverride_limits/" \
+    -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
+    Makefile
+fi
 
 if [ -e "${HERE}/config.h" ]; then
   VERSION=$(grep ' VERSION ' config.h | cut -s -d' ' -f3 | sed -e 's/^\"//' -e 's/\"$//')
