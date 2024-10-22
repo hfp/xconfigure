@@ -133,7 +133,7 @@ fi
 
 if [ -e "${HERE}/Makefile" ]; then
   sed -i \
-    -e "s/-openmp/-qopenmp -qoverride_limits/" \
+    -e "s/-openmp/-qopenmp/" \
     -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
     Makefile
 fi
