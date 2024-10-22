@@ -46,7 +46,7 @@ export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 export LIBS="-lstdc++"
 
-FC="ifx"; CC="icx"; CXX="icpx"
+FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
 if [ "1" = "${INTEL}" ] || \
    [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
 then
@@ -57,8 +57,7 @@ then
   fi
 fi
 
-export AR="xiar"
-export FC CC CXX
+export FC CC CXX AR
 export F77=${FC}
 export F90=${FC}
 

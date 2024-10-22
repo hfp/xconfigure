@@ -44,7 +44,7 @@ export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 export LIBS=""
 
-FC="ifx"; CC="icx"; CXX="icpx"
+FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
 if [ "1" = "${INTEL}" ] || 
    [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
 then
@@ -55,8 +55,7 @@ then
   fi
 fi
 
-export AR="xiar"
-export FC CC CXX
+export FC CC CXX AR
 CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
 CC_VERSION_MINOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f2)

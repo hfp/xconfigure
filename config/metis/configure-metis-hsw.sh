@@ -49,7 +49,7 @@ export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 
-FC="ifx"; CC="icx"; CXX="icpx"
+FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
 if [ "1" = "${INTEL}" ] || 
    [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
 then
@@ -60,8 +60,8 @@ then
   fi
 fi
 
-export AR="xiar"
-export FC CC CXXexport F77=${FC}
+export FC CC CXX AR
+export F77=${FC}
 export F90=${FC}
 
 make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"

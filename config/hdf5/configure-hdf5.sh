@@ -40,7 +40,7 @@ export CFLAGS="${FLAGS} -Wno-trigraphs ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} -Wno-trigraphs ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 
-FC="ifx"; CC="icx"; CXX="icpx"
+FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
 if [ "1" = "${INTEL}" ] || 
    [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
 then
@@ -51,12 +51,12 @@ then
   fi
 fi
 
-export AR="xiar"
 export FC="mpiifort -fc=${FC}"
 export CC="mpiicc   -cc=${CC}"
 export CXX="mpiicpc -cxx=${CXX}"
 export F77=${FC}
 export F90=${FC}
+export AR
 
 export MPICC=${CC}
 export MPIFC=${FC}
