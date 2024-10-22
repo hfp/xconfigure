@@ -45,15 +45,15 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 
-FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
-if [ "1" = "${INTEL}" ] || 
-   [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
-then
-  FC="ifort"
-  if [ "1" != "${INTEL}" ]; then
-    CC="icc"
-    CXX="icpc"
-  fi
+AR=$(command -v xiar || echo "ar")
+if [ "1" != "${INTEL}" ]; then
+  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
+  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
+  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+else
+  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
+  CC="mpiicc -cc=$(command -v icc || echo icx)"
+  FC="mpiifort"
 fi
 
 export FC CC CXX AR

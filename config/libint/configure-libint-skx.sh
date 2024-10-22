@@ -41,9 +41,6 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
 export LIBS="-lstdc++"
 
 FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
@@ -58,8 +55,11 @@ then
 fi
 
 export FC CC CXX AR
-export F77=${FC}
-export F90=${FC}
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)

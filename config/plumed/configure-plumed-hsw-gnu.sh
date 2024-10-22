@@ -35,23 +35,18 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
 export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
 export AR="gcc-ar"
 export FC="mpif90"
 export CC="mpicc"
 export CXX="mpicxx"
-export F77=${FC}
-export F90=${FC}
 
-export MPICC=${CC}
-export MPIFC=${FC}
-export MPIF77=${F77}
-export MPIF90=${F90}
-export MPICXX=${CXX}
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 cat << EOM > .autom4te.cfg
 begin-language: "Autoconf-without-aclocal-m4"

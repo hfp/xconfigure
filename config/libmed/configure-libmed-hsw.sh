@@ -39,33 +39,24 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
+
+AR=$(command -v xiar || echo "ar")
+if [ "1" != "${INTEL}" ]; then
+  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
+  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
+  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+else
+  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
+  CC="mpiicc -cc=$(command -v icc || echo icx)"
+  FC="mpiifort"
+fi
+
+export CXX CC FC AR
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
-
-FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
-if [ "1" = "${INTEL}" ] || 
-   [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
-then
-  FC="ifort"
-  if [ "1" != "${INTEL}" ]; then
-    CC="icc"
-    CXX="icpc"
-  fi
-fi
-
-export FC="mpiifort -fc=${FC}"
-export CC="mpiicc   -cc=${CC}"
-export CXX="mpiicpc -cxx=${CXX}"
-export F77=${FC}
-export F90=${FC}
-export AR
-
-export MPICC=${CC}
-export MPIFC=${FC}
-export MPIF77=${F77}
-export MPIF90=${F90}
-export MPICXX=${CXX}
 
 cat << EOM > .autom4te.cfg
 begin-language: "Autoconf-without-aclocal-m4"

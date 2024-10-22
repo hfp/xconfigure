@@ -39,25 +39,25 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS} ${FPCMODEL}"
 export CXXFLAGS="${FLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
 export LIBS=""
 
-FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
-if [ "1" = "${INTEL}" ] || 
-   [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
-then
-  FC="ifort"
-  if [ "1" != "${INTEL}" ]; then
-    CC="icc"
-    CXX="icpc"
-  fi
+AR=$(command -v xiar || echo "ar")
+if [ "1" != "${INTEL}" ]; then
+  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
+  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
+  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+else
+  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
+  CC="mpiicc -cc=$(command -v icc || echo icx)"
+  FC="mpiifort"
 fi
 
 export FC CC CXX AR
-export F77=${FC}
-export F90=${FC}
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)

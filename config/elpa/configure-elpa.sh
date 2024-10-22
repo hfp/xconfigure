@@ -50,7 +50,7 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS="${CONFOPTS} --enable-openmp --enable-generic-kernels --without-threading-support-check-during-build"
+CONFOPTS+=" --disable-single-precision --without-threading-support-check-during-build --enable-openmp"
 FPFLAGS="-fp-model fast"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
@@ -62,36 +62,27 @@ FLAGS="-O2 ${TARGET} -I${MKLROOT}/include"
 export LDFLAGS="-L${MKLROOT}/lib/intel64"
 export CFLAGS="${FLAGS} -fno-alias -ansi-alias ${FPFLAGS}"
 export CXXFLAGS="${CFLAGS}"
-export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64 -align array64byte -threads -heap-arrays 4096"
+export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64 -align array64byte -threads"
 export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
+
+AR=$(command -v xiar || echo "ar")
+if [ "1" != "${INTEL}" ]; then
+  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
+  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
+  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+else
+  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
+  CC="mpiicc -cc=$(command -v icc || echo icx)"
+  FC="mpiifort"
+fi
+
+export CXX CC FC AR
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
-
-FC="ifx"; CC="icx"; CXX="icpx"; AR=$(command -v xiar || echo "ar")
-if [ "1" = "${INTEL}" ] || 
-   [ ! "$(command -v ${FC})" ] || [ ! "$(command -v ${CC})" ] || [ ! "$(command -v ${CXX})" ];
-then
-  FC="ifort"
-  if [ "1" != "${INTEL}" ]; then
-    CC="icc"
-    CXX="icpc"
-  fi
-fi
-
-export FC="mpiifort -fc=${FC}"
-export CC="mpiicc   -cc=${CC}"
-export CXX="mpiicpc -cxx=${CXX}"
-export F77=${FC}
-export F90=${FC}
-export AR
-
-export MPICC=${CC}
-export MPIFC=${FC}
-export MPIF77=${F77}
-export MPIF90=${F90}
-export MPICXX=${CXX}
 
 CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
 CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
@@ -133,8 +124,8 @@ fi
 
 if [ -e "${HERE}/Makefile" ]; then
   sed -i \
-    -e "s/-openmp/-qopenmp/" \
     -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
+    -e "s/-fopenmp/-qopenmp/" \
     Makefile
 fi
 

@@ -41,15 +41,16 @@ export LDFLAGS=""
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${FLAGS}"
 export FCFLAGS="${FLAGS}"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
 
 export AR="gcc-ar"
 export FC="gfortran"
 export CC="gcc"
 export CXX="g++"
-export F77=${FC}
-export F90=${FC}
+
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"

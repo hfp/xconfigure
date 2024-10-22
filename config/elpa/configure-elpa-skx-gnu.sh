@@ -42,7 +42,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS="--enable-avx512 --enable-openmp --without-threading-support-check-during-build"
+CONFOPTS+=" --disable-single-precision --without-threading-support-check-during-build --enable-openmp --enable-avx512"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
@@ -54,22 +54,17 @@ export CXXFLAGS="${CFLAGS}"
 export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64"
 export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -lgomp -lm -Wl,--no-as-needed"
 export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
 
 export AR="gcc-ar"
 export FC="mpif90"
 export CC="mpicc"
 export CXX="mpicxx"
-export F77=${FC}
-export F90=${FC}
 
-export MPICC=${CC}
-export MPIFC=${FC}
-export MPIF77=${F77}
-export MPIF90=${F90}
-export MPICXX=${CXX}
+export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
+export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
+export F77FLAGS=${FCFLAGS}
+export F90FLAGS=${FCFLAGS}
+export FFLAGS=${FCFLAGS}
 
 # Development versions may require autotools mechanics
 if [ -e "${HERE}/autogen.sh" ]; then
@@ -92,8 +87,8 @@ fi
 
 if [ -e "${HERE}/Makefile" ]; then
   sed -i \
-    -e "s/-openmp/-qopenmp/" \
     -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
+    -e "s/-fopenmp/-qopenmp/" \
     Makefile
 fi
 
