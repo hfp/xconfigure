@@ -28,6 +28,14 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
+if [ "$(command -v icpx)" ] && [ "$(command -v icx)" ] && \
+   [ -e "${HERE}/configure-elpa-hsw.sh" ];
+then
+  export INTEL=0
+  eval "${HERE}/configure-elpa-hsw.sh ${PRFX}"
+  exit $?
+fi
+
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
@@ -84,13 +92,11 @@ fi
   --disable-dependency-tracking \
   --host=x86_64-unknown-linux-gnu \
   --disable-mpi-module \
-  --disable-avx512 \
   --prefix="${DEST}" ${CONFOPTS} "$@"
 
 if [ -e "${HERE}/Makefile" ]; then
   sed -i \
     -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-    -e "s/-fopenmp/-qopenmp/" \
     Makefile
 fi
 

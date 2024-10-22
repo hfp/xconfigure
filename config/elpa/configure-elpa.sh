@@ -52,38 +52,51 @@ fi
 
 CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp"
 CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
-FPFLAGS="-fp-model fast"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
 TARGET="-xHost"
-FLAGS="-O2 ${TARGET} -I${MKLROOT}/include"
-#FLAGS+="" #-ipo-separate
+TARGET_GNU="-march=native -mtune=native"
+FLAGS="-O3 -I${MKLROOT}/include"
 
-export LDFLAGS="-L${MKLROOT}/lib/intel64"
-export CFLAGS="${FLAGS} -fno-alias -ansi-alias ${FPFLAGS}"
-export CXXFLAGS="${CFLAGS}"
-export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64 -align array64byte -threads"
-export LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
-export SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
+LDFLAGS="-L${MKLROOT}/lib/intel64"
+CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast ${TARGET}"
+CXXFLAGS="${CFLAGS}"
+FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64"
+SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
+LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 
 AR=$(command -v xiar || echo "ar")
 if [ "1" != "${INTEL}" ]; then
   CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
   CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
-  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
 else
   CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
   CC="mpiicc -cc=$(command -v icc || echo icx)"
-  FC="mpiifort"
 fi
 
-if [ "1" != "${INTEL}" ]; then
-  CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels --enable-ifx-compiler"
+if [ "0" != "${GPU}" ]; then
+  CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
   CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl-targets=spir64 -fsycl"
   LDFLAGS+=" -Wl,--unresolved-symbols=ignore-all -lsycl"
   SCALAPACK_LDFLAGS+=" -lmkl_sycl -lsycl"
 fi
+if [ "1" != "${INTEL}" ]; then
+  if [ "0" != "${INTEL}" ]; then
+    FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+    FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
+    CONFOPTS+=" --enable-ifx-compiler"
+  else
+    FCFLAGS+=" ${TARGET_GNU}"
+    FC=mpif90
+  fi
+else
+  FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
+  FC="mpiifort"
+fi
+
+export CXXFLAGS CFLAGS FCFLAGS LDFLAGS LIBS
+export SCALAPACK_LDFLAGS
 
 export CXX CC FC AR
 export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
@@ -133,7 +146,6 @@ fi
 if [ -e "${HERE}/Makefile" ]; then
   sed -i \
     -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-    -e "s/-fopenmp/-qopenmp/" \
     Makefile
 fi
 

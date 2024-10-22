@@ -28,6 +28,14 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
+if [ "$(command -v icpx)" ] && [ "$(command -v icx)" ] && \
+   [ -e "${HERE}/configure-elpa.sh" ];
+then
+  export INTEL=0
+  eval "${HERE}/configure-elpa.sh ${PRFX}"
+  exit $?
+fi
+
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
@@ -97,7 +105,6 @@ fi
 if [ -e "${HERE}/Makefile" ]; then
   sed -i \
     -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-    -e "s/-fopenmp/-qopenmp/" \
     Makefile
 fi
 
