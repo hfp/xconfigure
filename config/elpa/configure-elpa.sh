@@ -52,6 +52,8 @@ fi
 
 CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp"
 CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
+CONFOPTS+=" --disable-fortran-tests --disable-c-tests --disable-cpp-tests"
+CONFOPTS+=" --with-test-programs=no"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
@@ -78,7 +80,7 @@ fi
 if [ "0" != "${GPU}" ]; then
   CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
   CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl-targets=spir64 -fsycl"
-  LDFLAGS+=" -Wl,--unresolved-symbols=ignore-all -lsycl"
+  LDFLAGS+=" -lsycl -lsvml"
   SCALAPACK_LDFLAGS+=" -lmkl_sycl -lsycl"
 fi
 if [ "1" != "${INTEL}" ]; then
