@@ -42,7 +42,8 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS+=" --disable-single-precision --without-threading-support-check-during-build --enable-openmp --enable-avx512"
+CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp --enable-avx512"
+CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"

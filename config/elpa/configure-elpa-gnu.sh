@@ -50,7 +50,8 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS+=" --disable-single-precision --without-threading-support-check-during-build --enable-openmp"
+CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp"
+CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
 TARGET="-march=native -mtune=native"

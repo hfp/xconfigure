@@ -50,7 +50,8 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS+=" --disable-single-precision --without-threading-support-check-during-build --enable-openmp"
+CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp"
+CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
 FPFLAGS="-fp-model fast"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
@@ -75,6 +76,13 @@ else
   CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
   CC="mpiicc -cc=$(command -v icc || echo icx)"
   FC="mpiifort"
+fi
+
+if [ "1" != "${INTEL}" ]; then
+  CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels --enable-ifx-compiler"
+  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl-targets=spir64 -fsycl"
+  LDFLAGS+=" -Wl,--unresolved-symbols=ignore-all -lsycl"
+  SCALAPACK_LDFLAGS+=" -lmkl_sycl -lsycl"
 fi
 
 export CXX CC FC AR
