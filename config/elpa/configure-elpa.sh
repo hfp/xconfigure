@@ -50,8 +50,8 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS="${CONFOPTS} --enable-openmp --without-threading-support-check-during-build"
-FPFLAGS="-fp-model fast=2 -complex-limited-range"
+CONFOPTS="${CONFOPTS} --enable-openmp --enable-generic-kernels --without-threading-support-check-during-build"
+FPFLAGS="-fp-model fast"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
@@ -159,4 +159,3 @@ if [ -e "${HERE}/config.h" ]; then
     ln -fs libelpa.a libelpa_mt.a
   fi
 fi
-

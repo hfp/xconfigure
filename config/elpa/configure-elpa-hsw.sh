@@ -43,7 +43,7 @@ if [ "" = "${MKLROOT}" ]; then
 fi
 
 CONFOPTS="--disable-avx512 --enable-openmp --without-threading-support-check-during-build"
-FPFLAGS="-fp-model fast=2 -complex-limited-range"
+FPFLAGS="-fp-model fast"
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 
