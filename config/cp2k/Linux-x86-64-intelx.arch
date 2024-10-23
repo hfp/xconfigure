@@ -477,8 +477,8 @@ ifeq (0,$(GNU)) # Intel
     FCFLAGS += -std08
     DFLAGS += __F2008
   endif
-  MKL_OMPRTL := intel
-  MKL_FCRTL := intel
+  MKL_OMPRTL ?= intel
+  MKL_FCRTL ?= intel
 else # GNU GCC
   ifneq (0,$(shell echo "$$((2 > $(DBG)))"))
     ifeq (1,$(AVX))
@@ -553,8 +553,8 @@ else # GNU GCC
     FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
     CFLAGS += -fsignaling-nans
   endif
-  MKL_OMPRTL := gnu
-  MKL_FCRTL := gf
+  MKL_OMPRTL ?= gnu
+  MKL_FCRTL ?= gf
   INTEL ?= 0
 endif
 
@@ -819,7 +819,8 @@ ifneq (0,$(ELPA))
   endif
   ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
     LIBS += -Wl,--as-needed -lmkl_sycl -lsycl -lsvml -Wl,--no-as-needed
-    MKL_BITS = ilp64
+    MKL_FCRTL = intel
+    #MKL_BITS = ilp64
   endif
 endif
 endif
@@ -963,6 +964,9 @@ ifneq (0,$(MKL))
     ifeq (0,$(OMP))
       LIBS += -l$(OMPRT)
     endif
+  endif
+  ifeq (ilp64,$(MKL_BITS))
+    DFLAGS += MKL_ILP64
   endif
   ifeq (0,$(BLAS_STATIC))
     LIBS += -L$(MKLROOT)/lib/intel64
