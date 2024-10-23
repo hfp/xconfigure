@@ -57,4 +57,4 @@ else
 fi
 
 export FC CC CXX AR
-make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"
+make config prefix="${DEST}" cc="${CC}" ${CONFOPTS} "$@"

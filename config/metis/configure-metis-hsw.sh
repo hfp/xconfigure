@@ -64,4 +64,4 @@ export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 
-make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"
+make config prefix="${DEST}" cc="${CC}" ${CONFOPTS} "$@"
