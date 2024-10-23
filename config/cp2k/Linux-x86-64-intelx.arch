@@ -308,43 +308,6 @@ ifneq (0,$(MPI))
 endif
 endif
 
-ifneq (0,$(SCALAPACK))
-ifneq (0,$(MPI))
-  DFLAGS += __SCALAPACK
-  ifneq (0,$(LEGACY))
-    DFLAGS += __BLACS
-  endif
-  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
-    ifneq (-1,$(SCALAPACK))
-    ifneq (1,$(SCALAPACK))
-      DFLAGS += __SCALAPACK$(SCALAPACK)
-    endif
-    endif
-    ifneq (,$(MKLROOT))
-      SCALAPACKDIR := $(MKLROOT)/lib/intel64
-      SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
-    endif
-  else # NaN
-    SCALAPACKDIR := $(SCALAPACK)
-  endif
-  ifeq (,$(MKLROOT))
-    ifeq (,$(SCALAPACKLIB))
-      ifneq (0,$(IMPI))
-        SCALAPACKLIB := scalapack
-      else
-        SCALAPACKLIB := scalapack-openmpi
-      endif
-    endif
-    ifneq (,$(SCALAPACKDIR))
-      LIBS += -L$(SCALAPACKDIR)
-    endif
-    ifneq (,$(SCALAPACKLIB))
-      LIBS += -l$(SCALAPACKLIB)
-    endif
-  endif
-endif
-endif
-
 ifneq (0,$(NDEBUG))
   DFLAGS += NDEBUG
   ifneq (1,$(NDEBUG)) # CP2K and DBCSR
@@ -764,9 +727,6 @@ ifneq (0,$(ELPA)) # incl. undefined
   endif
   ifneq (,$(ELPAROOT))
     $(info ELPAROOT=$(ELPAROOT))
-    ifneq (0,$(LEGACY))
-      MKL_BITS ?= ilp64
-    endif
   endif
 endif
 ifneq (0,$(LIBGRPP)) # incl. undefined
@@ -859,6 +819,7 @@ ifneq (0,$(ELPA))
   endif
   ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
     LIBS += -Wl,--as-needed -lmkl_sycl -lsycl -lsvml -Wl,--no-as-needed
+    MKL_BITS = ilp64
   endif
 endif
 endif
@@ -942,6 +903,43 @@ always-build:
 		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) INTEL=$(INTEL) GNU=$(GNU) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
   endif
+endif
+
+ifneq (0,$(SCALAPACK))
+ifneq (0,$(MPI))
+  DFLAGS += __SCALAPACK
+  ifneq (0,$(LEGACY))
+    DFLAGS += __BLACS
+  endif
+  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
+    ifneq (-1,$(SCALAPACK))
+    ifneq (1,$(SCALAPACK))
+      DFLAGS += __SCALAPACK$(SCALAPACK)
+    endif
+    endif
+    ifneq (,$(MKLROOT))
+      SCALAPACKDIR := $(MKLROOT)/lib/intel64
+      SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
+    endif
+  else # NaN
+    SCALAPACKDIR := $(SCALAPACK)
+  endif
+  ifeq (,$(MKLROOT))
+    ifeq (,$(SCALAPACKLIB))
+      ifneq (0,$(IMPI))
+        SCALAPACKLIB := scalapack
+      else
+        SCALAPACKLIB := scalapack-openmpi
+      endif
+    endif
+    ifneq (,$(SCALAPACKDIR))
+      LIBS += -L$(SCALAPACKDIR)
+    endif
+    ifneq (,$(SCALAPACKLIB))
+      LIBS += -l$(SCALAPACKLIB)
+    endif
+  endif
+endif
 endif
 
 ifneq (0,$(MKL))
