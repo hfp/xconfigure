@@ -594,7 +594,7 @@ ifeq (0,$(LEGACY))
   IFLAGS += $(CP2KHOME)/$(OBJDIRNAME)/$(ARCH)/$(ONEVERSION)/exts/dbcsr
   ELPA ?= 1
 else # legacy
-  ELPA ?= 201705
+  ELPA ?= 201805
 endif
 
 $(info ================================================================================)
