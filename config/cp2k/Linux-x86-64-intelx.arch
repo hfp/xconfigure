@@ -168,12 +168,7 @@ endif
 
 SCALAPACK ?= $(MPI)
 ifneq (0,$(MPI))
-  DFLAGS += __parallel
-  ifneq (1,$(MPI))
-    DFLAGS += __MPI_VERSION=$(MPI)
-  else # default MPI std. version
-    DFLAGS += __MPI_VERSION=3
-  endif
+  DFLAGS += __parallel $(if $(filter-out 1,$(MPI)),__MPI_VERSION=$(MPI),__MPI_VERSION=3)
   ifeq (0,$(GNU))
     ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
       RANLIB := $(XIAR) -s
@@ -284,11 +279,7 @@ endif
 # COSMA section must appear before SCALAPACK section
 ifneq (0,$(COSMA)) # incl. undefined
 ifneq (0,$(MPI))
-  ifneq (,$(NVCC))
-    COSMATGT := gpu
-  else
-    COSMATGT := cpu
-  endif
+  COSMATGT := $(if $(NVCC),gpu,cpu)
   COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(CP2KHOME)/../cosma*$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
   COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(HOME)/cosma*$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
   COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(CP2KHOME)/../cosma*/$(COSMATGT)/lib*/libcosma_pxgemm_cpp.*)))
@@ -558,16 +549,8 @@ else # GNU GCC
   INTEL ?= 0
 endif
 
-ifneq (,$(TGT))
-  XCFG := $(CFG)-$(TGT)
-else
-  XCFG := $(CFG)
-endif
-ifneq (0,$(OMP))
-  XCFGOMP := $(XCFG)-omp
-else
-  XCFGOMP := $(XCFG)
-endif
+XCFG := $(if $(TGT),$(CFG)-$(TGT),$(CFG))
+XCFGOMP := $(if $(filter-out 0,$(OMP)),$(XCFG)-omp,$(XCFG))
 
 OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
@@ -802,25 +785,22 @@ endif
 
 ifneq (,$(ELPAROOT))
 ifneq (0,$(ELPA))
-  ifneq (0,$(CUDA))
-    DFLAGS += __ELPA_NVIDIA_GPU
-  endif
-  ifneq (1,$(ELPA))
-    DFLAGS += __ELPA=$(ELPA)
-  else
-    DFLAGS += __ELPA
-  endif
+  DFLAGS += $(if $(filter-out 1,$(ELPA)),__ELPA=$(ELPA),__ELPA)
   ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
   ELPAMODDIR := $(ELPAINCDIR)../modules
   IFLAGS += $(ELPAINCDIR) $(ELPAMODDIR)
   LIBS += $(ELPAROOT)/lib/libelpa.a
-  ifeq (0,$(OMP)) # in case ELPA was built with OpenMP support
+  ifneq (0,$(CUDA))
+    DFLAGS += __ELPA_NVIDIA_GPU
+  else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
+    ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
+      LIBS += -Wl,--as-needed -lmkl_sycl -lsycl -lsvml -Wl,--no-as-needed
+      DFLAGS += __ELPA_INTEL_GPU
+      MKL_FCRTL = intel
+      #MKL_BITS = ilp64
+    endif
+  else ifeq (0,$(OMP)) # in case ELPA was built with OpenMP support
     LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
-  endif
-  ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
-    LIBS += -Wl,--as-needed -lmkl_sycl -lsycl -lsvml -Wl,--no-as-needed
-    MKL_FCRTL = intel
-    #MKL_BITS = ilp64
   endif
 endif
 endif
@@ -927,11 +907,7 @@ ifneq (0,$(MPI))
   endif
   ifeq (,$(MKLROOT))
     ifeq (,$(SCALAPACKLIB))
-      ifneq (0,$(IMPI))
-        SCALAPACKLIB := scalapack
-      else
-        SCALAPACKLIB := scalapack-openmpi
-      endif
+      SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
     endif
     ifneq (,$(SCALAPACKDIR))
       LIBS += -L$(SCALAPACKDIR)
@@ -995,12 +971,7 @@ ifneq (0,$(MKL))
     endif
   endif
   LIBS += -Wl,--as-needed
-  LIBS += -lpthread -ldl
-  ifneq (0,$(INTEL))
-    LIBS += -limf
-  else
-    LIBS += -lm
-  endif
+  LIBS += -lpthread -ldl $(if $(filter-out 0,$(INTEL)),-limf,-lm)
   LIBS += -Wl,--no-as-needed
 else ifneq (0,$(BLAS)) # generic
   ifneq (,$(AOCL_ROOT))
@@ -1065,11 +1036,7 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         IFLAGS += $(OPENCL_ROOT)/include/sycl
       endif
       OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
-      ifneq (,$(OCL_ICD_LOADER))
-        LIBS += $(OCL_ICD_LOADER)
-      else
-        LIBS += -l:libOpenCL.so.1
-      endif
+      LIBS += $(if $(OCL_ICD_LOADER),$(OCL_ICD_LOADER),-l:libOpenCL.so.1)
     endif
     ACCFLAGS += $(CFLAGS)
     USE_ACCEL := opencl
