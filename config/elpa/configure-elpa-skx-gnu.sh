@@ -57,7 +57,7 @@ CONFOPTS+=" --with-test-programs=no"
 
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
-MKL_BITS="ilp64"
+MKL_BITS="lp64"
 
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
 FLAGS="-O3 ${TARGET} -I${MKLROOT}/include"

@@ -57,7 +57,7 @@ CONFOPTS+=" --with-test-programs=no"
 
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
-MKL_BITS="ilp64"
+MKL_BITS="lp64"
 
 TARGET="-march=core-avx2"
 FLAGS="-O3 ${TARGET} -I${MKLROOT}/include"
