@@ -61,27 +61,31 @@ endif
 prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 
+IFX := $(call which,ifx)
+ICX := $(call which,icx)
+ICP := $(call which,icpx)
+
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
 GNU ?= 0
 ifeq (0,$(GNU))
   XIAR := $(if $(call which,xiar),xiar,ar)
   ifeq (,$(shell echo "$${FC}"))
-    ifneq (,$(filter ifx ifx2,$(notdir $(call which,ifx))$(INTEL)))
+    ifneq (,$(filter ifx ifx2,$(notdir $(IFX))$(INTEL)))
       FC := ifx
     else ifneq (,$(filter ifort ifort1,$(notdir $(call which,ifort))$(INTEL)))
       FC := ifort
     endif
   endif
   ifeq (,$(shell echo "$${CXX}"))
-    ifneq (,$(filter icpx icpx2,$(notdir $(call which,icpx))$(INTEL)))
+    ifneq (,$(filter icpx icpx2,$(notdir $(ICP))$(INTEL)))
       CXX := icpx
     else ifneq (,$(filter icpc icpc1,$(notdir $(call which,icpc))$(INTEL)))
       CXX := icpc
     endif
   endif
   ifeq (,$(shell echo "$${CC}"))
-    ifneq (,$(filter icx icx2,$(notdir $(call which,icx))$(INTEL)))
+    ifneq (,$(filter icx icx2,$(notdir $(ICX))$(INTEL)))
       CC := icx
     else ifneq (,$(filter icc icc1,$(notdir $(call which,icc))$(INTEL)))
       CC := icc
@@ -92,7 +96,7 @@ endif
 # check if the Intel Development Tools are available
 INTEL ?= $(strip $(if $(filter icc% icx% Intel%, \
   $(shell $(CC) --version 2>/dev/null | head -n1 | cut -d' ' -f1)), \
-  $(if $(call which,ifx), 2, 1), 0))
+  $(if $(IFX), 2, 1), 0))
 
 ifneq (0,$(INTEL))
   CFG := intel
@@ -118,6 +122,7 @@ STATIC ?= 1
 DYNAMIC ?= 1
 BLAS_STATIC ?= $(STATIC)
 MKL_DIRECT ?= 0
+MKL_BITS ?= lp64
 BEEP ?= 0
 
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
@@ -317,7 +322,7 @@ ifneq (0,$(MPI))
     endif
     ifneq (,$(MKLROOT))
       SCALAPACKDIR := $(MKLROOT)/lib/intel64
-      SCALAPACKLIB := mkl_scalapack_lp64
+      SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
     endif
   else # NaN
     SCALAPACKDIR := $(SCALAPACK)
@@ -759,6 +764,9 @@ ifneq (0,$(ELPA)) # incl. undefined
   endif
   ifneq (,$(ELPAROOT))
     $(info ELPAROOT=$(ELPAROOT))
+    ifneq (0,$(LEGACY))
+      MKL_BITS ?= ilp64
+    endif
   endif
 endif
 ifneq (0,$(LIBGRPP)) # incl. undefined
@@ -846,9 +854,11 @@ ifneq (0,$(ELPA))
   ELPAMODDIR := $(ELPAINCDIR)../modules
   IFLAGS += $(ELPAINCDIR) $(ELPAMODDIR)
   LIBS += $(ELPAROOT)/lib/libelpa.a
-  # in case ELPA is built with OpenMP
-  ifeq (0,$(OMP))
+  ifeq (0,$(OMP)) # in case ELPA was built with OpenMP support
     LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
+  endif
+  ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
+    LIBS += -Wl,--as-needed -lmkl_sycl -lsycl -lsvml -Wl,--no-as-needed
   endif
 endif
 endif
@@ -959,24 +969,24 @@ ifneq (0,$(MKL))
   ifeq (0,$(BLAS_STATIC))
     LIBS += -L$(MKLROOT)/lib/intel64
     ifneq (0,$(MPI))
-      LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_lp64 -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_lp64
+      LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_$(MKL_BITS) -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_$(MKL_BITS)
     else
-      LIBS += -lmkl_$(MKL_FCRTL)_lp64 -lmkl_core -lmkl_$(MKL_THREADS)
+      LIBS += -lmkl_$(MKL_FCRTL)_$(MKL_BITS) -lmkl_core -lmkl_$(MKL_THREADS)
     endif
   else # static
     ifneq (0,$(MPI))
       LIBS += \
         -Wl,--start-group \
           $(SCALAPACKDIR)/lib$(SCALAPACKLIB).a \
-          $(MKLROOT)/lib/intel64/libmkl_$(MKL_FCRTL)_lp64.a \
+          $(MKLROOT)/lib/intel64/libmkl_$(MKL_FCRTL)_$(MKL_BITS).a \
           $(MKLROOT)/lib/intel64/libmkl_core.a \
           $(MKLROOT)/lib/intel64/libmkl_$(MKL_THREADS).a \
-          $(MKLROOT)/lib/intel64/libmkl_blacs_$(MKL_MPIRTL)_lp64.a \
+          $(MKLROOT)/lib/intel64/libmkl_blacs_$(MKL_MPIRTL)_$(MKL_BITS).a \
         -Wl,--end-group
     else
       LIBS += \
         -Wl,--start-group \
-          $(MKLROOT)/lib/intel64/libmkl_$(MKL_FCRTL)_lp64.a \
+          $(MKLROOT)/lib/intel64/libmkl_$(MKL_FCRTL)_$(MKL_BITS).a \
           $(MKLROOT)/lib/intel64/libmkl_core.a \
           $(MKLROOT)/lib/intel64/libmkl_$(MKL_THREADS).a \
         -Wl,--end-group
