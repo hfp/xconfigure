@@ -61,12 +61,12 @@ TARGET="-xHost"
 TARGET_GNU="-march=native -mtune=native"
 FLAGS="-O3 -I${MKLROOT}/include"
 
-LDFLAGS="-L${MKLROOT}/lib/intel64"
 CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast ${TARGET}"
 CXXFLAGS="${CFLAGS}"
 FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/lp64"
 SCALAPACK_LDFLAGS="-lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64"
 LIBS="-lmkl_${MKL_FCRTL}_lp64 -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
+LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 AR=$(command -v xiar || echo "ar")
 if [ "1" != "${INTEL}" ]; then
@@ -80,8 +80,7 @@ fi
 if [ "0" != "${GPU}" ]; then
   CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
   CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl-targets=spir64 -fsycl"
-  LDFLAGS+=" -lsycl -lsvml"
-  SCALAPACK_LDFLAGS+=" -lmkl_sycl -lsycl"
+  LIBS+=" -lmkl_sycl -lsycl -lsvml"
 fi
 if [ "1" != "${INTEL}" ]; then
   if [ "0" != "${INTEL}" ]; then
