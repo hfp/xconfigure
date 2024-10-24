@@ -169,9 +169,9 @@ if [ -e "${HERE}/config.h" ]; then
     fi
     mkdir -p ${DEST}/lib
     cd ${DEST}/lib
-    if [ -e libelpa_openmp.so ]; then ln -fs libelpa_openmp.so libelpa.so; fi
-    if [ -e libelpa_openmp.a ]; then ln -fs libelpa_openmp.a libelpa.a; fi
-    if [ -e libelpa.so ]; then ln -fs libelpa.so libelpa_mt.so; fi
-    if [ -e libelpa.a ]; then ln -fs libelpa.a libelpa_mt.a; fi
+    ln -fs libelpa_openmp.so libelpa.so
+    ln -fs libelpa_openmp.a libelpa.a
+    ln -fs libelpa.so libelpa_mt.so
+    ln -fs libelpa.a libelpa_mt.a
   fi
 fi

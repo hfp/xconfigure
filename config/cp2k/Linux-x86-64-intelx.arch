@@ -67,7 +67,7 @@ ICP := $(call which,icpx)
 
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
-INTEL_FORCE := 0
+INTEL_FORCE := $(NULL)
 ifeq (,$(filter-out 0,$(GNU)))
   INTEL_FORCE := $(if $(filter-out 0,$(INTEL)),$(filter 0,$(GNU)))
   XIAR := $(if $(call which,xiar),xiar,ar)
@@ -582,7 +582,7 @@ else # legacy
 endif
 
 $(info ================================================================================)
-ifneq (0,$(INTEL_FORCE))
+ifneq (,$(INTEL_FORCE))
   $(info Forced Intel Compiler even with CXX, CC, and FC being set!)
 endif
 $(info Using the following libraries:)
