@@ -49,7 +49,7 @@ CONFOPTS+=" --with-test-programs=no"
 
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
-MKL_BITS="ilp64"
+MKL_BITS="lp64"
 
 TARGET="-xCORE-AVX2"
 TARGET_GNU="-march=core-avx2"

@@ -49,7 +49,7 @@ CONFOPTS+=" --with-test-programs=no"
 
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
-MKL_BITS="ilp64"
+MKL_BITS="lp64"
 
 TARGET="-xCORE-AVX512"
 TARGET_GNU="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"

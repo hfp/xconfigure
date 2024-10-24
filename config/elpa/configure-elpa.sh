@@ -57,7 +57,7 @@ CONFOPTS+=" --with-test-programs=no"
 
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
-MKL_BITS="ilp64"
+MKL_BITS="lp64"
 
 TARGET="-xHost"
 TARGET_GNU="-march=native -mtune=native"
