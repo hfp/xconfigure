@@ -790,7 +790,7 @@ endif
 ifneq (,$(ELPAROOT))
 ifneq (0,$(ELPA))
   ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
-  LIBS += $(if $(filter-out 0,$(STATIC)),$(ELPAROOT)/lib/libelpa.a,-L$(ELPAROOT)/lib -lelpa)
+  LIBS += $(if $(filter-out 0,$(STATIC)),$(ELPAROOT)/lib/libelpa.a,-L$(ELPAROOT)/lib "-Wl,-rpath,$(ELPAROOT)/lib" -lelpa)
   DFLAGS += $(if $(filter-out 1,$(ELPA)),__ELPA=$(ELPA),__ELPA)
   IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)../modules
   ifneq (0,$(CUDA))
@@ -836,7 +836,7 @@ ifneq (,$(LIBXSMMROOT))
       LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmmext.a
       LIBS += $(LIBXSMM_DSTDIR)/lib/libxsmm.a
     else
-      LIBS += -L$(LIBXSMM_DSTDIR)/lib
+      LIBS += -L$(LIBXSMM_DSTDIR)/lib -Wl,-rpath,$(LIBXSMM_DSTDIR)/lib
       LIBS += -lxsmmf -lxsmmext -lxsmm
     endif
 
@@ -948,7 +948,7 @@ ifneq (0,$(MKL))
     DFLAGS += MKL_ILP64
   endif
   ifeq (0,$(STATIC))
-    LIBS += -L$(MKLROOT)/lib/intel64
+    LIBS += -L$(MKLROOT)/lib/intel64 -Wl,-rpath,$(MKLROOT)/lib/intel64
     ifneq (0,$(MPI))
       LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_$(MKL_BITS) -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_$(MKL_BITS)
     else
@@ -979,10 +979,11 @@ ifneq (0,$(MKL))
 else ifneq (0,$(BLAS)) # generic
   ifneq (,$(AOCL_ROOT))
     ifeq (0,$(STATIC)) # shared
+      LIBS += -L$(AOCL_ROOT)/lib -Wl,-rpath,$(AOCL_ROOT)/lib
       ifeq (1,$(BLAS)) # sequential
-        LIBS += -L$(AOCL_ROOT)/lib -lblis
+        LIBS += -lblis
       else # multi-threaded
-        LIBS += -L$(AOCL_ROOT)/lib -lblis-mt
+        LIBS += -lblis-mt
       endif
     else # static
       ifeq (1,$(BLAS)) # sequential
