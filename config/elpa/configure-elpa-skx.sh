@@ -73,7 +73,7 @@ fi
 
 if [ "0" != "${GPU}" ]; then # incl. undefined
   CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
-  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl-targets=spir64 -fsycl"
+  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -Wc,-fsycl -fsycl -fsycl-targets=spir64"
   LIBS+=" -lmkl_sycl -lsycl -lsvml"
 fi
 if [ "1" != "${INTEL}" ]; then
