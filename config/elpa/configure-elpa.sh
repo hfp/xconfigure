@@ -72,17 +72,17 @@ LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 AR=$(command -v xiar || echo "ar")
 if [ "1" != "${INTEL}" ]; then
-  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
-  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
+  CXX=icpx; CC=icx
 else
-  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
-  CC="mpiicc -cc=$(command -v icc || echo icx)"
+  CXX=$(command -v icpc || echo icpx)
+  CC=$(command -v icc || echo icx)
 fi
 
 if [ "0" != "${GPU}" ]; then # incl. undefined
   CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
-  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -Wc,-fsycl -fsycl -fsycl-targets=spir64"
+  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl -fsycl-targets=spir64"
   LIBS+=" -lmkl_sycl -lsycl -lsvml"
+  LDFLAGS+=" -Wc,-fsycl"
 fi
 if [ "1" != "${INTEL}" ]; then
   if [ "0" != "${INTEL}" ]; then
