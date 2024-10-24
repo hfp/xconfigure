@@ -67,8 +67,8 @@ ICP := $(call which,icpx)
 
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
-GNU ?= 0
-ifeq (0,$(GNU))
+ifeq (,$(filter-out 0,$(GNU)))
+  INTEL_FORCE := $(if $(filter-out 0,$(INTEL)),$(filter 0,$(GNU)))
   XIAR := $(if $(call which,xiar),xiar,ar)
   ifeq (,$(shell echo "$${FC}"))
     ifneq (,$(filter ifx ifx2,$(notdir $(IFX))$(INTEL)))
@@ -77,20 +77,21 @@ ifeq (0,$(GNU))
       FC := ifort
     endif
   endif
-  ifeq (,$(shell echo "$${CXX}"))
+  ifeq (,$(if $(INTEL_FORCE),$(NULL),$(shell echo "$${CXX}")))
     ifneq (,$(filter icpx icpx2,$(notdir $(ICP))$(INTEL)))
       CXX := icpx
     else ifneq (,$(filter icpc icpc1,$(notdir $(call which,icpc))$(INTEL)))
       CXX := icpc
     endif
   endif
-  ifeq (,$(shell echo "$${CC}"))
+  ifeq (,$(if $(INTEL_FORCE),$(NULL),$(shell echo "$${CC}")))
     ifneq (,$(filter icx icx2,$(notdir $(ICX))$(INTEL)))
       CC := icx
     else ifneq (,$(filter icc icc1,$(notdir $(call which,icc))$(INTEL)))
       CC := icc
     endif
   endif
+  GNU := 0
 endif
 
 # check if the Intel Development Tools are available
@@ -153,8 +154,8 @@ MNAME ?= $(shell uname -m 2>/dev/null)
 
 # advanced compiler flags
 ifneq (0,$(INTEL))
-  FPCMODEL := $(if $(strip $(FPCMODEL)),-fp-model $(FPCMODEL),$(NULL))
-  FPFMODEL := $(if $(strip $(FPFMODEL)),-fp-model $(FPFMODEL),$(NULL))
+  FPCMODEL := $(if $(strip $(FPCMODEL)),-fp-model $(FPCMODEL))
+  FPFMODEL := $(if $(strip $(FPFMODEL)),-fp-model $(FPFMODEL))
   ifeq (1,$(INTEL))
   ifeq (,$(strip $(FPFMODEL)))
     FCFLAGS += -complex-limited-range
@@ -1136,7 +1137,7 @@ endif
 
 ifneq (0,$(NDEBUG))
 environment.o: environment.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -DNDEBUG,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 grid_library.o: grid_library.c $(ALL_HEADERS)
@@ -1147,16 +1148,16 @@ endif
 ifeq (1,$(INTEL))
 ifneq (,$(filter -qoverride_limits,$(FCFLAGS)))
 mp2_eri.o: mp2_eri.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qoverride_limits,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 minimax_exp_k53.o: minimax_exp_k53.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qoverride_limits,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 endif
 mp2_optimize_ri_basis.o: mp2_optimize_ri_basis.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(FCFLAGS) -O0 -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 endif
@@ -1165,15 +1166,15 @@ ifneq (,$(filter 0,$(GNU)))
 ifneq (,$(filter-out 0,$(BEEP)))
 ifneq (,$(filter-out 0 1,$(INTEL)))
 mp2_ri_gpw.o: mp2_ri_gpw.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 pw_methods.o: pw_methods.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 xc.o: xc.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90,$(NULL)))
+	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
 	$(MAKE_FYPP)
 	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
 endif
