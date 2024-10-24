@@ -120,7 +120,6 @@ IPO ?= 0
 VMAX ?= 0
 STATIC ?= 1
 DYNAMIC ?= 1
-BLAS_STATIC ?= $(STATIC)
 MKL_DIRECT ?= 0
 MKL_BITS ?= lp64
 BEEP ?= 0
@@ -785,11 +784,10 @@ endif
 
 ifneq (,$(ELPAROOT))
 ifneq (0,$(ELPA))
-  DFLAGS += $(if $(filter-out 1,$(ELPA)),__ELPA=$(ELPA),__ELPA)
   ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
-  ELPAMODDIR := $(ELPAINCDIR)../modules
-  IFLAGS += $(ELPAINCDIR) $(ELPAMODDIR)
-  LIBS += $(ELPAROOT)/lib/libelpa.a
+  LIBS += $(if $(filter-out 0,$(STATIC)),$(ELPAROOT)/lib/libelpa.a,-L$(ELPAROOT)/lib -lelpa)
+  DFLAGS += $(if $(filter-out 1,$(ELPA)),__ELPA=$(ELPA),__ELPA)
+  IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)../modules
   ifneq (0,$(CUDA))
     DFLAGS += __ELPA_NVIDIA_GPU
   else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
@@ -944,7 +942,7 @@ ifneq (0,$(MKL))
   ifeq (ilp64,$(MKL_BITS))
     DFLAGS += MKL_ILP64
   endif
-  ifeq (0,$(BLAS_STATIC))
+  ifeq (0,$(STATIC))
     LIBS += -L$(MKLROOT)/lib/intel64
     ifneq (0,$(MPI))
       LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_$(MKL_BITS) -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_$(MKL_BITS)
@@ -975,7 +973,7 @@ ifneq (0,$(MKL))
   LIBS += -Wl,--no-as-needed
 else ifneq (0,$(BLAS)) # generic
   ifneq (,$(AOCL_ROOT))
-    ifeq (0,$(BLAS_STATIC)) # shared
+    ifeq (0,$(STATIC)) # shared
       ifeq (1,$(BLAS)) # sequential
         LIBS += -L$(AOCL_ROOT)/lib -lblis
       else # multi-threaded
