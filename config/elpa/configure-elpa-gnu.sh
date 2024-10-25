@@ -109,9 +109,7 @@ fi
   --prefix="${DEST}" ${CONFOPTS} "$@"
 
 if [ -e "${HERE}/Makefile" ]; then
-  sed -i \
-    -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-    Makefile
+  sed -i "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" Makefile
 fi
 
 if [ -e "${HERE}/config.h" ]; then
