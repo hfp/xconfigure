@@ -59,13 +59,10 @@ MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 MKL_BITS="lp64"
 
-TARGET="-xHost"
-TARGET_GNU="-march=native -mtune=native"
-FLAGS="-O3 -I${MKLROOT}/include"
-
-CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast ${TARGET}"
+FLAGS="-O3 -xHost -I${MKLROOT}/include"
+CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast"
 CXXFLAGS="${CFLAGS}"
-FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS}"
+FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS} -align array64byte -threads -qopenmp"
 SCALAPACK_LDFLAGS="-lmkl_scalapack_${MKL_BITS} -lmkl_blacs_intelmpi_${MKL_BITS}"
 LIBS="-lmkl_${MKL_FCRTL}_${MKL_BITS} -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 LDFLAGS="-L${MKLROOT}/lib/intel64"
@@ -80,28 +77,16 @@ else
 fi
 
 if [ "1" != "${INTEL}" ]; then
-  IFX=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+  CONFOPTS+=" --enable-ifx-compiler"
   if [ "0" != "${GPU}" ]; then # incl. undefined
     CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
     CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
     CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
     LIBS+=" -lmkl_sycl -lsycl -lsvml"
-  fi
-  if [ "0" != "${INTEL}" ]; then
-    FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
-    CONFOPTS+=" --enable-ifx-compiler"
     LDFLAGS+=" -Wc,-fsycl"
-    FC=${IFX}
-  else
-    FCFLAGS+=" ${TARGET_GNU}"
-    FCLD="${IFX} -Wc,-fsycl -nofor-main"
-    CXXLD="${CXX} -Wc,-fsycl"
-    CCLD="${CC} -Wc,-fsycl"
-    LIBS+=" -lgfortran"
-    FC=mpif90
   fi
 else
-  FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
   FC="mpiifort"
 fi
 
@@ -155,8 +140,6 @@ fi
 
 if [ -e "${HERE}/Makefile" ]; then
   sed -i "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" Makefile
-  if [ "${CXXLD}" ]; then echo "CXXLD = \"${CXXLD}\"" >>Makefile; fi
-  if [ "${FCLD}" ]; then echo "FCLD = \"${FCLD}\"" >>Makefile; fi
 fi
 
 if [ -e "${HERE}/config.h" ]; then

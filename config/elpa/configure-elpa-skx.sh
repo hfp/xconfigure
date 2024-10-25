@@ -51,42 +51,34 @@ MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 MKL_BITS="lp64"
 
-TARGET="-xCORE-AVX512"
-TARGET_GNU="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
-FLAGS="-O3 -I${MKLROOT}/include"
-
-CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast ${TARGET}"
+FLAGS="-O3 -xCORE-AVX512 -I${MKLROOT}/include"
+CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast"
 CXXFLAGS="${CFLAGS}"
-FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS}"
+FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS} -align array64byte -threads -qopenmp"
 SCALAPACK_LDFLAGS="-lmkl_scalapack_${MKL_BITS} -lmkl_blacs_intelmpi_${MKL_BITS}"
 LIBS="-lmkl_${MKL_FCRTL}_${MKL_BITS} -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 AR=$(command -v xiar || echo "ar")
 if [ "1" != "${INTEL}" ]; then
-  CXX=icpx; CC=icx
+  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
+  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
 else
-  CXX=$(command -v icpc || echo icpx)
-  CC=$(command -v icc || echo icx)
+  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
+  CC="mpiicc -cc=$(command -v icc || echo icx)"
 fi
 
-if [ "0" != "${GPU}" ]; then # incl. undefined
-  CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
-  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl -fsycl-targets=spir64"
-  LIBS+=" -lmkl_sycl -lsycl -lsvml"
-  LDFLAGS+=" -Wc,-fsycl"
-fi
 if [ "1" != "${INTEL}" ]; then
-  if [ "0" != "${INTEL}" ]; then
-    FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
-    FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
-    CONFOPTS+=" --enable-ifx-compiler"
-  else
-    FCFLAGS+=" ${TARGET_GNU}"
-    FC=mpif90
+  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+  CONFOPTS+=" --enable-ifx-compiler"
+  if [ "0" != "${GPU}" ]; then # incl. undefined
+    CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
+    CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
+    CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
+    LIBS+=" -lmkl_sycl -lsycl -lsvml"
+    LDFLAGS+=" -Wc,-fsycl"
   fi
 else
-  FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
   FC="mpiifort"
 fi
 
@@ -139,9 +131,7 @@ fi
   --prefix="${DEST}" ${CONFOPTS} "$@"
 
 if [ -e "${HERE}/Makefile" ]; then
-  sed -i \
-    -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-    Makefile
+  sed -i "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" Makefile
 fi
 
 if [ -e "${HERE}/config.h" ]; then
