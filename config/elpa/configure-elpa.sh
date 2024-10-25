@@ -72,25 +72,32 @@ LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 AR=$(command -v xiar || echo "ar")
 if [ "1" != "${INTEL}" ]; then
-  CXX=icpx; CC=icx
+  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
+  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
 else
-  CXX=$(command -v icpc || echo icpx)
-  CC=$(command -v icc || echo icx)
+  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
+  CC="mpiicc -cc=$(command -v icc || echo icx)"
 fi
 
-if [ "0" != "${GPU}" ]; then # incl. undefined
-  CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
-  CXXFLAGS+=" -I$(dirname "$(command -v ${CXX})")/../linux/include/sycl -fsycl -fsycl-targets=spir64"
-  LIBS+=" -lmkl_sycl -lsycl -lsvml"
-  LDFLAGS+=" -Wc,-fsycl"
-fi
 if [ "1" != "${INTEL}" ]; then
+  IFX=$(command -v mpiifx || echo "mpiifort -fc=ifx")
+  if [ "0" != "${GPU}" ]; then # incl. undefined
+    CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
+    CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
+    CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
+    LIBS+=" -lmkl_sycl -lsycl -lsvml"
+  fi
   if [ "0" != "${INTEL}" ]; then
-    FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
     FCFLAGS+=" ${TARGET} -align array64byte -threads -qopenmp"
     CONFOPTS+=" --enable-ifx-compiler"
+    LDFLAGS+=" -Wc,-fsycl"
+    FC=${IFX}
   else
     FCFLAGS+=" ${TARGET_GNU}"
+    FCLD="${IFX} -Wc,-fsycl -nofor-main"
+    CXXLD="${CXX} -Wc,-fsycl"
+    CCLD="${CC} -Wc,-fsycl"
+    LIBS+=" -lgfortran"
     FC=mpif90
   fi
 else
@@ -147,9 +154,9 @@ fi
   --prefix="${DEST}" ${CONFOPTS} "$@"
 
 if [ -e "${HERE}/Makefile" ]; then
-  sed -i \
-    -e "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" \
-    Makefile
+  sed -i "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" Makefile
+  if [ "${CXXLD}" ]; then echo "CXXLD = \"${CXXLD}\"" >>Makefile; fi
+  if [ "${FCLD}" ]; then echo "FCLD = \"${FCLD}\"" >>Makefile; fi
 fi
 
 if [ -e "${HERE}/config.h" ]; then
