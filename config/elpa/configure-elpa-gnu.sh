@@ -28,15 +28,6 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-INTEL=0
-if [ "0" != "${GPU}" ] && [ -e "${HERE}/configure-elpa.sh" ] && \
-   [ "$(command -v icpx)" ] && [ "$(command -v icx)" ] && [ "$(command -v ifx)" ];
-then
-  eval "${HERE}/configure-elpa.sh"
-  if make -j "$(nproc)" && make install; then INTEL=2; fi
-  make clean
-fi
-
 # attempt to detect MKLROOT
 if [ "" = "${MKLROOT}" ]; then
   MKL_INCFILE=$(ls -1 /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h 2>/dev/null | head -n1)
@@ -127,15 +118,10 @@ if [ -e "${HERE}/config.h" ]; then
       ln -s ${ELPA}-${VERSION} elpa
       cd ${CWD}
     fi
-    if [ "0" != "${INTEL}" ]; then
-      SRCDIR=$(cd ${HERE}/../elpa/intel/lib && pwd -P)
-    else
-      SRCDIR=.
-    fi
     mkdir -p ${DEST}/lib && cd ${DEST}/lib
-    ln -fs ${SRCDIR}/libelpa_openmp.so libelpa.so
-    ln -fs ${SRCDIR}/libelpa_openmp.a libelpa.a
-    ln -fs ${SRCDIR}/libelpa.so libelpa_mt.so
-    ln -fs ${SRCDIR}/libelpa.a libelpa_mt.a
+    ln -fs libelpa_openmp.so libelpa.so
+    ln -fs libelpa_openmp.a libelpa.a
+    ln -fs libelpa.so libelpa_mt.so
+    ln -fs libelpa.a libelpa_mt.a
   fi
 fi
