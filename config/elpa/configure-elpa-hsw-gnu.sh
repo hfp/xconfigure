@@ -28,8 +28,8 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-if [ "$(command -v icpx)" ] && [ "$(command -v icx)" ] && \
-   [ -e "${HERE}/configure-elpa-hsw.sh" ];
+if [ "0" != "${GPU}" ] && [ "0" != "${INTEL}" ] && [ -e "${HERE}/configure-elpa-hsw.sh" ] && \
+   [ "$(command -v icpx)" ] && [ "$(command -v icx)" ] && [ "$(command -v ifx)" ];
 then
   export INTEL=0
   eval "${HERE}/configure-elpa-hsw.sh ${PRFX}"
