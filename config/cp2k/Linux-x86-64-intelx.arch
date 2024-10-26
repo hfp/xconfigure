@@ -790,9 +790,13 @@ endif
 ifneq (,$(ELPAROOT))
 ifneq (0,$(ELPA))
   ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
-  LIBS += $(if $(filter-out 0,$(STATIC)),$(ELPAROOT)/lib/libelpa.a,-L$(ELPAROOT)/lib "-Wl,-rpath,$(ELPAROOT)/lib" -lelpa)
   DFLAGS += $(if $(filter-out 1,$(ELPA)),__ELPA=$(ELPA),__ELPA)
   IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)../modules
+  ifneq (0,$(STATIC))
+    LIBS += $(ELPAROOT)/lib/libelpa.a
+  else
+    LIBS += -L$(ELPAROOT)/lib -Wl,-rpath,$(ELPAROOT)/lib -lelpa
+  endif
   ifneq (0,$(CUDA))
     DFLAGS += __ELPA_NVIDIA_GPU
   else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
