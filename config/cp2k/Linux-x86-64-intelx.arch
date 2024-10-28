@@ -801,6 +801,9 @@ ifneq (0,$(ELPA))
     DFLAGS += __ELPA_NVIDIA_GPU
   else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
     ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
+      ifneq (0,$(STATIC))
+        LDFLAGS += -Wc,-fsycl
+      endif
       LIBS += -Wl,--as-needed
       LIBS += -lmkl_sycl -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
       LIBS += -Wl,--no-as-needed
