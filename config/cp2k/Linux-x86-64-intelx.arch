@@ -129,6 +129,7 @@ BEEP ?= 0
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
 OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
 #MATMUL ?= $(if $(filter-out 1,$(INTEL)),1,0)
+LIBEXT ?= $(if $(filter-out 0,$(STATIC)),a,so)
 
 # NDEBUG=0: keep all assertions active
 # NDEBUG=1: apply to DBCSR (should be fine)
@@ -789,30 +790,38 @@ endif
 
 ifneq (,$(ELPAROOT))
 ifneq (0,$(ELPA))
-  ELPAINCDIR := $(dir $(shell ls -1 $(ELPAROOT)/include/*/elpa/elpa_*constants.h | head -n1))
-  DFLAGS += $(if $(filter-out 1,$(ELPA)),__ELPA=$(ELPA),__ELPA)
-  IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)../modules
-  ifneq (0,$(STATIC))
-    LIBS += $(ELPAROOT)/lib/libelpa.a
-  else
-    LIBS += -L$(ELPAROOT)/lib -Wl,-rpath,$(ELPAROOT)/lib -lelpa
+  ELPAINCDIR := $(dir $(firstword $(wildcard $(ELPAROOT)/include/*/elpa/elpa_*constants.h)))
+  ELPALIBDIR := $(firstword $(wildcard $(ELPAROOT)/lib64 $(wildcard $(ELPAROOT)/lib)))
+  ifneq (,$(ELPAINCDIR))
+  ifneq (,$(ELPALIBDIR))
+    ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
   endif
-  ifneq (0,$(CUDA))
-    DFLAGS += __ELPA_NVIDIA_GPU
-  else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
-    ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
-      ifneq (0,$(STATIC))
-        LDFLAGS += -Wc,-fsycl
-      endif
-      LIBS += -Wl,--as-needed
-      LIBS += -lmkl_sycl -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
-      LIBS += -Wl,--no-as-needed
-      DFLAGS += __ELPA_INTEL_GPU
-      MKL_FCRTL = intel
-      #MKL_BITS = ilp64
+  endif
+  ifneq (,$(ELPALIB))
+    IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
+    DFLAGS += __ELPA=$(ELPA)
+    ifeq (0,$(STATIC))
+      LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
+    else
+      LIBS += $(ELPALIB).a
     endif
-  else ifeq (0,$(OMP)) # in case ELPA was built with OpenMP support
-    LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
+    ifneq (0,$(CUDA))
+      DFLAGS += __ELPA_NVIDIA_GPU
+    else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
+      ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
+        ifneq (0,$(STATIC))
+          LDFLAGS += -Wc,-fsycl
+        endif
+        LIBS += -Wl,--as-needed
+        LIBS += -lmkl_sycl -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
+        LIBS += -Wl,--no-as-needed
+        DFLAGS += __ELPA_INTEL_GPU
+        MKL_FCRTL = intel
+        #MKL_BITS = ilp64
+      endif
+    else ifeq (0,$(OMP)) # in case ELPA was built with OpenMP support
+      LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
+    endif
   endif
 endif
 endif
