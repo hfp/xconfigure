@@ -244,7 +244,7 @@ endif
 ifneq (,$(filter-out 0,$(CUDA) $(OCL)))
   NVCC_FILE := $(call which,nvcc)
   NVCC := $(notdir $(NVCC_FILE))
-  NVCC_PATH := $(if $(NVCC_FILE),$(wildcard $(dir $(NVCC_FILE))/..))
+  NVCC_PATH := $(if $(NVCC_FILE),$(realpath $(dir $(NVCC_FILE))/..))
   CUDA_FILE := $(wildcard $(NVCC_PATH)/../cuda/include/cuda.h)
   CUDA_PATH := $(if $(CUDA_FILE),$(NVCC_PATH)/../cuda,$(NVCC_PATH))
   CUDA_LIBS := $(if $(wildcard $(CUDA_PATH)/lib64),lib64,lib)
@@ -260,20 +260,20 @@ ifneq (,$(filter x86_64,$(MNAME)))
   ifeq (,$(strip $(MKLROOT)))
     MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h))))
     ifneq (,$(MKL_INCFILE))
-      MKLROOT := $(abspath $(dir $(MKL_INCFILE))/..)
+      MKLROOT := $(realpath $(dir $(MKL_INCFILE))/..)
     endif
   endif
   ifeq (,$(strip $(MKLROOT)))
     MKL_INCFILE := $(strip $(wildcard /usr/include/mkl/mkl.h))
     ifneq (,$(MKL_INCFILE))
-      MKLROOT := $(abspath $(dir $(MKL_INCFILE))/../..)
+      MKLROOT := $(realpath $(dir $(MKL_INCFILE))/../..)
     endif
   endif
-  ifeq (/,$(MKLROOT))
+  ifneq (,$(MKLROOT))
+    MKL := $(BLAS)
+  else
     MKL_INCFILE := $(NULL)
     MKLROOT := $(NULL)
-  else
-    MKL := $(BLAS)
   endif
 endif
 endif
@@ -289,7 +289,7 @@ ifneq (0,$(MPI))
   COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(CP2KHOME)/../cosma*/lib*/libcosma_pxgemm_cpp.*)))
   COSMAROOT := $(if $(COSMAROOT),$(COSMAROOT),$(firstword $(wildcard $(HOME)/cosma*/lib*/libcosma_pxgemm_cpp.*)))
   ifneq (,$(COSMAROOT))
-    COSMAROOT := $(abspath $(dir $(COSMAROOT))/..)
+    COSMAROOT := $(realpath $(dir $(COSMAROOT))/..)
   endif
   ifneq (,$(COSMAROOT))
     LIBS += -L$(COSMAROOT)/lib64 -L$(COSMAROOT)/lib -lcosma -lcosma_pxgemm_cpp -lcosma_prefixed_pxgemm -lcosta_scalapack -lcosta
@@ -371,7 +371,7 @@ ifeq (0,$(LEGACY))
       endif
       endif
     else
-      MPIROOT=$dir $(dir $(call which,$(FC))))
+      MPIROOT=$(abspath $(dir $(call which,$(FC)))/..)
       ifneq (,$(wildcard $(MPIROOT)/lib/*.mod))
         IFLAGS += $(MPIROOT)/lib
       endif
@@ -810,7 +810,7 @@ ifneq (,$(ELPAROOT))
     else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
       ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
         ifeq (0,$(STATIC))
-          INTEL_LIBS := $(wildcard $(dir $(ICX))/../lib)
+          INTEL_LIBS := $(realpath $(dir $(ICX))/../lib)
           ifneq (,$(INTEL_LIBS))
             LIBS += -L$(INTEL_LIBS) -Wl,-rpath,$(INTEL_LIBS)
           endif
@@ -1057,10 +1057,13 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         OPENCL_LIBS := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
         LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LIBS)
         IFLAGS += $(OPENCL_ROOT)/include
-      else ifneq (,$(wildcard $(OPENCL_ROOT)/include/sycl/CL/cl.h))
-        OPENCL_LIBS := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
-        LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LIBS) -L$(OPENCL_ROOT)/compiler/lib/intel64 -lintlc
-        IFLAGS += $(OPENCL_ROOT)/include/sycl
+      else ifneq (,$(ICX))
+        OPENCL_ROOT := $(abspath $(dir $(ICX))/..)
+        ifneq (,$(wildcard $(OPENCL_ROOT)/include/sycl/CL/cl.h))
+          OPENCL_LIBS := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
+          LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LIBS) -L$(OPENCL_ROOT)/compiler/lib/intel64 -lintlc
+          IFLAGS += $(OPENCL_ROOT)/include/sycl
+        endif
       endif
       OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
       LIBS += $(if $(OCL_ICD_LOADER),$(OCL_ICD_LOADER),-l:libOpenCL.so.1)
