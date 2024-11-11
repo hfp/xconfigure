@@ -80,7 +80,7 @@ if [ "1" != "${INTEL}" ]; then
   FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
   CONFOPTS+=" --enable-ifx-compiler"
   if [ "0" != "${GPU}" ]; then # incl. undefined
-    CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-intel-gpu-sycl-kernels"
+    CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-gpu-streams=sycl --enable-intel-gpu-sycl-kernels"
     CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
     CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
     LIBS+=" -lmkl_sycl -lsycl -lsvml"
