@@ -42,7 +42,7 @@ if [ "" = "${MKLROOT}" ]; then
   fi
 fi
 
-CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp --enable-avx512"
+CONFOPTS+=" --without-threading-support-check-during-build --enable-avx512"
 CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
 CONFOPTS+=" --disable-fortran-tests --disable-c-tests --disable-cpp-tests"
 CONFOPTS+=" --with-test-programs=no"
@@ -52,14 +52,17 @@ MKL_FCRTL="gf"
 MKL_BITS="lp64"
 
 TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
-FLAGS="-O3 ${TARGET} -I${MKLROOT}/include"
+FLAGS="-I${MKLROOT}/include -O3 ${TARGET}"
+if [ "0" != "${OMP}" ]; then
+  CONFOPTS+=" --enable-openmp"
+fi
 
-export LDFLAGS="-L${MKLROOT}/lib/intel64"
 export CFLAGS="${FLAGS}"
 export CXXFLAGS="${CFLAGS}"
 export FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS}"
 export LIBS="-lmkl_${MKL_FCRTL}_${MKL_BITS} -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -lgomp -lm -Wl,--no-as-needed"
 export SCALAPACK_LDFLAGS="-lmkl_scalapack_${MKL_BITS} -lmkl_blacs_intelmpi_${MKL_BITS}"
+export LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 export AR="gcc-ar"
 export FC="mpif90"

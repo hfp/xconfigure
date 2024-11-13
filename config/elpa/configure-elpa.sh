@@ -50,7 +50,7 @@ then
   CONFOPTS="--disable-avx512"
 fi
 
-CONFOPTS+=" --without-threading-support-check-during-build --enable-openmp"
+CONFOPTS+=" --without-threading-support-check-during-build"
 CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
 CONFOPTS+=" --disable-fortran-tests --disable-c-tests --disable-cpp-tests"
 CONFOPTS+=" --with-test-programs=no"
@@ -59,12 +59,18 @@ MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 MKL_BITS="lp64"
 
-FLAGS="-O3 -xHost -I${MKLROOT}/include"
-CFLAGS="${FLAGS} -qopenmp -fno-alias -ansi-alias -fp-model fast"
+TARGET="-xHost"
+FLAGS="-I${MKLROOT}/include -O3 ${TARGET}"
+if [ "0" != "${OMP}" ]; then
+  CONFOPTS+=" --enable-openmp"
+  FLAGS+=" -qopenmp"
+fi
+
+CFLAGS="${FLAGS} -fno-alias -ansi-alias -fp-model fast"
 CXXFLAGS="${CFLAGS}"
-FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS} -align array64byte -threads -qopenmp"
-SCALAPACK_LDFLAGS="-lmkl_scalapack_${MKL_BITS} -lmkl_blacs_intelmpi_${MKL_BITS}"
+FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS} -align array64byte -threads"
 LIBS="-lmkl_${MKL_FCRTL}_${MKL_BITS} -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
+SCALAPACK_LDFLAGS="-lmkl_scalapack_${MKL_BITS} -lmkl_blacs_intelmpi_${MKL_BITS}"
 LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 AR=$(command -v xiar || echo "ar")
