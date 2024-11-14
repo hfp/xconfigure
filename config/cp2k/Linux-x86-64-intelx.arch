@@ -562,9 +562,11 @@ ifneq (0,$(SYM))
   ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
     DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
     OPTFLAGS += -traceback
+    LDFLAGS += -traceback
   endif
   endif
   OPTFLAGS += $(DBG_FLAG)
+  LDFLAGS += $(DBG_FLAG)
 endif
 
 ifneq (0,$(OMP))
@@ -824,8 +826,6 @@ ifneq (,$(ELPAROOT))
         MKL_FCRTL = intel
         #MKL_BITS = ilp64
       endif
-    else ifeq (0,$(OMP)) # in case ELPA was built with OpenMP support
-      LIBS += -Wl,--as-needed -l$(OMPRT) -Wl,--no-as-needed
     endif
   endif
 endif
@@ -866,11 +866,6 @@ ifneq (,$(LIBXSMMROOT))
     # account for OpenMP-enabled libxsmmext routines
     ifeq (0,$(OMP))
       DFLAGS += DBCSR_LIBXSMM_GEMM_BATCH=libxsmm_gemm_batch_omp
-      ifeq (1,$(BLAS))
-        LIBS += -l$(OMPRT)
-      else ifeq (0,$(BLAS))
-        LIBS += -l$(OMPRT)
-      endif
     endif
     # enable additional use cases for LIBXSMM
     ifneq (0,$(shell echo "$$((1 < $(LIBXSMM)))"))
@@ -963,9 +958,6 @@ ifneq (0,$(MKL))
     MKL_THREADS := sequential
   else ifneq (0,$(MKL)) # multi-threaded
     MKL_THREADS := $(MKL_OMPRTL)_thread
-    ifeq (0,$(OMP))
-      LIBS += -l$(OMPRT)
-    endif
   endif
   ifeq (ilp64,$(MKL_BITS))
     DFLAGS += MKL_ILP64
@@ -1122,7 +1114,7 @@ endif
 CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
 CFLAGS    += $(OPTFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
-LDFLAGS   += $(OPTFLAGS) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
+LDFLAGS   += $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
 
 ifeq (0,$(GNU))
 ifneq (0,$(INTEL))
@@ -1145,7 +1137,7 @@ LD_LIBSTUB_PATH := $(wildcard $(patsubst %,%/stubs,$(LD_LIBRARY_PATH)))
 #LD_INCLUDE_PATH := $(wildcard $(patsubst %,$(abspath %/../include),$(LD_LIBRARY_PATH)))
 LIBPATHS := $(foreach DIR,$(LD_LIBRARY_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBSTUBS := $(foreach DIR,$(LD_LIBSTUB_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
-LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -Wl,--no-as-needed
+LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -l$(OMPRT) -Wl,--no-as-needed
 #IFLAGS += $(INCPATHS)
 
 cleanup = $(foreach FLAG,$1,$(FLAG))
