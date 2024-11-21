@@ -805,7 +805,7 @@ ifneq (,$(ELPAROOT))
     ifeq (0,$(STATIC))
       LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
     else
-      LIBS += $(ELPALIBDIR)/$(ELPALIB).a
+      LIBS += $(ELPALIBDIR)/lib$(ELPALIB).a
     endif
     ifneq (0,$(CUDA))
       DFLAGS += __ELPA_NVIDIA_GPU
