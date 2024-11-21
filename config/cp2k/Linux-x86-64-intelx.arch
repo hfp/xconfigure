@@ -811,12 +811,11 @@ ifneq (,$(ELPAROOT))
       DFLAGS += __ELPA_NVIDIA_GPU
     else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
       ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
-        ifeq (0,$(STATIC))
-          INTEL_LIBS := $(realpath $(dir $(ICX))/../lib)
-          ifneq (,$(INTEL_LIBS))
-            LIBS += -L$(INTEL_LIBS) -Wl,-rpath,$(INTEL_LIBS)
-          endif
-        else
+        INTEL_LIBS := $(realpath $(dir $(ICX))/../lib)
+        ifneq (,$(INTEL_LIBS))
+          LIBS += -L$(INTEL_LIBS) -Wl,-rpath,$(INTEL_LIBS)
+        endif
+        ifneq (0,$(STATIC))
           LDFLAGS += -Wc,-fsycl
         endif
         LIBS += -Wl,--as-needed
