@@ -805,7 +805,7 @@ ifneq (,$(ELPAROOT))
     ifeq (0,$(STATIC))
       LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
     else
-      LIBS += $(ELPALIB).a
+      LIBS += $(ELPALIBDIR)/$(ELPALIB).a
     endif
     ifneq (0,$(CUDA))
       DFLAGS += __ELPA_NVIDIA_GPU
@@ -1114,7 +1114,8 @@ endif
 CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
 CFLAGS    += $(OPTFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
-LDFLAGS   += $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
+# apply opt-level at link-line to avoid Intel Compiler remark #10440
+LDFLAGS   += -O$(OPT) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
 
 ifeq (0,$(GNU))
 ifneq (0,$(INTEL))
