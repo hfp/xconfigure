@@ -574,11 +574,7 @@ ifneq (0,$(OMP))
 endif
 
 ifneq (0,$(DYNAMIC))
-  #LDFLAGS += -Wl,--export-dynamic
-  LDFLAGS  += -rdynamic
-  CXXFLAGS += -rdynamic
-  FCFLAGS  += -rdynamic
-  CFLAGS   += -rdynamic
+  LDFLAGS += -Wl,--export-dynamic
 endif
 
 ifeq (0,$(LEGACY))
@@ -823,7 +819,6 @@ ifneq (,$(ELPAROOT))
         LIBS += -lmkl_sycl
         ifneq (2,$(INTEL))
           LIBS += -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
-          LDFLAGS += -Wc,-fsycl
         else
           LDFLAGS += -fsycl
         endif
