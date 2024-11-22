@@ -53,14 +53,14 @@ fi
 CONFOPTS+=" --without-threading-support-check-during-build"
 CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
 CONFOPTS+=" --disable-fortran-tests --disable-c-tests --disable-cpp-tests"
-CONFOPTS+=" --with-test-programs=no"
+CONFOPTS+=" --disable-scalapack-tests --without-test-programs"
 
 MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 MKL_BITS="lp64"
 
 TARGET="-xHost"
-FLAGS="-I${MKLROOT}/include -O3 ${TARGET} -rdynamic"
+FLAGS="-I${MKLROOT}/include -O3 ${TARGET}"
 if [ "0" != "${OMP}" ]; then
   CONFOPTS+=" --enable-openmp"
   FLAGS+=" -qopenmp"
@@ -71,7 +71,7 @@ CXXFLAGS="${CFLAGS}"
 FCFLAGS="${FLAGS} -I${MKLROOT}/include/intel64/${MKL_BITS} -align array64byte -threads"
 LIBS="-lmkl_${MKL_FCRTL}_${MKL_BITS} -lmkl_core -lmkl_${MKL_OMPRTL} -Wl,--as-needed -liomp5 -Wl,--no-as-needed"
 SCALAPACK_LDFLAGS="-lmkl_scalapack_${MKL_BITS} -lmkl_blacs_intelmpi_${MKL_BITS}"
-LDFLAGS="-L${MKLROOT}/lib/intel64 -rdynamic"
+LDFLAGS="-L${MKLROOT}/lib/intel64"
 
 AR=$(command -v xiar || echo "ar")
 if [ "1" != "${INTEL}" ]; then
@@ -89,8 +89,8 @@ if [ "1" != "${INTEL}" ]; then
     CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-gpu-streams=sycl --enable-intel-gpu-sycl-kernels"
     CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
     CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
-    LIBS+=" -lmkl_sycl"
-    LDFLAGS+=" -fsycl"
+    LIBS+=" -lmkl_sycl" # -lsvml
+    LDFLAGS+=" -Wc,-fsycl"
   fi
 else
   FC="mpiifort"
