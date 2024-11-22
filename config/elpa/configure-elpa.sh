@@ -60,7 +60,7 @@ MKL_FCRTL="intel"
 MKL_BITS="lp64"
 
 TARGET="-xHost"
-FLAGS="-I${MKLROOT}/include -O3 ${TARGET}"
+FLAGS="-I${MKLROOT}/include -O3 ${TARGET} -rdynamic"
 if [ "0" != "${OMP}" ]; then
   CONFOPTS+=" --enable-openmp"
   FLAGS+=" -qopenmp"
@@ -89,8 +89,8 @@ if [ "1" != "${INTEL}" ]; then
     CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-gpu-streams=sycl --enable-intel-gpu-sycl-kernels"
     CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
     CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
-    LIBS+=" -lmkl_sycl -lsycl -lsvml"
-    LDFLAGS+=" -Wc,-fsycl"
+    LIBS+=" -lmkl_sycl -lsvml"
+    LDFLAGS+=" -fsycl"
   fi
 else
   FC="mpiifort"
