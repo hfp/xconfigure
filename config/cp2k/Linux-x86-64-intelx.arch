@@ -815,11 +815,14 @@ ifneq (,$(ELPAROOT))
         ifneq (,$(INTEL_LIBS))
           LIBS += -L$(INTEL_LIBS) -Wl,-rpath,$(INTEL_LIBS)
         endif
-        ifneq (0,$(STATIC))
-          LDFLAGS += -Wc,-fsycl
-        endif
         LIBS += -Wl,--as-needed
-        LIBS += -lmkl_sycl -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
+        LIBS += -lmkl_sycl
+        ifneq (2,$(INTEL))
+          LIBS += -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
+          LDFLAGS += -Wc,-fsycl
+        else
+          LDFLAGS += -fsycl
+        endif
         LIBS += -Wl,--no-as-needed
         DFLAGS += __ELPA_INTEL_GPU
         MKL_FCRTL = intel
