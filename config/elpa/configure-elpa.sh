@@ -89,7 +89,7 @@ if [ "1" != "${INTEL}" ]; then
     CONFOPTS+=" --enable-intel-gpu-backend=sycl --enable-gpu-streams=sycl --enable-intel-gpu-sycl-kernels"
     CXXISYCL=$(dirname "$(command -v ${CXX})")/../linux/include/sycl
     CXXFLAGS+=" -I${CXXISYCL} -fsycl -fsycl-targets=spir64"
-    LIBS+=" -lmkl_sycl -lsvml"
+    LIBS+=" -lmkl_sycl"
     LDFLAGS+=" -fsycl"
   fi
 else
