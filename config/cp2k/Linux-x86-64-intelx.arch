@@ -818,7 +818,11 @@ ifneq (,$(ELPAROOT))
         LIBS += -Wl,--as-needed
         LIBS += -lmkl_sycl
         ifneq (2,$(INTEL))
-          LIBS += -lsycl -lsvml $(if $(filter-out 0,$(GNU)),-liomp5)
+          LIBS += -lsycl
+          ifneq (0,$(GNU))
+            LIBS += -lsvml
+            OMPRT = iomp5
+          endif
         else
           LDFLAGS += -fsycl
         endif
