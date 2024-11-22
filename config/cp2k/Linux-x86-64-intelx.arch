@@ -574,7 +574,11 @@ ifneq (0,$(OMP))
 endif
 
 ifneq (0,$(DYNAMIC))
-  LDFLAGS += -Wl,--export-dynamic
+  #LDFLAGS += -Wl,--export-dynamic
+  LDFLAGS  += -rdynamic
+  CXXFLAGS += -rdynamic
+  FCFLAGS  += -rdynamic
+  CFLAGS   += -rdynamic
 endif
 
 ifeq (0,$(LEGACY))
