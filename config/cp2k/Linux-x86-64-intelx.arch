@@ -95,10 +95,13 @@ ifeq (,$(filter-out 0,$(GNU)))
   GNU := 0
 endif
 
+CXX_VERSION_OUT := $(shell $(CXX) --version 2>/dev/null | head -n1)
+CC_VERSION_OUT := $(shell $(CC) --version 2>/dev/null | head -n1)
+FC_VERSION_OUT := $(shell $(FC) --version 2>/dev/null | head -n1)
+
 # check if the Intel Development Tools are available
 INTEL ?= $(strip $(if $(filter icc% icx% Intel%, \
-  $(shell $(CC) --version 2>/dev/null | head -n1 | cut -d' ' -f1)), \
-  $(if $(IFX), 2, 1), 0))
+  $(firstword $(CC_VERSION_OUT))),$(if $(IFX), 2, 1), 0))
 
 ifneq (0,$(INTEL))
   CFG := intel
@@ -323,9 +326,9 @@ REVERSION1 := s/..* \($(REVERSION0)\)[ \S]*.*/\1/
 REVERSION2 := s/..* \([0-9]\{5\}[0-9]*\)[ \S]*.*/\1/
 
 # Make C Compiler version number available
-CC_VERSION := $(shell $(CC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION1)p")
+CC_VERSION := $(shell echo "$(CC_VERSION_OUT)" | $(SED) -n "$(REVERSION1)p")
 ifeq (,$(CC_VERSION))
-  CC_VERSION := $(shell $(CC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION2)p")
+  CC_VERSION := $(shell echo "$(CC_VERSION_OUT)" | $(SED) -n "$(REVERSION2)p")
 endif
 CC_VERSION_NUM := $(call version, \
   $(shell echo "$(CC_VERSION)" | cut -d. -f1), \
@@ -333,9 +336,9 @@ CC_VERSION_NUM := $(call version, \
   $(shell echo "$(CC_VERSION)" | cut -d. -f3))
 
 # Make Fortran Compiler version number available
-FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION1)p")
+FC_VERSION := $(shell echo "$(FC_VERSION_OUT)" | $(SED) -n "$(REVERSION1)p")
 ifeq (,$(FC_VERSION))
-  FC_VERSION := $(shell $(FC) --version 2>/dev/null | head -n1 | $(SED) -n "$(REVERSION2)p")
+  FC_VERSION := $(shell echo "$(FC_VERSION_OUT)" | $(SED) -n "$(REVERSION2)p")
 endif
 FC_VERSION_NUM := $(call version, \
   $(shell echo "$(FC_VERSION)" | cut -d. -f1), \
@@ -587,16 +590,20 @@ endif
 $(info ================================================================================)
 ifneq (,$(INTEL_FORCE))
   $(info Forced Intel Compiler even with CXX, CC, and FC being set!)
+  $(info --------------------------------------------------------------------------------)
 endif
-$(info Using the following libraries:)
+$(info CXX: $(CXX_VERSION_OUT))
+$(info CC: $(CC_VERSION_OUT))
+$(info FC: $(FC_VERSION_OUT))
+$(info --------------------------------------------------------------------------------)
 ifneq (0,$(MPI)) # incl. undefined
 ifneq (0,$(IMPI))
-  $(info I_MPI_ROOT=$(I_MPI_ROOT))
+  $(info I_MPI_ROOT: $(I_MPI_ROOT))
 endif
 endif
 ifneq (0,$(BLAS)) # incl. undefined
 ifneq (,$(MKLROOT))
-  $(info MKLROOT=$(MKLROOT))
+  $(info MKLROOT: $(MKLROOT))
 endif
 endif
 ifneq (0,$(LIBXSMM)) # incl. undefined
@@ -623,7 +630,7 @@ ifneq (0,$(LIBXSMM)) # incl. undefined
     LIBXSMMROOT := $(NULL)
   endif
   ifneq (,$(LIBXSMMROOT))
-    $(info LIBXSMMROOT=$(LIBXSMMROOT))
+    $(info LIBXSMMROOT: $(LIBXSMMROOT))
   endif
 endif
 ifneq (0,$(LIBINT)) # incl. undefined
@@ -644,7 +651,7 @@ ifneq (0,$(LIBINT)) # incl. undefined
     LIBINTROOT := $(NULL)
   endif
   ifneq (,$(LIBINTROOT))
-    $(info LIBINTROOT=$(LIBINTROOT))
+    $(info LIBINTROOT: $(LIBINTROOT))
   endif
 endif
 ifneq (0,$(PLUMED)) # incl. undefined
@@ -665,7 +672,7 @@ ifneq (0,$(PLUMED)) # incl. undefined
     PLUMEDROOT := $(NULL)
   endif
   ifneq (,$(PLUMEDROOT))
-    $(info PLUMEDROOT=$(PLUMEDROOT))
+    $(info PLUMEDROOT: $(PLUMEDROOT))
   endif
 endif
 ifneq (0,$(LIBXC)) # incl. undefined
@@ -686,7 +693,7 @@ ifneq (0,$(LIBXC)) # incl. undefined
     LIBXCROOT := $(NULL)
   endif
   ifneq (,$(LIBXCROOT))
-    $(info LIBXCROOT=$(LIBXCROOT))
+    $(info LIBXCROOT: $(LIBXCROOT))
   endif
 endif
 ifneq (0,$(ELPA)) # incl. undefined
@@ -716,7 +723,7 @@ ifneq (0,$(ELPA)) # incl. undefined
     ELPAROOT ?= $(abspath $(HOME)/elpa/$(CFG))
   endif
   ifneq (,$(ELPAROOT))
-    $(info ELPAROOT=$(ELPAROOT))
+    $(info ELPAROOT: $(ELPAROOT))
   endif
 endif
 ifneq (0,$(LIBGRPP)) # incl. undefined
@@ -737,13 +744,13 @@ ifneq (0,$(LIBGRPP)) # incl. undefined
     LIBGRPPROOT := $(NULL)
   endif
   ifneq (,$(LIBGRPPROOT))
-    $(info LIBGRPPROOT=$(LIBGRPPROOT))
+    $(info LIBGRPPROOT: $(LIBGRPPROOT))
   endif
 endif
 #
 ifneq (0,$(COSMA)) # incl. undefined
 ifneq (,$(COSMAROOT))
-  $(info COSMAROOT=$(COSMAROOT))
+  $(info COSMAROOT: $(COSMAROOT))
 endif
 endif
 $(info ================================================================================)
