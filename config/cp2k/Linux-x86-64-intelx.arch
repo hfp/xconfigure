@@ -909,7 +909,7 @@ ifneq (,$(LIBXSMMROOT))
 always-build:
 	@$(BIGVERNUM)
 	@mkdir -p $(LIBXSMM_DSTDIR)
-	@$(MAKE) -C $(LIBXSMM_DSTDIR) \
+	$(MAKE) -C $(LIBXSMM_DSTDIR) \
 		-f "$(LIBXSMMROOT)/Makefile" --no-print-directory \
 		CXX="$(XCXX)" CC="$(XCC)" FC="$(XFC)" "AR=$(firstword $(AR))" WERROR=0 \
 		STATIC=$(STATIC) JIT=$(JIT) SYM=$(SYM) DBG=$(DBG) OPT=$(OPT) IPO=0 INIT=0 MALLOC=0 WRAP=$(WRAP) \
