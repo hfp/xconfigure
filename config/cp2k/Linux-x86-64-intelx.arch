@@ -95,6 +95,7 @@ ifeq (,$(filter-out 0,$(GNU)))
   GNU := 0
 endif
 
+MAKE_VERSION_OUT := $(shell $(MAKE) --version 2>/dev/null | head -n1)
 CXX_VERSION_OUT := $(shell $(CXX) --version 2>/dev/null | head -n1)
 CC_VERSION_OUT := $(shell $(CC) --version 2>/dev/null | head -n1)
 FC_VERSION_OUT := $(shell $(FC) --version 2>/dev/null | head -n1)
@@ -595,6 +596,7 @@ endif
 $(info CXX: $(CXX_VERSION_OUT))
 $(info CC: $(CC_VERSION_OUT))
 $(info FC: $(FC_VERSION_OUT))
+$(info MAKE: $(MAKE_VERSION_OUT))
 $(info --------------------------------------------------------------------------------)
 ifneq (0,$(MPI)) # incl. undefined
 ifneq (0,$(IMPI))
@@ -904,7 +906,7 @@ ifneq (,$(LIBXSMMROOT))
     ifneq (0,$(shell echo "$$((0>=$(JIT)))"))
       LIBXSMM_MNK := "23, 6, 14 16 29, 14 32 29, 5 32 13 24 26, 9 32 22, 64, 78, 16 29 55, 32 29 55, 12, 4 5 7 9 13 25 26 28 32 45"
     endif
-#-include always-build
+-include always-build
 .PHONY: always-build
 always-build:
 	@$(BIGVERNUM)
