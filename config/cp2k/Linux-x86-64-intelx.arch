@@ -261,14 +261,14 @@ MKL_MPIRTL ?= $(if $(filter-out 0,$(IMPI)),intelmpi,openmpi)
 MKL := 0
 ifneq (0,$(BLAS))
 ifneq (,$(filter x86_64,$(MNAME)))
-  ifeq (,$(strip $(MKLROOT)))
-    MKL_INCFILE := $(strip $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h))))
+  ifeq (,$(MKLROOT))
+    MKL_INCFILE := $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h)))
     ifneq (,$(MKL_INCFILE))
       MKLROOT := $(realpath $(dir $(MKL_INCFILE))/..)
     endif
   endif
-  ifeq (,$(strip $(MKLROOT)))
-    MKL_INCFILE := $(strip $(wildcard /usr/include/mkl/mkl.h))
+  ifeq (,$(MKLROOT))
+    MKL_INCFILE := $(wildcard /usr/include/mkl/mkl.h)
     ifneq (,$(MKL_INCFILE))
       MKLROOT := $(realpath $(dir $(MKL_INCFILE))/../..)
     endif
@@ -277,7 +277,6 @@ ifneq (,$(filter x86_64,$(MNAME)))
     MKL := $(BLAS)
   else
     MKL_INCFILE := $(NULL)
-    MKLROOT := $(NULL)
   endif
 endif
 endif
@@ -628,13 +627,9 @@ ifneq (0,$(LIBXSMM)) # incl. undefined
   else ifneq (,$(wildcard $(TOOLSRC)/toolchain/build/libxsmm*/Makefile))
     LIBXSMMROOT ?= $(abspath $(dir $(lastword $(sort $(wildcard $(TOOLSRC)/toolchain/build/libxsmm*/Makefile)))))
   endif
-  ifeq (/,$(LIBXSMMROOT))
-    LIBXSMMROOT := $(NULL)
-  endif
+  LIBXSMMROOT := $(realpath $(LIBXSMMROOT))
   ifneq (,$(LIBXSMMROOT))
     $(info LIBXSMMROOT: $(LIBXSMMROOT))
--include libxsmm
-.PHONY: libxsmm
   endif
 endif
 ifneq (0,$(LIBINT)) # incl. undefined
@@ -651,9 +646,7 @@ ifneq (0,$(LIBINT)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/libint/$(CFG)))
     LIBINTROOT ?= $(abspath $(HOME)/libint/$(CFG))
   endif
-  ifeq (/,$(LIBINTROOT))
-    LIBINTROOT := $(NULL)
-  endif
+  LIBINTROOT := $(realpath $(LIBINTROOT))
   ifneq (,$(LIBINTROOT))
     $(info LIBINTROOT: $(LIBINTROOT))
   endif
@@ -672,9 +665,7 @@ ifneq (0,$(PLUMED)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/plumed/$(CFG)))
     PLUMEDROOT ?= $(abspath $(HOME)/plumed/$(CFG))
   endif
-  ifeq (/,$(PLUMEDROOT))
-    PLUMEDROOT := $(NULL)
-  endif
+  PLUMEDROOT := $(realpath $(PLUMEDROOT))
   ifneq (,$(PLUMEDROOT))
     $(info PLUMEDROOT: $(PLUMEDROOT))
   endif
@@ -693,9 +684,7 @@ ifneq (0,$(LIBXC)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/libxc/$(CFG)))
     LIBXCROOT ?= $(abspath $(HOME)/libxc/$(CFG))
   endif
-  ifeq (/,$(LIBXCROOT))
-    LIBXCROOT := $(NULL)
-  endif
+  LIBXCROOT := $(realpath $(LIBXCROOT))
   ifneq (,$(LIBXCROOT))
     $(info LIBXCROOT: $(LIBXCROOT))
   endif
@@ -744,9 +733,7 @@ ifneq (0,$(LIBGRPP)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/libgrpp/$(CFG)))
     LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(CFG))
   endif
-  ifeq (/,$(LIBGRPPROOT))
-    LIBGRPPROOT := $(NULL)
-  endif
+  LIBGRPPROOT := $(realpath $(LIBGRPPROOT))
   ifneq (,$(LIBGRPPROOT))
     $(info LIBGRPPROOT: $(LIBGRPPROOT))
   endif
@@ -908,6 +895,8 @@ ifneq (,$(LIBXSMMROOT))
     ifneq (0,$(shell echo "$$((0>=$(JIT)))"))
       LIBXSMM_MNK := "23, 6, 14 16 29, 14 32 29, 5 32 13 24 26, 9 32 22, 64, 78, 16 29 55, 32 29 55, 12, 4 5 7 9 13 25 26 28 32 45"
     endif
+-include libxsmm
+.PHONY: libxsmm
 libxsmm:
 	@$(BIGVERNUM)
 	@mkdir -p $(LIBXSMM_DSTDIR)
@@ -1029,7 +1018,7 @@ endif
 
 # Define __INTEL_COMPILER in case of external preprocessing because some source (pw/fft/fftw3_lib.F)
 # toggles code using this symbol, but of course the cpp preprocessor is not defining this symbol.
-ifneq (,$(strip $(CPP)))
+ifneq (,$(CPP))
   CPPFLAGS += -C $(call prefix_iflags,$(IFLAGS)) $(call prefix_dflags,$(DFLAGS) __INTEL_COMPILER) -P -traditional
 endif
 
