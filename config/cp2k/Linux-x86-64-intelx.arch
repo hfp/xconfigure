@@ -906,6 +906,9 @@ libxsmm:
 		MNK=$(LIBXSMM_MNK) M=$(LIBXSMM_M) N=$(LIBXSMM_N) K=$(LIBXSMM_K) PRECISION=2 VTUNE=0 \
 		CTARGET="$(TARGET)" SSE=$(SSE) AVX=$(AVX) MIC=$(MIC) INTEL=$(INTEL) GNU=$(GNU) \
 		$(if $(filter-out 0,$(shell echo "$$((3<$(WRAP)))")),BLAS=0) >&2
+    ifneq (0,$(EXTSPACKAGES))
+$(EXTSPACKAGES): libxsmm
+    endif
   endif
 endif
 
