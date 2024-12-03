@@ -96,9 +96,7 @@ ifeq (,$(filter-out 0,$(GNU)))
 endif
 
 MAKE_VERSION_OUT := $(shell $(MAKE) --version 2>/dev/null | head -n1)
-CXX_VERSION_OUT := $(shell $(CXX) --version 2>/dev/null | head -n1)
 CC_VERSION_OUT := $(shell $(CC) --version 2>/dev/null | head -n1)
-FC_VERSION_OUT := $(shell $(FC) --version 2>/dev/null | head -n1)
 
 # check if the Intel Development Tools are available
 INTEL ?= $(strip $(if $(filter icc% icx% Intel%, \
@@ -320,6 +318,10 @@ endif
 
 # Diagnostic message to be turned off
 DIAG_DISABLE := 8290,8291,10010,10212,10411,10448,11060
+
+CXX_VERSION_OUT := $(shell $(CXX) --version 2>/dev/null | head -n1)
+CC_VERSION_OUT := $(shell $(CC) --version 2>/dev/null | head -n1)
+FC_VERSION_OUT := $(shell $(FC) --version 2>/dev/null | head -n1)
 
 REVERSION0 := [0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*
 REVERSION1 := s/..* \($(REVERSION0)\)[ \S]*.*/\1/
