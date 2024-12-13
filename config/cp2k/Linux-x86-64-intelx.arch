@@ -9,6 +9,7 @@ OFFLOAD_FLAGS = $(NULL)
 DFLAGS        = __NO_IPI_DRIVER __HAS_IEEE_EXCEPTIONS __DBCSR_DISABLE_WORKSHARE
 #CSTD          = -std=c99
 #CSTD          = -std=c11
+OPTFLAGS      = $(NULL)
 CFLAGS        = $(CSTD) -fPIC
 CXXFLAGS      = $(NULL) -fPIC
 FCFLAGS       = $(NULL) -fPIC #-parallel
@@ -574,8 +575,9 @@ ifneq (0,$(SYM))
   LDFLAGS += $(DBG_FLAG)
 endif
 
+IOMPFLAG := -qopenmp
 ifneq (0,$(OMP))
-  OPTFLAGS += $(if $(filter-out 0,$(INTEL)),-qopenmp,-fopenmp)
+  OPTFLAGS += $(if $(filter-out 0,$(INTEL)),$(IOMPFLAG),-fopenmp)
 endif
 
 ifneq (0,$(DYNAMIC))
@@ -854,7 +856,7 @@ ifneq (,$(LIBXSMMROOT))
       endif
     else
       DFLAGS += _OPENMP_SIMD
-      OPTFLAGS += -qopenmp-simd
+      OPTFLAGS += $(IOMPFLAG)-simd
     endif
     IFLAGS += $(LIBXSMM_DSTDIR)/include
 
