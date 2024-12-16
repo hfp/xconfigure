@@ -304,6 +304,38 @@ ifneq (0,$(MPI))
 endif
 endif
 
+ifneq (0,$(SCALAPACK))
+ifneq (0,$(MPI))
+  DFLAGS += __SCALAPACK
+  ifneq (0,$(LEGACY))
+    DFLAGS += __BLACS
+  endif
+  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
+    ifneq (-1,$(SCALAPACK))
+    ifneq (1,$(SCALAPACK))
+      DFLAGS += __SCALAPACK$(SCALAPACK)
+    endif
+    endif
+  endif
+  ifneq (,$(MKLROOT)) # link as part of MKL even for non-MKL ScaLAPACK
+    SCALAPACKDIR := $(MKLROOT)/lib/intel64
+    SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
+  else # not via MKL
+    SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
+    ifneq (,$(SCALAPACKDIR))
+      LIBS += -L$(SCALAPACKDIR)
+    endif
+    ifneq (,$(SCALAPACKLIB))
+      LIBS += -l$(SCALAPACKLIB)
+    endif
+  endif
+  ifneq (,$(SCALAPACK_ADDON))
+    LIBS += $(SCALAPACK_ADDON)
+    MKL_STATIC = 0
+  endif
+endif
+endif
+
 ifneq (0,$(NDEBUG))
   DFLAGS += NDEBUG
   ifneq (1,$(NDEBUG)) # CP2K and DBCSR
@@ -917,34 +949,6 @@ libxsmm:
 $(EXTSPACKAGES): libxsmm
     endif
   endif
-endif
-
-ifneq (0,$(SCALAPACK))
-ifneq (0,$(MPI))
-  DFLAGS += __SCALAPACK
-  ifneq (0,$(LEGACY))
-    DFLAGS += __BLACS
-  endif
-  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
-    ifneq (-1,$(SCALAPACK))
-    ifneq (1,$(SCALAPACK))
-      DFLAGS += __SCALAPACK$(SCALAPACK)
-    endif
-    endif
-  endif
-  ifneq (,$(MKLROOT)) # link as part of MKL even for non-MKL ScaLAPACK
-    SCALAPACKDIR := $(MKLROOT)/lib/intel64
-    SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
-  else # not via MKL
-    SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
-    ifneq (,$(SCALAPACKDIR))
-      LIBS += -L$(SCALAPACKDIR)
-    endif
-    ifneq (,$(SCALAPACKLIB))
-      LIBS += -l$(SCALAPACKLIB)
-    endif
-  endif
-endif
 endif
 
 ifneq (0,$(MKL))
