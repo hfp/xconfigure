@@ -251,13 +251,13 @@ ifneq (,$(filter-out 0,$(CUDA) $(OCL)))
   NVCC_PATH := $(if $(NVCC_FILE),$(realpath $(dir $(NVCC_FILE))/..))
   CUDA_FILE := $(wildcard $(NVCC_PATH)/../cuda/include/cuda.h)
   CUDA_PATH := $(if $(CUDA_FILE),$(NVCC_PATH)/../cuda,$(NVCC_PATH))
-  CUDA_LIBS := $(if $(wildcard $(CUDA_PATH)/lib64),lib64,lib)
+  CUDA_LDIR := $(if $(wildcard $(CUDA_PATH)/lib64),lib64,lib)
 endif
 
 # MKL_MPIRTL: intelmpi, openmpi
 MKL_MPIRTL ?= $(if $(filter-out 0,$(IMPI)),intelmpi,openmpi)
 
-# enable Intel MKL if available
+# enable Intel MKL (if available)
 MKL := 0
 ifneq (0,$(BLAS))
 ifneq (,$(filter x86_64,$(MNAME)))
@@ -300,38 +300,6 @@ ifneq (0,$(MPI))
     ifneq (,$(NVCC))
       LIBS += -lTiled-MM
     endif
-  endif
-endif
-endif
-
-ifneq (0,$(SCALAPACK))
-ifneq (0,$(MPI))
-  DFLAGS += __SCALAPACK
-  ifneq (0,$(LEGACY))
-    DFLAGS += __BLACS
-  endif
-  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
-    ifneq (-1,$(SCALAPACK))
-    ifneq (1,$(SCALAPACK))
-      DFLAGS += __SCALAPACK$(SCALAPACK)
-    endif
-    endif
-  endif
-  ifneq (,$(MKLROOT)) # link as part of MKL even for non-MKL ScaLAPACK
-    SCALAPACKDIR := $(MKLROOT)/lib/intel64
-    SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
-  else # not via MKL
-    SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
-    ifneq (,$(SCALAPACKDIR))
-      LIBS += -L$(SCALAPACKDIR)
-    endif
-    ifneq (,$(SCALAPACKLIB))
-      LIBS += -l$(SCALAPACKLIB)
-    endif
-  endif
-  ifneq (,$(SCALAPACK_ADDON))
-    LIBS += $(SCALAPACK_ADDON)
-    MKL_STATIC = 0
   endif
 endif
 endif
@@ -728,6 +696,25 @@ ifneq (0,$(LIBXC)) # incl. undefined
     $(info LIBXCROOT: $(LIBXCROOT))
   endif
 endif
+ifneq (0,$(LIBGRPP)) # incl. undefined
+  ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/$(XCFG)))
+    LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/$(XCFG))
+  else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/$(XCFG)))
+    LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/$(XCFG))
+  else ifneq (,$(wildcard $(HOME)/libgrpp/$(XCFG)))
+    LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(XCFG))
+  else ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/$(CFG)))
+    LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/$(CFG))
+  else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/$(CFG)))
+    LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/$(CFG))
+  else ifneq (,$(wildcard $(HOME)/libgrpp/$(CFG)))
+    LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(CFG))
+  endif
+  LIBGRPPROOT := $(realpath $(LIBGRPPROOT))
+  ifneq (,$(LIBGRPPROOT))
+    $(info LIBGRPPROOT: $(LIBGRPPROOT))
+  endif
+endif
 ifneq (0,$(ELPA)) # incl. undefined
   ifneq (,$(wildcard $(ELPA_BASEDIR)/$(XCFGOMP)))
     ELPAROOT ?= $(abspath $(ELPA_BASEDIR)/$(XCFGOMP))
@@ -758,26 +745,28 @@ ifneq (0,$(ELPA)) # incl. undefined
     $(info ELPAROOT: $(ELPAROOT))
   endif
 endif
-ifneq (0,$(LIBGRPP)) # incl. undefined
-  ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/$(XCFG)))
-    LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/$(XCFG))
-  else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/$(XCFG)))
-    LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/$(XCFG))
-  else ifneq (,$(wildcard $(HOME)/libgrpp/$(XCFG)))
-    LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(XCFG))
-  else ifneq (,$(wildcard $(LIBGRPP_BASEDIR)/$(CFG)))
-    LIBGRPPROOT ?= $(abspath $(LIBGRPP_BASEDIR)/$(CFG))
-  else ifneq (,$(wildcard $(CP2KHOME)/../libgrpp/$(CFG)))
-    LIBGRPPROOT ?= $(abspath $(CP2KHOME)/../libgrpp/$(CFG))
-  else ifneq (,$(wildcard $(HOME)/libgrpp/$(CFG)))
-    LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(CFG))
+ifneq (0,$(SLATE)) # incl. undefined
+  ifneq (,$(wildcard $(SLATE_BASEDIR)/$(XCFG)))
+    SLATEROOT ?= $(abspath $(SLATE_BASEDIR)/$(XCFG))
+  else ifneq (,$(wildcard $(CP2KHOME)/../slate/$(XCFG)))
+    SLATEROOT ?= $(abspath $(CP2KHOME)/../slate/$(XCFG))
+  else ifneq (,$(wildcard $(HOME)/slate/$(XCFG)))
+    SLATEROOT ?= $(abspath $(HOME)/slate/$(XCFG))
+  else ifneq (,$(wildcard $(SLATE_BASEDIR)/$(CFG)))
+    SLATEROOT ?= $(abspath $(SLATE_BASEDIR)/$(CFG))
+  else ifneq (,$(wildcard $(CP2KHOME)/../slate/$(CFG)))
+    SLATEROOT ?= $(abspath $(CP2KHOME)/../slate/$(CFG))
+  else ifneq (,$(wildcard $(HOME)/slate/$(CFG)))
+    SLATEROOT ?= $(abspath $(HOME)/slate/$(CFG))
   endif
-  LIBGRPPROOT := $(realpath $(LIBGRPPROOT))
-  ifneq (,$(LIBGRPPROOT))
-    $(info LIBGRPPROOT: $(LIBGRPPROOT))
+  SLATEROOT := $(realpath $(SLATEROOT))
+  ifneq (,$(SLATEROOT))
+    SLATE_LDIR := $(if $(wildcard ${SLATEROOT}/lib64),lib64,lib)
+    SCALAPACK_ADDON += -L${SLATEROOT}/$(SLATE_LDIR) -Wl,-rpath,${SLATEROOT}/$(SLATE_LDIR)
+    SCALAPACK_ADDON += -lslate_lapack_api
+    $(info SLATEROOT: $(SLATEROOT))
   endif
 endif
-#
 ifneq (0,$(COSMA)) # incl. undefined
 ifneq (,$(COSMAROOT))
   $(info COSMAROOT: $(COSMAROOT))
@@ -848,9 +837,9 @@ ifneq (,$(ELPAROOT))
       DFLAGS += __ELPA_NVIDIA_GPU
     else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
       ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
-        INTEL_LIBS := $(realpath $(dir $(ICX))/../lib)
-        ifneq (,$(INTEL_LIBS))
-          LIBS += -L$(INTEL_LIBS) -Wl,-rpath,$(INTEL_LIBS)
+        INTEL_LDIR := $(realpath $(dir $(ICX))/../lib)
+        ifneq (,$(INTEL_LDIR))
+          LIBS += -L$(INTEL_LDIR) -Wl,-rpath,$(INTEL_LDIR)
         endif
         LIBS += -Wl,--as-needed
         LIBS += -lmkl_sycl
@@ -949,6 +938,38 @@ libxsmm:
 $(EXTSPACKAGES): libxsmm
     endif
   endif
+endif
+
+ifneq (0,$(SCALAPACK))
+ifneq (0,$(MPI))
+  DFLAGS += __SCALAPACK
+  ifneq (0,$(LEGACY))
+    DFLAGS += __BLACS
+  endif
+  ifeq (0,$(shell echo $(SCALAPACK) | grep -q "^-*[0-9]\+$$"; echo $$?)) # number
+    ifneq (-1,$(SCALAPACK))
+    ifneq (1,$(SCALAPACK))
+      DFLAGS += __SCALAPACK$(SCALAPACK)
+    endif
+    endif
+  endif
+  ifneq (,$(MKLROOT)) # link as part of MKL even for non-MKL ScaLAPACK
+    SCALAPACKDIR := $(MKLROOT)/lib/intel64
+    SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
+  else # not via MKL
+    SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
+    ifneq (,$(SCALAPACKDIR))
+      LIBS += -L$(SCALAPACKDIR)
+    endif
+    ifneq (,$(SCALAPACKLIB))
+      LIBS += -l$(SCALAPACKLIB)
+    endif
+  endif
+  ifneq (,$(SCALAPACK_ADDON))
+    LIBS += $(SCALAPACK_ADDON)
+    MKL_STATIC = 0
+  endif
+endif
 endif
 
 ifneq (0,$(MKL))
@@ -1055,16 +1076,16 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
     else
       ifneq (,$(CUDA_PATH))
         IFLAGS += $(CUDA_PATH)/include
-        #LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS)
+        #LIBS += -L$(CUDA_PATH)/$(CUDA_LDIR)
       else ifneq (,$(wildcard $(OPENCL_ROOT)/include/CL/cl.h))
-        OPENCL_LIBS := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
-        LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LIBS)
+        OPENCL_LDIR := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
+        LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LDIR)
         IFLAGS += $(OPENCL_ROOT)/include
       else ifneq (,$(ICX))
         OPENCL_ROOT := $(abspath $(dir $(ICX))/..)
         ifneq (,$(wildcard $(OPENCL_ROOT)/include/sycl/CL/cl.h))
-          OPENCL_LIBS := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
-          LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LIBS) -L$(OPENCL_ROOT)/compiler/lib/intel64 -lintlc
+          OPENCL_LDIR := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
+          LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LDIR) -L$(OPENCL_ROOT)/compiler/lib/intel64 -lintlc
           IFLAGS += $(OPENCL_ROOT)/include/sycl
         endif
       endif
@@ -1082,7 +1103,7 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         endif
         IFLAGS += $(CUDA_PATH)/include
         DFLAGS += __CUDA __OFFLOAD_CUDA __GRID_CUDA __DBM_CUDA __PW_GPU __PW_CUDA
-        LIBS += -L$(CUDA_PATH)/$(CUDA_LIBS) -lcudart -lcublas -lcufft -lnvrtc -lcuda
+        LIBS += -L$(CUDA_PATH)/$(CUDA_LDIR) -lcudart -lcublas -lcufft -lnvrtc -lcuda
         # consider omitting opt-level entirely due to extreme compilation time even when flag targets only the host compiler
         ACCFLAGS := -O$(OPT) $(addprefix -Xcompiler $(NULL),$(filter-out $(DBG_FLAG) -O$(OPT) -Wl%,$(OPTFLAGS))) $(call prefix_dflags,$(DFLAGS))
         NVCFLAGS := $(ACCFLAGS)
