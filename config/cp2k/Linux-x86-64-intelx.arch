@@ -125,6 +125,7 @@ IPO ?= 0
 VMAX ?= 0
 STATIC ?= 1
 DYNAMIC ?= 1
+MKL_STATIC ?= $(STATIC)
 MKL_DIRECT ?= 0
 MKL_BITS ?= lp64
 BEEP ?= 0
@@ -968,7 +969,7 @@ ifneq (0,$(MKL))
   ifeq (ilp64,$(MKL_BITS))
     DFLAGS += MKL_ILP64
   endif
-  ifeq (0,$(STATIC))
+  ifeq (0,$(MKL_STATIC))
     LIBS += -L$(MKLROOT)/lib/intel64 -Wl,-rpath,$(MKLROOT)/lib/intel64
     ifneq (0,$(MPI))
       LIBS += -l$(SCALAPACKLIB) -lmkl_$(MKL_FCRTL)_$(MKL_BITS) -lmkl_core -lmkl_$(MKL_THREADS) -lmkl_blacs_$(MKL_MPIRTL)_$(MKL_BITS)
