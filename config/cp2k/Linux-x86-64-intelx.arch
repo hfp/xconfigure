@@ -316,7 +316,7 @@ ifneq (0,$(NDEBUG))
     endif
   endif
 else
-  SYM ?= 1
+  SYM = 1
 endif
 
 # Diagnostic message to be turned off
