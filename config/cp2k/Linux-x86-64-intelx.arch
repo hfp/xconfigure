@@ -315,6 +315,8 @@ ifneq (0,$(NDEBUG))
       FC := $(CP2KHOME)/.inject.sh dbcsr_ -DNDEBUG $(FC)
     endif
   endif
+else
+  SYM ?= 1
 endif
 
 # Diagnostic message to be turned off
