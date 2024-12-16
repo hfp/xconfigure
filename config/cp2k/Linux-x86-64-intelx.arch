@@ -930,17 +930,12 @@ ifneq (0,$(MPI))
       DFLAGS += __SCALAPACK$(SCALAPACK)
     endif
     endif
-    ifneq (,$(MKLROOT))
-      SCALAPACKDIR := $(MKLROOT)/lib/intel64
-      SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
-    endif
-  else # NaN
-    SCALAPACKDIR := $(SCALAPACK)
   endif
-  ifeq (,$(MKLROOT))
-    ifeq (,$(SCALAPACKLIB))
-      SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
-    endif
+  ifneq (,$(MKLROOT)) # link as part of MKL even for non-MKL ScaLAPACK
+    SCALAPACKDIR := $(MKLROOT)/lib/intel64
+    SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
+  else # not via MKL
+    SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
     ifneq (,$(SCALAPACKDIR))
       LIBS += -L$(SCALAPACKDIR)
     endif
