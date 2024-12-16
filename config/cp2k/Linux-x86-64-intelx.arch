@@ -656,6 +656,16 @@ ifneq (0,$(LIBINT)) # incl. undefined
   LIBINTROOT := $(realpath $(LIBINTROOT))
   ifneq (,$(LIBINTROOT))
     $(info LIBINTROOT: $(LIBINTROOT))
+    DFLAGS += __LIBINT __MAX_CONTR=4
+    IFLAGS += $(LIBINTROOT)/include
+    ifneq (,$(wildcard $(LIBINTROOT)/lib64/libint2.*))
+      LIBS += $(LIBINTROOT)/lib64/libint2.a
+    else ifneq (,$(wildcard $(LIBINTROOT)/lib/libint2.*))
+      LIBS += $(LIBINTROOT)/lib/libint2.a
+    else # LIBINT1
+      LIBS += $(LIBINTROOT)/lib/libderiv.a $(LIBINTROOT)/lib/libint.a
+      DFLAGS += __LIBINT_MAX_AM=7 __LIBDERIV_MAX_AM1=6
+    endif
   endif
 endif
 ifneq (0,$(PLUMED)) # incl. undefined
@@ -675,6 +685,9 @@ ifneq (0,$(PLUMED)) # incl. undefined
   PLUMEDROOT := $(realpath $(PLUMEDROOT))
   ifneq (,$(PLUMEDROOT))
     $(info PLUMEDROOT: $(PLUMEDROOT))
+    DFLAGS += __PLUMED2
+    # avoid duplicated libraries (-ldl -lstdc++)
+    LIBS += $(PLUMEDROOT)/lib/libplumed.a -lz
   endif
 endif
 ifneq (0,$(LIBXC)) # incl. undefined
@@ -694,6 +707,18 @@ ifneq (0,$(LIBXC)) # incl. undefined
   LIBXCROOT := $(realpath $(LIBXCROOT))
   ifneq (,$(LIBXCROOT))
     $(info LIBXCROOT: $(LIBXCROOT))
+    DFLAGS += __LIBXC
+    IFLAGS += $(LIBXCROOT)/include
+    ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxcf03.a))
+      LIBS += $(LIBXCROOT)/lib64/libxcf03.a
+    else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxcf03.a))
+      LIBS += $(LIBXCROOT)/lib/libxcf03.a
+    endif
+    ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxc.a))
+      LIBS += $(LIBXCROOT)/lib64/libxc.a
+    else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxc.a))
+      LIBS += $(LIBXCROOT)/lib/libxc.a
+    endif
   endif
 endif
 ifneq (0,$(LIBGRPP)) # incl. undefined
@@ -712,7 +737,12 @@ ifneq (0,$(LIBGRPP)) # incl. undefined
   endif
   LIBGRPPROOT := $(realpath $(LIBGRPPROOT))
   ifneq (,$(LIBGRPPROOT))
+  ifneq (,$(wildcard $(LIBGRPPROOT)/lib/liblibgrpp.a))
     $(info LIBGRPPROOT: $(LIBGRPPROOT))
+    LIBS += $(LIBGRPPROOT)/lib/liblibgrpp.a
+    IFLAGS += $(LIBGRPPROOT)/include
+    DFLAGS += __LIBGRPP
+  endif
   endif
 endif
 ifneq (0,$(ELPA)) # incl. undefined
@@ -761,10 +791,10 @@ ifneq (0,$(SLATE)) # incl. undefined
   endif
   SLATEROOT := $(realpath $(SLATEROOT))
   ifneq (,$(SLATEROOT))
-    SLATE_LDIR := $(if $(wildcard ${SLATEROOT}/lib64),lib64,lib)
-    SCALAPACK_ADDON += -L${SLATEROOT}/$(SLATE_LDIR) -Wl,-rpath,${SLATEROOT}/$(SLATE_LDIR)
-    SCALAPACK_ADDON += -lslate_lapack_api
     $(info SLATEROOT: $(SLATEROOT))
+    SLATE_LDIR := $(if $(wildcard $(SLATEROOT)/lib64),lib64,lib)
+    SCALAPACK_ADDON += -L$(SLATEROOT)/$(SLATE_LDIR) -lslate_scalapack_api
+    SCALAPACK_ADDON += -Wl,-rpath,$(SLATEROOT)/$(SLATE_LDIR)
   endif
 endif
 ifneq (0,$(COSMA)) # incl. undefined
@@ -773,48 +803,6 @@ ifneq (,$(COSMAROOT))
 endif
 endif
 $(info ================================================================================)
-
-ifneq (,$(LIBINTROOT))
-  DFLAGS += __LIBINT __MAX_CONTR=4
-  IFLAGS += $(LIBINTROOT)/include
-  ifneq (,$(wildcard $(LIBINTROOT)/lib64/libint2.*))
-    LIBS += $(LIBINTROOT)/lib64/libint2.a
-  else ifneq (,$(wildcard $(LIBINTROOT)/lib/libint2.*))
-    LIBS += $(LIBINTROOT)/lib/libint2.a
-  else # LIBINT1
-    LIBS += $(LIBINTROOT)/lib/libderiv.a $(LIBINTROOT)/lib/libint.a
-    DFLAGS += __LIBINT_MAX_AM=7 __LIBDERIV_MAX_AM1=6
-  endif
-endif
-
-ifneq (,$(LIBXCROOT))
-  DFLAGS += __LIBXC
-  IFLAGS += $(LIBXCROOT)/include
-  ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxcf03.a))
-    LIBS += $(LIBXCROOT)/lib64/libxcf03.a
-  else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxcf03.a))
-    LIBS += $(LIBXCROOT)/lib/libxcf03.a
-  endif
-  ifneq (,$(wildcard $(LIBXCROOT)/lib64/libxc.a))
-    LIBS += $(LIBXCROOT)/lib64/libxc.a
-  else ifneq (,$(wildcard $(LIBXCROOT)/lib/libxc.a))
-    LIBS += $(LIBXCROOT)/lib/libxc.a
-  endif
-endif
-
-ifneq (,$(LIBGRPPROOT))
-  ifneq (,$(wildcard $(LIBGRPPROOT)/lib/liblibgrpp.a))
-    LIBS += $(LIBGRPPROOT)/lib/liblibgrpp.a
-    IFLAGS += $(LIBGRPPROOT)/include
-    DFLAGS += __LIBGRPP
-  endif
-endif
-
-ifneq (,$(PLUMEDROOT))
-  DFLAGS += __PLUMED2
-  # avoid duplicated libraries (-ldl -lstdc++)
-  LIBS   += $(PLUMEDROOT)/lib/libplumed.a -lz
-endif
 
 ifneq (0,$(ELPA))
 ifneq (,$(ELPAROOT))
