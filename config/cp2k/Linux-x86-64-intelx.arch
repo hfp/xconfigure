@@ -795,6 +795,17 @@ ifneq (0,$(SLATE)) # incl. undefined
     SLATE_LDIR := $(if $(wildcard $(SLATEROOT)/lib64),lib64,lib)
     SCALAPACK_ADDON += -L$(SLATEROOT)/$(SLATE_LDIR) -lslate_scalapack_api
     SCALAPACK_ADDON += -Wl,-rpath,$(SLATEROOT)/$(SLATE_LDIR)
+    ifneq (,$(ICX)) # if Slate was eventually built with Intel Compiler
+      SCALAPACK_ADDON += -Wl,--as-needed
+      ifneq (2,$(INTEL))
+        SCALAPACK_ADDON += -lsycl -lur_loader -lomptarget
+        ifneq (0,$(GNU))
+          SCALAPACK_ADDON += -lsvml -lirc
+          OMPRT = iomp5
+        endif
+      endif
+      SCALAPACK_ADDON += -Wl,--no-as-needed
+    endif
   endif
 endif
 ifneq (0,$(COSMA)) # incl. undefined
