@@ -98,6 +98,8 @@ fi
 if [ "$1" ]; then
   NRANKS=$1
   shift
+elif [ "${SLURM_NTASKS_PER_NODE}" ]; then
+  NRANKS=${SLURM_NTASKS_PER_NODE}
 else
   NRANKS=${NC}
 fi
