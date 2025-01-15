@@ -119,6 +119,7 @@ AVX ?= 0
 MPI ?= 1
 OMP ?= 1
 DBG ?= $(DUMPAST)
+CHK ?= $(DBG)
 SYM ?= $(DBG)
 FPE ?= 0
 IPO ?= 0
@@ -462,13 +463,16 @@ ifeq (0,$(GNU)) # Intel
       LDFLAGS += -no-ipo
     endif
   else # debug
-    FCFLAGS += -heap-arrays
     ifeq (1,$(INTEL))
       CXXFLAGS += -debug
       FCFLAGS  += -debug
       CFLAGS   += -debug
     endif
     OPT ?= 0
+  endif
+  ifneq (0,$(CHK))
+    FCFLAGS += -heap-arrays
+    DFLAGS += __CHECK_DIAG
   endif
   ifneq (0,$(FPE))
     FCFLAGS += -fpe0 # debugging NaNs
@@ -533,8 +537,7 @@ else # GNU GCC
     endif
     OPT ?= 3
   else # debug
-    FCFLAGS += -fstrict-aliasing -fbacktrace -fbounds-check \
-      -fimplicit-none -fsanitize=leak -fcheck=all -finit-derived -finit-real=snan -finit-integer=-42 -finline-matmul-limit=0 \
+    FCFLAGS += -fimplicit-none -fstrict-aliasing -finline-matmul-limit=0 \
       -Werror=aliasing -Werror=ampersand -Werror=c-binding-type -Werror=intrinsics-std -Werror=line-truncation -Werror=tabs \
       -Werror=target-lifetime -Werror=underflow -Werror=unused-but-set-variable -Werror=conversion -Werror=unused-variable \
       -Werror=zerotrip -Wintrinsic-shadow #-Warray-temporaries
@@ -546,14 +549,19 @@ else # GNU GCC
     endif
     OPT ?= 0
   endif
-  ifneq (0,$(DUMPAST))
-    FCFLAGS += -fdump-fortran-original
-    FCLOGPIPE = >$(notdir $<).ast
-    export LC_ALL=C
+  ifneq (0,$(CHK))
+    FCFLAGS += -finit-derived -finit-real=snan -finit-integer=-42
+    FCFLAGS += -fcheck=all -fbounds-check -fsanitize=leak
+    DFLAGS += __CHECK_DIAG
   endif
   ifneq (0,$(FPE))
     FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
     CFLAGS += -fsignaling-nans
+  endif
+  ifneq (0,$(DUMPAST))
+    FCFLAGS += -fdump-fortran-original
+    FCLOGPIPE = >$(notdir $<).ast
+    export LC_ALL=C
   endif
   MKL_OMPRTL ?= gnu
   MKL_FCRTL ?= gf
@@ -567,12 +575,14 @@ OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
 
 ifneq (0,$(SYM))
-  ifeq (0,$(GNU))
-  ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
-    DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
-    OPTFLAGS += -traceback
-    LDFLAGS += -traceback
-  endif
+  ifeq (0,$(GNU)) # Intel
+    ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
+      DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
+      OPTFLAGS += -traceback
+      LDFLAGS += -traceback
+    endif
+  else # GNU
+    FCFLAGS += -fbacktrace
   endif
   OPTFLAGS += $(DBG_FLAG)
   LDFLAGS += $(DBG_FLAG)
@@ -1152,7 +1162,7 @@ ifeq (0,$(GNU))
 ifneq (0,$(INTEL))
   # workaround for certain bits introduced by GCC 7.0
   ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
-    CFLAGS += -D_Float128=__float128
+    DFLAGS +=_Float128=__float128
   endif
   CXXFLAGS  += -fno-alias -ansi-alias -diag-disable $(DIAG_DISABLE)
   CFLAGS    += -fno-alias -ansi-alias -diag-disable $(DIAG_DISABLE)
