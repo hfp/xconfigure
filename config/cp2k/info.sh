@@ -11,15 +11,16 @@
 ###############################################################################
 set -o noglob
 
+# Example: find . -maxdepth 1 -mindepth 1 -type d | xargs -I{} ./info.sh {}
 PATTERNS="*.txt *.out"
 
 BEST=0
+SORT="sort -k2,2g -k6,6g"
+SORTBEST="sort -u -k2,2g"
 if [ "-best" = "$1" ]; then
-  SORT="sort -k2,2g -k6,6g | sort -u -k2,2g"
+  SORT+=" | ${SORTBEST}"
   BEST=1
   shift
-else
-  SORT="sort -k2,2g -k6,6g"
 fi
 
 if [ "-depth" = "$1" ]; then
@@ -32,6 +33,12 @@ fi
 
 if [ "$1" ] && [ -e "$1" ]; then
   FILEPATH="$1"
+  if [ "0" = "${BEST}" ]; then
+    OUTBASE=$(basename "${FILEPATH}" | tr '[:upper:]' '[:lower:]' | tr -d '-')
+    OUTBEST=cp2k-${OUTBASE}-best.txt
+    OUTALL=cp2k-${OUTBASE}-all.txt
+    SORT+=" | tee ${OUTALL} | ${SORTBEST} | tee ${OUTBEST}"
+  fi
   shift
 else
   FILEPATH="."
@@ -54,8 +61,8 @@ if [ "${FILE0}" ]; then
   if [ "PROJECT" = "${PROJECT}" ]; then
     PROJECT=$(grep -m1 "GLOBAL| Method name" "${FILE0}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
   fi
-  echo -e -n "$(printf %-23.23s "${PROJECT}")\tNodes\tR/N\tT/R\tCases/d\tSeconds"
-  echo
+  HEADER=$(echo -e "$(printf %-23.23s "${PROJECT}")\tNodes\tR/N\tT/R\tCases/d\tSeconds")
+  echo "${HEADER}"
 fi
 
 for FILE in ${FILES}; do
@@ -115,3 +122,13 @@ for FILE in ${FILES}; do
     fi
   fi
 done | eval "${SORT}"
+
+if [ "${HEADER}" ]; then
+  HEADER=$(sed 's/\//\\\//g' <<<"${HEADER}")
+  if [ "${OUTBEST}" ] && [ -e "${OUTBEST}" ]; then
+    sed -i "1s/^/${HEADER}\n/" "${OUTBEST}"
+  fi
+  if [ "${OUTALL}" ] && [ -e "${OUTALL}" ]; then
+    sed -i "1s/^/${HEADER}\n/" "${OUTALL}"
+  fi
+fi
