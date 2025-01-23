@@ -619,7 +619,7 @@ ifneq (0,$(IMPI))
   $(info I_MPI_ROOT: $(I_MPI_ROOT))
 endif
 endif
-ifneq (0,$(BLAS)) # incl. undefined
+ifneq (0,$(MKL)) # incl. undefined
 ifneq (,$(MKLROOT))
   $(info MKLROOT: $(MKLROOT))
 endif
