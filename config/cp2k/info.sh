@@ -11,7 +11,7 @@
 ###############################################################################
 set -o noglob
 
-# Example: find . -maxdepth 1 -mindepth 1 -type d | xargs -I{} ./info.sh {}
+# Example: find . -maxdepth 1 -mindepth 1 -type d | xargs -I{} ./info.sh -best {}
 PATTERNS="*.txt *.out"
 
 BEST=0
@@ -32,12 +32,15 @@ if [ ! "${DEPTH}" ]; then
 fi
 
 if [ "$1" ] && [ -e "$1" ]; then
+  OUTBASE=$(basename "$1" | tr '[:upper:]' '[:lower:]' | tr -d '-')
   FILEPATH="$1"
   if [ "0" = "${BEST}" ]; then
-    OUTBASE=$(basename "${FILEPATH}" | tr '[:upper:]' '[:lower:]' | tr -d '-')
     OUTBEST=cp2k-${OUTBASE}-best.txt
     OUTALL=cp2k-${OUTBASE}-all.txt
     SORT+=" | tee ${OUTALL} | ${SORTBEST} | tee ${OUTBEST}"
+  else
+    OUTBEST=cp2k-${OUTBASE}.txt
+    SORT+=" | ${SORTBEST} | tee ${OUTBEST}"
   fi
   shift
 else
