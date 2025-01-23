@@ -276,8 +276,10 @@ ifneq (,$(filter x86_64,$(MNAME)))
   endif
   ifneq (,$(MKLROOT))
     MKL := $(BLAS)
-  else
+  endif
+  ifeq (0,$(MKL))
     MKL_INCFILE := $(NULL)
+    MKLROOT := $(NULL)
   endif
 endif
 endif
