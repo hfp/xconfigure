@@ -968,7 +968,8 @@ ifneq (0,$(MPI))
     SCALAPACKDIR := $(MKLROOT)/lib/intel64
     SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
   else # not via MKL
-    SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
+    #SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
+    SCALAPACKLIB := scalapack
     ifneq (,$(SCALAPACKDIR))
       LIBS += -L$(SCALAPACKDIR)
     endif
