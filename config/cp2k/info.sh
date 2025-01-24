@@ -15,30 +15,40 @@ set -o noglob
 PATTERNS="*.txt *.out"
 
 BEST=0
+DEPTH=1
 SORT="sort -k2,2g -k6,6g"
 SORTBEST="sort -u -k2,2g"
-if [ "-best" = "$1" ]; then
-  SORT+=" | ${SORTBEST}"
-  BEST=1
-  shift
-fi
 
-if [ "-depth" = "$1" ]; then
-  DEPTH=$2
-  shift 2
-fi
-if [ ! "${DEPTH}" ]; then
-  DEPTH=1
-fi
+while test $# -gt 0; do
+  case "$1" in
+  -h|--help)
+    echo "$0 [options] [dir] [symbol]"
+    exit 0;;
+  -a|--all)
+    ALL=1
+    shift;;
+  -b|--best)
+    SORT+=" | ${SORTBEST}"
+    BEST=1
+    shift;;
+  -d|--depth)
+    DEPTH=$2
+    shift 2;;
+  *) break;;
+  esac
+done
 
 if [ "$1" ] && [ -e "$1" ]; then
   OUTBASE=$(basename "$1" | tr '[:upper:]' '[:lower:]' | tr -d '-')
   FILEPATH="$1"
-  if [ "0" = "${BEST}" ]; then
+  if [ "${ALL}" ] && [ "0" != "${ALL}" ]; then
+    OUTALL=cp2k-${OUTBASE}.txt
+    SORT+=" | tee ${OUTALL}"
+  elif [ "0" = "${BEST}" ]; then
     OUTBEST=cp2k-${OUTBASE}-best.txt
     OUTALL=cp2k-${OUTBASE}-all.txt
     SORT+=" | tee ${OUTALL} | ${SORTBEST} | tee ${OUTBEST}"
-  else
+  else # best
     OUTBEST=cp2k-${OUTBASE}.txt
     SORT+=" | ${SORTBEST} | tee ${OUTBEST}"
   fi
