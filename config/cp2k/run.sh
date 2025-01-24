@@ -168,12 +168,19 @@ if [ "${I_MPI_ROOT}" ]; then
     export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
     export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
   fi
+  if [ ! "${I_MPI_FABRICS}" ]; then
+    if [ "1" = "${NUMNODES}" ]; then
+      export I_MPI_FABRICS=shm
+    else
+      #export I_MPI_FABRICS=shm:tcp
+      export I_MPI_FABRICS=shm:ofi
+    fi
+  fi
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
   export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   #
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
-  #export I_MPI_FABRICS=shm:tcp
 else
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
