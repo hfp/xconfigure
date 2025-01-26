@@ -94,6 +94,8 @@ ifeq (,$(filter-out 0,$(GNU)))
     endif
   endif
   GNU := 0
+else
+  GCC_AR := $(call which,gcc-ar)
 endif
 
 MAKE_VERSION_OUT := $(shell $(MAKE) --version 2>/dev/null | head -n1)
@@ -201,7 +203,7 @@ ifneq (0,$(MPI))
     endif
   else # GNU
     RANLIB := gcc-ranlib
-    AR  := gcc-ar -r
+    AR  := $(if $(GCC_AR),gcc-ar,ar) -r
     CXX := mpicxx
     CC  := mpicc
     FC  := mpif90
@@ -225,7 +227,7 @@ else ifeq (0,$(GNU))
   endif
 else # GNU
   RANLIB := gcc-ranlib
-  AR  := gcc-ar -r
+  AR  := $(if $(GCC_AR),gcc-ar,ar) -r
   CXX := g++
   CC  := gcc
   FC  := gfortran
