@@ -16,8 +16,8 @@ PATTERNS="*.txt *.out"
 
 BEST=0
 DEPTH=1
-SORT="sort -k2,2g -k6,6g"
-SORTBEST="sort -u -k2,2g"
+SORT="-k2,2g -k6,6g"
+SORTBEST="-u -k2,2g"
 
 while test $# -gt 0; do
   case "$1" in
@@ -25,10 +25,11 @@ while test $# -gt 0; do
     echo "$0 [options] [dir] [symbol]"
     exit 0;;
   -a|--all)
+    SORT="-k1,1"
     ALL=1
     shift;;
   -b|--best)
-    SORT+=" | ${SORTBEST}"
+    SORT+=" | sort ${SORTBEST}"
     BEST=1
     shift;;
   -d|--depth)
@@ -47,10 +48,10 @@ if [ "$1" ] && [ -e "$1" ]; then
   elif [ "0" = "${BEST}" ]; then
     OUTBEST=cp2k-${OUTBASE}-best.txt
     OUTALL=cp2k-${OUTBASE}-all.txt
-    SORT+=" | tee ${OUTALL} | ${SORTBEST} | tee ${OUTBEST}"
+    SORT+=" | tee ${OUTALL} | sort ${SORTBEST} | tee ${OUTBEST}"
   else # best
     OUTBEST=cp2k-${OUTBASE}.txt
-    SORT+=" | ${SORTBEST} | tee ${OUTBEST}"
+    SORT+=" | sort ${SORTBEST} | tee ${OUTBEST}"
   fi
   shift
 else
@@ -134,7 +135,7 @@ for FILE in ${FILES}; do
       echo
     fi
   fi
-done | eval "${SORT}"
+done | eval "sort ${SORT}"
 
 if [ "${HEADER}" ]; then
   HEADER=$(sed 's/\//\\\//g' <<<"${HEADER}")
