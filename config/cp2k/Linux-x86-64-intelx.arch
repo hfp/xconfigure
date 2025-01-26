@@ -400,6 +400,7 @@ else # legacy
 endif
 
 MIC ?= 0
+CPUINFO := $(wildcard /proc/cpuinfo)
 ifeq (0,$(GNU)) # Intel
   ifeq (0,$(INTEL))
     $(info ================================================================================)
@@ -435,17 +436,19 @@ ifeq (0,$(GNU)) # Intel
       TARGET := -xSSE3
     else
       TARGET := -xHost
-      ifneq (,$(shell grep -om1 '\bavx512vl\b' /proc/cpuinfo))
-        ifeq (1,$(INTEL))
-        ifneq (0,$(VMAX))
-          TARGET += -qopt-zmm-usage=$(if $(filter-out -%,$(VMAX)),high,low)
+      ifneq (,$(CPUINFO))
+        ifneq (,$(shell grep -om1 '\bavx512vl\b' $(CPUINFO)))
+          ifeq (1,$(INTEL))
+          ifneq (0,$(VMAX))
+            TARGET += -qopt-zmm-usage=$(if $(filter-out -%,$(VMAX)),high,low)
+          endif
+          endif
+          TGT := skx
+        else ifneq (,$(shell grep -om1 '\bavx2\b' $(CPUINFO)))
+          TGT := hsw
+        else ifneq (,$(shell grep -om1 '\bavx\b' $(CPUINFO)))
+          TGT := snb
         endif
-        endif
-        TGT := skx
-      else ifneq (,$(shell grep -om1 '\bavx2\b' /proc/cpuinfo))
-        TGT := hsw
-      else ifneq (,$(shell grep -om1 '\bavx\b' /proc/cpuinfo))
-        TGT := snb
       endif
     endif
   endif
@@ -511,14 +514,16 @@ else # GNU GCC
       TARGET := -mSSE3
     else
       TARGET := -march=native -mtune=native
-      ifneq (,$(shell grep -om1 '\bavx512vl\b' /proc/cpuinfo))
-        TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=512)
-        TGT := skx
-      else ifneq (,$(shell grep -om1 '\bavx2\b' /proc/cpuinfo))
-        TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=256)
-        TGT := hsw
-      else ifneq (,$(shell grep -om1 '\bavx\b' /proc/cpuinfo))
-        TGT := snb
+      ifneq (,$(CPUINFO))
+        ifneq (,$(shell grep -om1 '\bavx512vl\b' $(CPUINFO)))
+          TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=512)
+          TGT := skx
+        else ifneq (,$(shell grep -om1 '\bavx2\b' $(CPUINFO)))
+          TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=256)
+          TGT := hsw
+        else ifneq (,$(shell grep -om1 '\bavx\b' $(CPUINFO)))
+          TGT := snb
+        endif
       endif
     endif
   endif
