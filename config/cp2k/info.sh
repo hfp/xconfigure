@@ -11,7 +11,7 @@
 ###############################################################################
 set -o noglob
 
-# Example: find . -maxdepth 1 -mindepth 1 -type d | xargs -I{} ./info.sh -best {}
+# Example: find . -maxdepth 1 -mindepth 1 -type d | xargs -I{} ./info.sh --best {}
 PATTERNS="*.txt *.out"
 
 BEST=0
