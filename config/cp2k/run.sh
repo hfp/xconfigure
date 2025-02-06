@@ -28,13 +28,17 @@ then
   fi
 fi
 
-CP2K_GLIBC_TUNABLES="glibc.cpu.hwcaps=-AVX2"
-#CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
-#CP2K_GLIBC_TUNABLES+=":glibc.malloc.trim_threshold=-1"
-if [ "${GLIBC_TUNABLES}" ]; then
-  export GLIBC_TUNABLES="${GLIBC_TUNABLES}:${CP2K_GLIBC_TUNABLES}"
-else
-  export GLIBC_TUNABLES="${CP2K_GLIBC_TUNABLES}"
+if [ ! "${TUNE}" ] || [ "0" != "${TUNE}" ]; then
+  CP2K_GLIBC_TUNABLES="glibc.cpu.hwcaps=-AVX2"
+  CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
+  CP2K_GLIBC_TUNABLES+=":glibc.malloc.trim_threshold=-1"
+fi
+if [ "${CP2K_GLIBC_TUNABLES}" ]; then
+  if [ "${GLIBC_TUNABLES}" ]; then
+    export GLIBC_TUNABLES="${GLIBC_TUNABLES}:${CP2K_GLIBC_TUNABLES}"
+  else
+    export GLIBC_TUNABLES="${CP2K_GLIBC_TUNABLES}"
+  fi
 fi
 
 if [ "${LSB_JOBID}" ]; then
