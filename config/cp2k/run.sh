@@ -54,19 +54,24 @@ if [ "${JOBID}" ]; then  # cleanup
   JOBID=$(cut -d. -f1 <<<"${JOBID}")
 fi
 
+if [ ! "${EXE}" ]; then
+  EXEVER=${EXEVER:-exe}
+  EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
+fi
+EXE=$(cd "$(dirname "${EXE}")" && pwd -P)/$(basename "${EXE}")
+
 if [ "$1" ]; then
   if [ -f "$1" ]; then
-    WORKLOAD=$1
-  else
-    >&2 echo "ERROR: $1 not found!"
+    WORKLOAD=$(cd "$(dirname "$1")" && pwd -P)/$(basename "$1")
+    shift
+  elif [ "${EXEVER}" ]; then
+    >&2 echo "ERROR: workload $1 is not an input file!"
     exit 1
   fi
-  shift
-else
+elif [ "${EXEVER}" ]; then
   >&2 echo "Please use: $0 /file/to/workload.inp [ranks-per-node [num-nodes]]"
   exit 1
 fi
-WORKLOAD=$(cd "$(dirname "${WORKLOAD}")" && pwd -P)/$(basename "${WORKLOAD}")
 
 if [ "$(command -v lscpu)" ]; then
   NS=$(lscpu | grep -m1 "Socket(s)" | tr -d " " | cut -d: -f2)
@@ -143,9 +148,6 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 
 # additional command-line arguments
 ARGS="$*"
-
-EXEVER=${EXEVER:-exe}
-EXE=$(cd "${ROOT}/${EXEVER}/${BUILD}" && pwd -P)/cp2k.${VERSION}
 
 if [ "${I_MPI_ROOT}" ]; then
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
