@@ -149,7 +149,7 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 # additional command-line arguments
 ARGS="$*"
 
-if [ "${I_MPI_ROOT}" ]; then
+if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
@@ -194,6 +194,7 @@ if [ "${I_MPI_ROOT}" ]; then
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
 else
   MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
+  # Depending on OpenMPI version: package <-> socket
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
 fi
 
