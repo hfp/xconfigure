@@ -1088,7 +1088,7 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
       DFLAGS += __OFFLOAD_OPENCL
       # TODO: implement support or missing features for GRID and PW
       DFLAGS += __NO_OFFLOAD_GRID __NO_OFFLOAD_PW
-      IFLAGS += $(EXTDBCSR)
+      IFLAGS += $(EXTDBCSR) $(DBCSRSRC)/acc/opencl
     endif
     ifeq (Darwin,$(UNAME))
       LIBS += -framework OpenCL
