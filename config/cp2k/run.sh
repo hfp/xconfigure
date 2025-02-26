@@ -14,7 +14,6 @@ MAXNT=${MAXNT:-1}
 # ulimit -c0
 
 export CP2K_DATA_DIR=${CP2K_DATA_DIR:-${ROOT}/data}
-export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
 #NUMACTL="numactl --preferred=1"
 
 # adjust default memory allocator
@@ -57,6 +56,7 @@ fi
 if [ ! "${EXE}" ]; then
   EXEVER=${EXEVER:-exe}
   EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
+  export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
 fi
 EXE=$(cd "$(dirname "${EXE}")" && pwd -P)/$(basename "${EXE}")
 
