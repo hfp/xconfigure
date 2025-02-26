@@ -247,6 +247,11 @@ echo
 
 # prolog
 PROLOG=${PROLOG:-${CHECK}}
+if [ "${CHECK_EXE}" ] && [ -e "${CHECK_EXE}" ]; then
+  echo "*** CHECK ***"
+  eval "mpirun ${HST} -np ${NUMNODES} ${CHECK_EXE} 2>/dev/null"
+  echo "*************"
+fi
 if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
   echo "*** PROLOG ***"
   if command -v numactl >/dev/null; then
