@@ -467,7 +467,6 @@ ifeq (0,$(GNU)) # Intel
     CFLAGS   += $(FPCMODEL) $(FPFLAGS)
     CXXFLAGS += $(FPCMODEL) $(FPFLAGS)
     OPT ?= 2
-    #OPTFLAGS += -qoverride_limits
     ifeq (0,$(MATMUL))
       OPTFLAGS += $(if $(filter-out 0 1,$(OPT)),-qopt-matmul)
     endif
@@ -605,8 +604,9 @@ ifneq (0,$(SYM))
 endif
 
 IOMPFLAG := -qopenmp
+GOMPFLAG := -fopenmp
 ifneq (0,$(OMP))
-  OPTFLAGS += $(if $(filter-out 0,$(INTEL)),$(IOMPFLAG),-fopenmp)
+  OPTFLAGS += $(if $(filter-out 0,$(INTEL)),$(IOMPFLAG),$(GOMPFLAG))
 endif
 
 ifneq (0,$(DYNAMIC))
@@ -901,7 +901,7 @@ ifneq (,$(LIBXSMMROOT))
       ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
       # GNU: https://github.com/cp2k/dbcsr/issues/217
         DFLAGS += _OPENMP_SIMD
-        OPTFLAGS += -fopenmp-simd
+        OPTFLAGS += $(GOMPFLAG)-simd
       endif
     else
       DFLAGS += _OPENMP_SIMD
@@ -1212,55 +1212,26 @@ OFFLOAD_TARGET := $(USE_ACCEL)
 OFFLOAD_FLAGS := $(ACCFLAGS)
 OFFLOAD_CC := $(ACC)
 
-ifneq (,$(CSTD))
-dbm_miniapp.o: dbm_miniapp.c $(ALL_HEADERS)
-	$(CC) -c $(filter-out $(CSTD),$(CFLAGS)) $<
-endif
+
+dbm_miniapp.o: CSTD = $(NULL)
 
 ifneq (0,$(NDEBUG))
-environment.o: environment.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -DNDEBUG,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-grid_library.o: grid_library.c $(ALL_HEADERS)
-	$(CC) -c $(filter-out -DNDEBUG,$(CFLAGS)) $<
+environment.o: FCFLAGS += -UNDEBUG
+grid_library.o: CFLAGS += -UNDEBUG
 endif
 
-# filter-out override_limits flag since IFORT can run out of memory (SIGKILL)
 ifeq (1,$(INTEL))
-ifneq (,$(filter -qoverride_limits,$(FCFLAGS)))
-mp2_eri.o: mp2_eri.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -qoverride_limits,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-minimax_exp_k53.o: minimax_exp_k53.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -qoverride_limits,$(FCFLAGS)) -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-endif
-mp2_optimize_ri_basis.o: mp2_optimize_ri_basis.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(FCFLAGS) -O0 -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+mp2_optimize_ri_basis.o: FCFLAGS += -O0
 endif
 
-ifneq (,$(filter 0,$(GNU)))
+ifeq (0,$(GNU))
 ifneq (,$(filter-out 0,$(BEEP)))
 ifneq (,$(filter-out 0 1,$(INTEL)))
-mp2_ri_gpw.o: mp2_ri_gpw.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-pw_methods.o: pw_methods.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
-xc.o: xc.F
-	$(eval MAKE_FYPP := $(if $(FYPP),$(FYPP) $(FYPPFLAGS) $< $*.F90))
-	$(MAKE_FYPP)
-	$(FC) -c $(filter-out -qopenmp,$(FCFLAGS)) -D_OPENMP -recursive -D__SHORT_FILE__="\"$(subst $(SRCDIR)/,,$<)\"" -I'$(dir $<)' $(OBJEXTSINCL) $*.F90 $(FCLOGPIPE)
+mp2_ri_gpw.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
+pw_methods.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
+xc.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
 endif
-grid_dgemm_prepare_pab.o: grid_dgemm_prepare_pab.c $(ALL_HEADERS)
-	$(CC) -c $(CFLAGS) -O$(OPT2) $<
+grid_dgemm_prepare_pab.o: CFLAGS += -O$(OPT2)
 endif
+dbm_multiply.o: CFLAGS += -qno-openmp -Wno-recommended-option $(GOMPFLAG)
 endif
