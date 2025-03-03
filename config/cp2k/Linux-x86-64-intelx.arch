@@ -162,6 +162,7 @@ UNAME ?= $(shell uname    2>/dev/null)
 MNAME ?= $(shell uname -m 2>/dev/null)
 
 # advanced compiler flags
+ASSUME ?= 0
 ifneq (0,$(INTEL))
   FPCMODEL := $(if $(strip $(FPCMODEL)),-fp-model $(FPCMODEL))
   FPFMODEL := $(if $(strip $(FPFMODEL)),-fp-model $(FPFMODEL))
@@ -172,7 +173,13 @@ ifneq (0,$(INTEL))
     #FCFLAGS += -fast-transcendentals
   endif
   endif
-  #FCFLAGS += -nostandard-realloc-lhs
+  ifneq (0,$(ASSUME))
+    ifeq (1,$(ASSUME))
+      FCFLAGS += -assume norealloc_lhs
+    else
+      FCFLAGS += -assume norealloc_lhs,contiguous_assumed_shape
+    endif
+  endif
 endif
 
 SCALAPACK ?= $(MPI)
