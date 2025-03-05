@@ -187,13 +187,17 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
       export I_MPI_FABRICS=shm:ofi
     fi
   fi
+  if [ "${EXEVER}" ]; then
+    export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
+  fi
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
-  export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   #
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
 else
-  MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
+  if [ "${EXEVER}" ]; then
+    MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
+  fi
   # Depending on OpenMPI version: package <-> socket
   MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
 fi
@@ -235,15 +239,19 @@ if [ "${NODEINFO}" ] && [ "$(command -v sed)" ]; then
   echo "PARTITION: $(sed "s/ .*//" <<<"${NODEINFO}")"
 fi
 echo
-echo "EXE: ${EXE}"
-ldd "${EXE}"
-echo
 
-# print environment
-ENVPAT="^LD_PRELOAD\|^GLIBC_\|^LIBXSMM_\|^CUDA_\|^DBCSR_\|^ACC_\|^DBM_\|^MKL\|^OPENCL_\|=[0-9][0-9]*$"
-ENVPAT+="\|^SLURM_\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_"
-env | grep "${ENVPAT}" | sort
-echo
+# print additional info
+if [ "${EXEVER}" ]; then
+  # print details about executable
+  echo "EXE: ${EXE}"
+  ldd "${EXE}"
+  echo
+  # print environment
+  ENVPAT="^LD_PRELOAD\|^GLIBC_\|^LIBXSMM_\|^CUDA_\|^DBCSR_\|^ACC_\|^DBM_\|^MKL\|^OPENCL_\|=[0-9][0-9]*$"
+  ENVPAT+="\|^SLURM_\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_"
+  env | grep "${ENVPAT}" | sort
+  echo
+fi
 
 # prolog
 PROLOG=${PROLOG:-${CHECK}}
