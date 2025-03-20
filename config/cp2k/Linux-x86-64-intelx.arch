@@ -987,8 +987,10 @@ ifneq (0,$(MPI))
     ifneq (,$(SCALAPACKDIR))
       LIBS += -L$(SCALAPACKDIR)
     endif
-    ifneq (,$(SCALAPACKLIB))
+    ifeq (1,$(words $(SCALAPACKLIB)))
       LIBS += -l$(SCALAPACKLIB)
+    else ifneq (,$(SCALAPACKLIB))
+      SCALAPACK_ADDON := $(SCALAPACKLIB)
     endif
   endif
   ifneq (,$(SCALAPACK_ADDON))
