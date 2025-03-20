@@ -206,9 +206,14 @@ if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ] && [ ! "${SLURM_NODELIST}" ]; then
   HST="-host ${HOSTS}"
 fi
 
-RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
-  -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
-${EXE} ${WORKLOAD} ${ARGS}"
+if [ "1" != "$((NRANKS*NUMNODES))" ] || [ "${HST}" ]; then
+  RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
+      -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
+    ${EXE} ${WORKLOAD} ${ARGS}"
+else
+  RUN="${MPIRUNPREFX} ${NUMACTL} ${PREFX} \
+    ${EXE} ${WORKLOAD} ${ARGS}"
+fi
 
 # setup OpenMP environment
 if [ ! "${OMP_NUM_THREADS}" ]; then
