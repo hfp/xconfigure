@@ -1067,10 +1067,9 @@ else ifneq (0,$(BLAS)) # generic
         LIBS += $(AOCL_ROOT)/lib/libblis-mt.so
       endif
     endif
-  else ifneq (1,$(BLAS))
-    LIBS += -lopenblas
   else
-    LIBS += -lblas
+    BLASLIB := $(if $(filter-out 1,$(BLAS)),openblas,blas)
+    LIBS += -l$(BLASLIB)
   endif
 endif
 
