@@ -98,12 +98,10 @@ else
   GCC_AR := $(call which,gcc-ar)
 endif
 
-MAKE_VERSION_OUT := $(shell $(MAKE) --version 2>/dev/null | head -n1)
-CC_VERSION_OUT := $(shell $(CC) --version 2>/dev/null | head -n1)
-
 # check if the Intel Development Tools are available
 INTEL ?= $(strip $(if $(filter icc% icx% Intel%, \
-  $(firstword $(CC_VERSION_OUT))),$(if $(IFX), 2, 1), 0))
+  $(firstword $(shell $(CC) --version 2>/dev/null | head -n1))), \
+  $(if $(IFX), 2, 1), 0))
 
 ifneq (0,$(INTEL))
   CFG := intel
@@ -628,7 +626,7 @@ endif
 $(info CXX: $(CXX_VERSION_OUT))
 $(info CC: $(CC_VERSION_OUT))
 $(info FC: $(FC_VERSION_OUT))
-$(info MAKE: $(MAKE_VERSION_OUT))
+$(info $(shell $(MAKE) --version 2>/dev/null | head -n1))
 $(info --------------------------------------------------------------------------------)
 ifneq (0,$(MPI)) # incl. undefined
 ifneq (0,$(IMPI))
