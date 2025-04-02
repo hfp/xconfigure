@@ -187,7 +187,7 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
       export I_MPI_FABRICS=shm:ofi
     fi
   fi
-  if [ "${EXEVER}" ]; then
+  if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
   fi
   export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
@@ -195,7 +195,7 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
 else
-  if [ "${EXEVER}" ]; then
+  if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   # Depending on OpenMPI version: package <-> socket
@@ -246,7 +246,7 @@ fi
 echo
 
 # print additional info
-if [ "${EXEVER}" ]; then
+if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   # print details about executable
   echo "EXE: ${EXE}"
   ldd "${EXE}"
