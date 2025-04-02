@@ -256,6 +256,8 @@ if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   ENVPAT+="\|^SLURM_\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_"
   env | grep "${ENVPAT}" | sort
   echo
+  echo "PWD: ${PWD}"
+  echo
 fi
 
 # prolog
