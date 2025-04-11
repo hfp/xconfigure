@@ -1232,5 +1232,5 @@ xc.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
 endif
 grid_dgemm_prepare_pab.o: CFLAGS += -O$(OPT2)
 endif
-dbm_multiply.o: CFLAGS += -qno-openmp -Wno-recommended-option $(GOMPFLAG)
+#dbm_multiply.o: CFLAGS += -qno-openmp -Wno-recommended-option $(GOMPFLAG)
 endif
