@@ -144,6 +144,7 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=survey:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=tripcounts --flop:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=roofline:$((NRANKS/2))=exclusive'"
+#PREFX="${PREFX} unitrace --chrome-kernel-logging --opencl -o ${ROOT}/unitrace.\${PMI_RANK:-0}"
 #PREFX="${PREFX} ${ROOT}/multirun.sh 2"
 
 # additional command-line arguments
