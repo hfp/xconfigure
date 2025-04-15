@@ -217,16 +217,16 @@ else
 fi
 
 # setup OpenMP environment
-if [ ! "${OMP_NUM_THREADS}" ]; then
-  NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
-  MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
-  MT=$((HT<=MAXNT?HT:MAXNT))
-  NTHREADS=$((MC*MT))
-  if [ "${NT}" != "$((NRANKS*NTHREADS))" ]; then
+NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
+MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
+MT=$((HT<=MAXNT?HT:MAXNT))
+NTHREADS=${OMP_NUM_THREADS:-$((MC*MT))}
+if [ "${NT}" != "$((NRANKS*NTHREADS))" ]; then
+  if [ ! "${OMP_NUM_THREADS}" ]; then
     export OMP_NUM_THREADS=${NTHREADS}
-    if [ ! "${OMP_PLACES}" ] && [ "1" = "${MT}" ]; then
-      export OMP_PLACES=cores
-    fi
+  fi
+  if [ ! "${OMP_PLACES}" ] && [ "1" = "${MT}" ]; then
+    export OMP_PLACES=cores
   fi
 fi
 # OMP_PROC_BIND: default
