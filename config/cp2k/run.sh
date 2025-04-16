@@ -256,8 +256,7 @@ if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   ENVPAT="^LD_PRELOAD\|^GLIBC_\|^LIBXSMM_\|^CUDA_\|^DBCSR_\|^ACC_\|^DBM_\|^MKL\|^OPENCL_\|=[0-9][0-9]*$"
   ENVPAT+="\|^SLURM_\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_"
   env | grep "${ENVPAT}" | sort
-  echo
-  echo "PWD: ${PWD}"
+  echo "PWD=${PWD}"
   echo
 fi
 
