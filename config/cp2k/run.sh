@@ -164,16 +164,6 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
   if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
     export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
   fi
-  if [ ! "${ACC_OPENCL_DEVIDS}" ] && [ ! "${ACC_OPENCL_DEVTYPE}" ] && \
-       command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
-  then
-    if [ "0" != "${I_MPI_OFFLOAD}" ]; then
-      export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
-    fi
-    export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
-  else
-    export I_MPI_OFFLOAD=0
-  fi
   if [ ! "${MPI_OPT}" ] || [ "0" != "${MPI_OPT}" ]; then
     export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
     export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
