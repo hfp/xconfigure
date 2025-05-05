@@ -1192,13 +1192,11 @@ endif
 endif
 
 # Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
-LD_LIBRARY_PATH := $(wildcard $(subst :, ,$(LD_LIBRARY_PATH)))
+LD_LIBRARY_PATH := $(wildcard $(subst :, ,$(shell echo "$${LD_LIBRARY_PATH}")))
 LD_LIBSTUB_PATH := $(wildcard $(patsubst %,%/stubs,$(LD_LIBRARY_PATH)))
-#LD_INCLUDE_PATH := $(wildcard $(patsubst %,$(abspath %/../include),$(LD_LIBRARY_PATH)))
 LIBPATHS := $(foreach DIR,$(LD_LIBRARY_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBSTUBS := $(foreach DIR,$(LD_LIBSTUB_PATH),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -l$(OMPRT) -Wl,--no-as-needed
-#IFLAGS += $(INCPATHS)
 
 cleanup = $(foreach FLAG,$1,$(FLAG))
 LDFLAGS := $(filter-out -ipo -ipo-separate,$(call cleanup,$(LDFLAGS)))
