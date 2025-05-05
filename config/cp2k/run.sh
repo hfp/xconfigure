@@ -177,7 +177,6 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
       if [ "1" = "${NUMNODES}" ]; then
         export I_MPI_FABRICS=shm
       else
-        #export I_MPI_FABRICS=shm:tcp
         export I_MPI_FABRICS=shm:ofi
       fi
     fi
