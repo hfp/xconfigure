@@ -117,6 +117,7 @@ for FILE in ${FILES}; do
       if [ ! "${NDEVS}" ]; then
         NDEVS=$(grep -m1 " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
       fi
+      if [ "${NDEVS}" ] && [ "0" != "$((RANKS<NDEVS))" ]; then NDEVS=${RANKS}; fi
       if [ "${NDEVS}" ]; then
         DEVIDS=$(grep -m1 "ACC_OPENCL_DEVIDS" "${FILE}" | sed -n "s/..*=\(\w\)/\1/p" | tr -cd ,)
         if [ ! "${DEVIDS}" ]; then
