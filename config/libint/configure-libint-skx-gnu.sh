@@ -34,8 +34,8 @@ TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
 
 export FLAGS="-O3 ${TARGET}"
 export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS} -std=c++17"
+export CFLAGS="${FLAGS} -include stdint.h"
+export CXXFLAGS="${CFLAGS} -std=c++17"
 export FCFLAGS="${FLAGS}"
 export LIBS="-lstdc++"
 

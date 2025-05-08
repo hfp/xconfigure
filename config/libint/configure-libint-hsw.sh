@@ -38,8 +38,8 @@ TARGET="-xCORE-AVX2"
 
 export FLAGS="-O2 ${TARGET}" #-ipo-separate
 export LDFLAGS=""
-export CFLAGS="${FLAGS} ${FPCMODEL}"
-export CXXFLAGS="${FLAGS} ${FPCMODEL}"
+export CFLAGS="${FLAGS} -include stdint.h ${FPCMODEL}"
+export CXXFLAGS="${CFLAGS} ${FPCMODEL}"
 export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 export LIBS="-lstdc++"
 
