@@ -48,7 +48,7 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-**Note**: Starting with a generic source code package of LIBINT (not downloaded from https://github.com/cp2k/libint-cp2k/ but taken from https://github.com/evaleev/), BOOST libraries are required and if setup with $BOOST_ROOT, the path shall be in original format like denoting the version, e.g., `boost_1_88_0`.
+**Note**: Starting with a generic source code package of LIBINT (not downloaded from [https://github.com/cp2k/libint-cp2k/](https://github.com/cp2k/libint-cp2k/releases/latest) but taken from [https://github.com/evaleev/](https://github.com/evaleev/libint/releases/latest)), BOOST libraries are required and if setup with $BOOST_ROOT, the path shall be in the original format like denoting the version, e.g., `boost_1_88_0`.
 
 There can be issues with target flags requiring a build-system able to execute a binary compiled with the flags of choice. To avoid cross-compilation (not supported here), please rely on a build system that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX") using, e.g., Intel Compiler:
 
