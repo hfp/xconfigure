@@ -18,7 +18,7 @@ Please make the intended compiler available on the command line. For instance, m
 source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
 ```
 
-**Note**: Please make the "hdf5-tools" command available, or pay attention to the console output after configuring libmed. In general, an HDF5 development package is necessary to pass the default configuration as implemented by XCONFIGURE. One can adjust the configure wrapper script for custom-built HDF5 by pointing to an (non-default) installation location.
+**Note**: Please make the "hdf5-tools" command available or pay attention to the console output after configuring libmed. In general, an HDF5 development package is necessary to pass the default configuration as implemented by XCONFIGURE. One can adjust the configure wrapper script for custom-built HDF5 by pointing to an (non-default) installation location.
 
 For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
 

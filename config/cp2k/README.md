@@ -23,7 +23,7 @@ XCONFIGURE provides a collection of helper scripts, optional patches, and an ARC
 
 ## Step-by-step Guide<a name="current-release"></a>
 
-This step-by-step guide assumes the GNU Compiler Collection (GNU&#160;Fortran), Intel&#160;MPI and Intel&#160;MKL as prerequisites (adding an Intel repository to the Linux distribution's package manager, installing Intel MKL and Intel MPI or supporting an HPC fabric is out of scope in this document. is not subject of this document). Building LIBXSMM, LIBINT, and LIBXC is part of the steps.
+This step-by-step guide assumes the GNU Compiler Collection (GNU&#160;Fortran), Intel&#160;MPI and Intel&#160;MKL as prerequisites (adding an Intel repository to the Linux distribution's package manager, installing Intel MKL and Intel MPI or supporting an HPC fabric is out of scope in this document. Building LIBXSMM, LIBINT, and LIBXC are part of the steps.
 
 <a name="offline-environment"></a>**Note**: in an offline environment, it is best to [download](https://github.com/hfp/xconfigure/archive/refs/heads/main.zip) the entire XCONFIGURE project upfront and to upload it to the target system. Offline limitations can be worked around and overcome with additional steps. This step-by-step guide assumes Internet connectivity.
 
@@ -72,7 +72,7 @@ make distclean
 
 There can be issues about target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build-host matching the capabilities of the target system.
 
-**3**) The third step builds LIBXC.
+**3**) The third step is to build LIBXC.
 
 ```bash
 cd $HOME && wget https://gitlab.com/libxc/libxc/-/archive/6.2.2/libxc-6.2.2.tar.bz2
@@ -100,9 +100,9 @@ unzip $HOME/libxsmm-develop.zip && ln -s libxsmm-develop libxsmm
 #cd $HOME/libxsmm && make GNU=1 -j $(nproc)
 ```
 
-It can be useful to build LIBXSMM also in a separate fashion (see last/commented line above). This can be useful for building a stand-alone reproducer in DBCSR's GPU backend as well as CP2K's DBM reproducer.
+It can be useful to build LIBXSMM also in a separate fashion (see last/commented line above). This can be useful for building a standalone reproducer in DBCSR's GPU backend as well as CP2K's DBM reproducer.
 
-**5**) <a name="getting-the-source-code"></a>This last step builds CP2K and LIBXSMM inside of CP2K's source directory. A serial version `VERSION=ssmp` as opposed to `VERSION=psmp` is possible, however OpenMP remains a requirement of CP2K's code base.
+**5**) <a name="getting-the-source-code"></a>This last step builds CP2K and LIBXSMM inside CP2K's source directory. A serial version `VERSION=ssmp` as opposed to `VERSION=psmp` is possible, however OpenMP remains a requirement of CP2K's code base.
 
 <a name="missing-git-submodules"></a>Downloading GitHub-generated assets from [https://github.com/cp2k/cp2k/releases](https://github.com/cp2k/cp2k/releases) like "*Source code (zip)*" or "*Source code (tar.gz)*" will miss submodules which are subsequently missed when building CP2K.
 
@@ -160,15 +160,15 @@ The ARCH-file attempts to auto-detect optional libraries using `I_MPI_ROOT`, `MK
 
 Please apply `USE_ACCEL=opencl` (like `USE_ACCEL=cuda` for CUDA) to XCONFIGURE's [build instructions](#build-instructions). The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component.
 
-Further, DBCSR can be built stand-alone and used to exercise and test GPU acceleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a stand-alone fashion (does not even rely on DBCSR's build system; see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The OpenCL backend in DBCSR provides [tuned kernels](https://github.com/cp2k/dbcsr/tree/develop/src/acc/opencl/smm/params) for CP2K. Similarly, CP2K's DBM component (`/path/to/cp2k/src/dbm`) can be built and exercised in a stand-alone fashion.
+Further, DBCSR can be built standalone and used to exercise and test GPU acceleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a standalone fashion (does not even rely on DBCSR's build system; see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The OpenCL backend in DBCSR provides [tuned kernels](https://github.com/cp2k/dbcsr/tree/develop/src/acc/opencl/smm/params) for CP2K. Similarly, CP2K's DBM component (`/path/to/cp2k/src/dbm`) can be built and exercised in a standalone fashion.
 
 The OpenCL backend has comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific kernels.
 
 ## Running CP2K<a name="run-instructions"></a><a name="performance"></a>
 
-<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads becomes even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. To ease running CP2K, there are a number of supportive scripts provided by XCONFIGURE: `plan.sh` (see [here](plan.md)), `run.sh` (see [here](https://raw.githubusercontent.com/hfp/xconfigure/main/config/cp2k/run.sh)), and `info.sh`.
+<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads become even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. To ease running CP2K, there are a number of supportive scripts provided by XCONFIGURE: `plan.sh` (see [here](plan.md)), `run.sh` (see [here](https://raw.githubusercontent.com/hfp/xconfigure/main/config/cp2k/run.sh)), and `info.sh`.
 
-<a name="info-script"></a>As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (`.txt` and `.out` extension by default). Log files can be captured with `tee`, or the output is captured by the job scheduler.
+<a name="info-script"></a>As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (`.txt` and `.out` extension by default). Log files can be captured with "tee", or the output is captured by the job scheduler.
 
 ```text
 ./run.sh benchmarks/QS/H2O-64.inp | tee cp2k-h2o64-20240725b.txt

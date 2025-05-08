@@ -34,19 +34,21 @@ curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
 To download the latest generic source code package of LIBINT (small package but full [bootstrap for CP2K](README.md#boostrap-for-cp2k) applies):
 
 ```bash
-wget https://github.com/evaleev/libint/archive/refs/tags/v2.9.0.tar.gz
+wget https://github.com/evaleev/libint/archive/refs/tags/v2.11.0.tar.gz
 ```
 
 Unpack the archive of choice and download the XCONFIGURE scripts:
 
 ```bash
 # tar xvf libint-v2.6.0-cp2k-lmax-6.tgz && cd libint-v2.6.0-cp2k-lmax-6
-tar v2.9.0.tar.gz && cd v2.9.0
+tar xvf v2.11.0.tar.gz && cd libint-2.11.0
 
 wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
+
+**Note**: Starting with a generic source code package of LIBINT (not downloaded from https://github.com/cp2k/libint-cp2k/ but taken from https://github.com/evaleev/), BOOST libraries are required and if setup with $BOOST_ROOT, the path shall be in original format like denoting the version, e.g., `boost_1_88_0`.
 
 There can be issues with target flags requiring a build-system able to execute a binary compiled with the flags of choice. To avoid cross-compilation (not supported here), please rely on a build system that matches the target system. For example, to configure and make for an Intel Xeon Scalable processor such as "Cascadelake" or "Skylake" server ("SKX") using, e.g., Intel Compiler:
 
