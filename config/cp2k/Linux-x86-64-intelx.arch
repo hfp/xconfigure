@@ -147,11 +147,10 @@ NDEBUG ?= $(if $(filter-out 0,$(DBG)),0,1)
 # BLAS=2: use OpenMP variant
 BLAS ?= 2
 
-# Intel FP-model
-#FPCMODEL := fast=2
-#FPCMODEL := precise
-#FPFMODEL := fast=2
-#FPFMODEL := source
+# Intel FP-model (precise, source, fast, fast=2, etc.)
+#FPMODEL := precise
+FPCMODEL := $(FPMODEL)
+FPFMODEL := $(FPMODEL)
 
 EXTSHOME ?= $(CP2KHOME)/$(EXTSDIR)
 EXTDBCSR ?= $(EXTSHOME)/dbcsr
@@ -163,8 +162,9 @@ MNAME ?= $(shell uname -m 2>/dev/null)
 # advanced compiler flags
 ASSUME ?= 0
 ifneq (0,$(INTEL))
-  FPCMODEL := $(if $(strip $(FPCMODEL)),-fp-model $(FPCMODEL))
-  FPFMODEL := $(if $(strip $(FPFMODEL)),-fp-model $(FPFMODEL))
+  FCFLAGS  += $(if $(FPFMODEL),-fp-model $(FPFMODEL)) $(FPFLAGS)
+  CFLAGS   += $(if $(FPCMODEL),-fp-model $(FPCMODEL)) $(FPFLAGS)
+  CXXFLAGS += $(if $(FPCMODEL),-fp-model $(FPCMODEL)) $(FPFLAGS)
   ifeq (1,$(INTEL))
   ifeq (,$(strip $(FPFMODEL)))
     FCFLAGS += -complex-limited-range
@@ -462,9 +462,6 @@ ifeq (0,$(GNU)) # Intel
   endif
   ifeq (0,$(DBG))
     FCFLAGS  += $(if $(filter-out 0,$(ALIGN)),-align array64byte)
-    FCFLAGS  += $(FPFMODEL) $(FPFLAGS)
-    CFLAGS   += $(FPCMODEL) $(FPFLAGS)
-    CXXFLAGS += $(FPCMODEL) $(FPFLAGS)
     OPT ?= 2
     ifeq (0,$(MATMUL))
       OPTFLAGS += $(if $(filter-out 0 1,$(OPT)),-qopt-matmul)
