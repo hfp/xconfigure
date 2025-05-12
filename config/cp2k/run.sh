@@ -172,7 +172,9 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
     export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
     export I_MPI_OFI_PROVIDER=${I_MPI_OFI_PROVIDER:-psm3}
     if [ "0" != "${I_MPI_OFFLOAD}" ]; then
-      export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
+      if [ "psm3" = "${I_MPI_OFI_PROVIDER}" ]; then
+        export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
+      fi
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
     fi
     if [ ! "${I_MPI_FABRICS}" ]; then
