@@ -1171,7 +1171,7 @@ CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call pref
 CFLAGS    += $(OPTFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 # apply opt-level at link-line to avoid Intel Compiler remark #10440
-LDFLAGS   += -O$(OPT) $(IPOFLAGS) #-static-intel -static-libgcc -static-libstdc++
+LDFLAGS   += -O$(OPT) $(IPOFLAGS)
 
 ifeq (0,$(GNU))
 ifneq (0,$(INTEL))
@@ -1185,7 +1185,22 @@ ifneq (0,$(INTEL))
   LDFLAGS   += -diag-disable $(DIAG_DISABLE)
   # consider -nofor_main for legacy compiler
   LDFLAGS_C += -nofor-main
+  ifneq (0,$(STATIC))
+  ifneq (1,$(STATIC)) # 2
+    LDFLAGS += -static-intel
+  endif
+  endif
 endif
+endif
+ifneq (0,$(STATIC))
+  ifneq (1,$(STATIC)) # 2
+  ifneq (0,$(IMPI))
+    LDFLAGS += -static-mpi
+  endif
+  endif
+  ifneq (2,$(STATIC)) # 3
+    LDFLAGS += -static-libgcc -static-libstdc++
+  endif
 endif
 
 # Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
