@@ -253,6 +253,8 @@ if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   ENVPAT+="\|^SLURM_\|^I_MPI_\|^PMI_\|^MPICH_\|^PSM3_\|^FI_\|^OMPI_\|^UCX_\|^OMP_\|^KMP_\|^ZEX_\|^IGC_"
   env | grep "${ENVPAT}" | sort
   echo "PWD=${PWD}"
+  ENVGEN=$(command -v iga64)
+  if [ "${ENVGEN}" ]; then echo "GEN=$(cd "$(dirname "${ENVGEN}")/../.." 2>/dev/null && pwd -P)"; fi
   echo
 fi
 
