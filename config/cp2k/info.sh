@@ -114,9 +114,10 @@ for FILE in ${FILES}; do
         echo -e -n "\t\t${EXTRAVAL}"
       fi
       NDEVS=$(grep -m1 "\[0\] MPI startup(): \(Stacks\|Tiles\).*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
-      if [ ! "${NDEVS}" ]; then
-        NDEVS=$(grep -m1 " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
-      fi
+      ACCON=$(grep -m1 " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
+      if [ ! "${NDEVS}" ]; then NDEVS=${ACCON}; fi
+      if [ ! "${NDEVS}" ]; then NDEVS=0; fi
+      if [ ! "${ACCON}" ]; then NDEVS=0; fi
       if [ "${NDEVS}" ] && [ "0" != "$((RANKS<NDEVS))" ]; then NDEVS=${RANKS}; fi
       if [ "${NDEVS}" ]; then
         DEVIDS=$(grep -m1 "ACC_OPENCL_DEVIDS" "${FILE}" | sed -n "s/..*=\(\w\)/\1/p" | tr -cd ,)
@@ -127,7 +128,7 @@ for FILE in ${FILES}; do
           DEVIDS=$(wc -c <<<"${DEVIDS}")
           NDEVS=$((DEVIDS<NDEVS?(DEVIDS+1):NDEVS))
         fi
-        echo -e -n "\t\t${NDEVS} ACC"
+        if [ "0" != "$((0<NDEVS))" ]; then echo -e -n "\t\t${NDEVS} ACC"; fi
       fi
       echo
     elif [ "0" != "${NUMFILES}" ] && [ "0" = "${BEST}" ]; then
