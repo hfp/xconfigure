@@ -171,7 +171,9 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
     export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
     export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
     export I_MPI_OFI_PROVIDER=${I_MPI_OFI_PROVIDER:-psm3}
-    if [ "0" != "${I_MPI_OFFLOAD}" ]; then
+    if [ "0" != "${I_MPI_OFFLOAD}" ] && \
+       command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
+    then
       if [ "psm3" = "${I_MPI_OFI_PROVIDER}" ]; then
         export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
       fi
