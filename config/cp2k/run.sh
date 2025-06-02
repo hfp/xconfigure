@@ -170,17 +170,14 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
     export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
     export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
     export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
-    export I_MPI_OFI_PROVIDER=${I_MPI_OFI_PROVIDER:-psm3}
+    if [ "1" = "${NUMNODES}" ]; then
+      export I_MPI_FABRICS=${I_MPI_FABRICS:-shm}
+    fi
     if [ "0" != "${I_MPI_OFFLOAD}" ] && \
        command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
     then
-      if [ "psm3" = "${I_MPI_OFI_PROVIDER}" ]; then
-        export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
-      fi
+      export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
-    fi
-    if [ "1" = "${NUMNODES}" ]; then
-      export I_MPI_FABRICS=${I_MPI_FABRICS:-shm}
     fi
   fi
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
