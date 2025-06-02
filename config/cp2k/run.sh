@@ -179,12 +179,8 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
       fi
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
     fi
-    if [ ! "${I_MPI_FABRICS}" ]; then
-      if [ "1" = "${NUMNODES}" ]; then
-        export I_MPI_FABRICS=shm
-      else
-        export I_MPI_FABRICS=shm:ofi
-      fi
+    if [ "1" = "${NUMNODES}" ]; then
+      export I_MPI_FABRICS=${I_MPI_FABRICS:-shm}
     fi
   fi
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
