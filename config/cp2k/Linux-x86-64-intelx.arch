@@ -56,7 +56,7 @@ which = $(shell $(WHICH) 2>/dev/null $(firstword $1))
 
 # Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
 uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
-LIBRARY_PATHS := $(call uniq,$(wildcard $(subst :, $(NULL),$(shell echo "$${LD_LIBRARY_PATH} $${LIBRARY_PATH}"))))
+LIBRARY_PATHS := $(call uniq,$(wildcard $(subst :, $(NULL),$(shell echo "$${LD_LIBRARY_PATH}"))))
 LIBRARY_STUBS := $(wildcard $(patsubst %,%/stubs,$(LIBRARY_PATHS)))
 
 SED := $(call which,gsed)
