@@ -94,6 +94,8 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
   if [ -e "${HERE}/autogen.sh" ]; then
     if [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/include" ]; then
       export CPATH=${BOOST_ROOT}/include:${CPATH}
+    elif [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/boost" ]; then
+      export CPATH=${BOOST_ROOT}:${CPATH}
     fi
     "${HERE}/autogen.sh"
   elif [ ! -e "${HERE}/configure" ]; then
