@@ -54,6 +54,11 @@ version = $(shell echo "$$(( \
 WHICH := $(shell which which 2>/dev/null || echo "command -v")
 which = $(shell $(WHICH) 2>/dev/null $(firstword $1))
 
+# Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
+uniq = $(if $1,$(firstword $1) $(call uniq,$(filter-out $(firstword $1),$1)))
+LIBRARY_PATHS := $(call uniq,$(wildcard $(subst :, $(NULL),$(shell echo "$${LD_LIBRARY_PATH} $${LIBRARY_PATH}"))))
+LIBRARY_STUBS := $(wildcard $(patsubst %,%/stubs,$(LIBRARY_PATHS)))
+
 SED := $(call which,gsed)
 # GNU sed is desired (macOS)
 ifeq (,$(SED))
@@ -1113,8 +1118,12 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
           IFLAGS += $(abspath $(dir $(firstword $(CLINC)))/..)
         endif
       endif
-      OCL_ICD_LOADER := $(firstword $(wildcard /usr/lib/*/libOpenCL.so.*))
-      LIBS += $(if $(OCL_ICD_LOADER),$(OCL_ICD_LOADER),-l:libOpenCL.so.1)
+      OCL_ICD_LOADER := $(firstword $(wildcard $(foreach DIR,$(LIBRARY_PATHS) /usr/*/lib,$(DIR)/libOpenCL.so.*)))
+      ifneq (,$(OCL_ICD_LOADER))
+        LIBS += $(OCL_ICD_LOADER) $(if $(shell ldd $(OCL_ICD_LOADER) | grep "libintlc"),-lintlc)
+      else
+        LIBS += -l:libOpenCL.so.1
+      endif
     endif
     ACCFLAGS += $(CFLAGS)
     USE_ACCEL := opencl
@@ -1203,11 +1212,10 @@ ifneq (0,$(STATIC))
   endif
 endif
 
-# Collect all paths in LD_LIBRARY_PATH and LD_LIBRARY_PATH/stubs, and append to LIBS
-LIBRARY_PATHS := $(wildcard $(subst :, $(NULL),$(shell echo "$${LD_LIBRARY_PATH}")))
-LIBRARY_STUBS := $(wildcard $(patsubst %,%/stubs,$(LIBRARY_PATHS)))
+# Collect LIBRARY_PATHS into LIBPATHS and LIBRARY_STUBS into LIBSTUBS (if not part of LIBS)
 LIBPATHS := $(foreach DIR,$(LIBRARY_PATHS),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBSTUBS := $(foreach DIR,$(LIBRARY_STUBS),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
+# Collect LIBPATHS and LIBSTUBS into LIBS
 LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -l$(OMPRT) -Wl,--no-as-needed
 
 cleanup = $(foreach FLAG,$1,$(FLAG))
