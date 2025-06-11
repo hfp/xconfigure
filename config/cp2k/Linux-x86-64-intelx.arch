@@ -132,9 +132,6 @@ IPO ?= 0
 VMAX ?= 0
 STATIC ?= 1
 DYNAMIC ?= 1
-MKL_STATIC ?= $(STATIC)
-MKL_DIRECT ?= 0
-MKL_BITS ?= lp64
 BEEP ?= 0
 
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
@@ -147,10 +144,20 @@ LIBEXT ?= $(if $(filter-out 0,$(STATIC)),a,so)
 # NDEBUG=2: plus CP2K (regtests may fail)
 NDEBUG ?= $(if $(filter-out 0,$(DBG)),0,1)
 
+# Kind of Clang/GCC based analysis:
+#   leak, address, memory, undefined,
+#   thread, numerical
+SANITIZE ?= $(NULL)
+
 # BLAS=0: disabled even if found
 # BLAS=1: use sequential variant
 # BLAS=2: use OpenMP variant
 BLAS ?= 2
+
+# Intel MKL defaults
+MKL_STATIC ?= $(STATIC)
+MKL_DIRECT ?= 0
+MKL_BITS ?= lp64
 
 # Intel FP-model (precise, source, fast, fast=2, etc.)
 #FPMODEL := precise
@@ -567,8 +574,9 @@ else # GNU GCC
   endif
   ifneq (0,$(CHK))
     FCFLAGS += -finit-derived -finit-real=snan -finit-integer=-42
-    FCFLAGS += -fcheck=all -fbounds-check -fsanitize=leak
+    FCFLAGS += -fcheck=all -fbounds-check
     DFLAGS += __CHECK_DIAG
+    SANITIZE = leak
   endif
   ifneq (0,$(FPE))
     FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
@@ -591,6 +599,8 @@ OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
 
 ifneq (0,$(SYM))
+  OPTFLAGS += $(DBG_FLAG)
+  LDFLAGS += $(DBG_FLAG)
   ifeq (0,$(GNU)) # Intel
     ifneq (0,$(shell echo "$$((3 > $(OPT)))"))
       DFLAGS += $(if $(filter-out 0,$(LEGACY)),__USE_CP2K_TRACE)
@@ -598,10 +608,14 @@ ifneq (0,$(SYM))
       LDFLAGS += -traceback
     endif
   else # GNU
-    FCFLAGS += -fbacktrace
+    FCFLAGS += -fbacktrace -fno-omit-frame-pointer
   endif
-  OPTFLAGS += $(DBG_FLAG)
-  LDFLAGS += $(DBG_FLAG)
+  ifneq (,$(SANITIZE))
+    CXXFLAGS += -fsanitize=$(SANITIZE)
+    CFLAGS += -fsanitize=$(SANITIZE)
+    FCFLAGS += -fsanitize=$(SANITIZE)
+    LDFLAGS += -fsanitize=$(SANITIZE)
+  endif
 endif
 
 IOMPFLAG := -qopenmp
