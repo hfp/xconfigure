@@ -145,8 +145,7 @@ LIBEXT ?= $(if $(filter-out 0,$(STATIC)),a,so)
 NDEBUG ?= $(if $(filter-out 0,$(DBG)),0,1)
 
 # Kind of Clang/GCC based analysis:
-#   leak, address, memory, undefined,
-#   thread, numerical
+#   leak, address, undefined, thread
 SANITIZE ?= $(NULL)
 
 # BLAS=0: disabled even if found
