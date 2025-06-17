@@ -178,6 +178,8 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
     then
       export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
+    else
+      export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
     fi
   fi
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
