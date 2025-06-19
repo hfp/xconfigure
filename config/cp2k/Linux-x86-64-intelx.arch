@@ -597,6 +597,14 @@ XCFGOMP := $(if $(filter-out 0,$(OMP)),$(XCFG)-omp,$(XCFG))
 OPT1 := $(shell echo "$$((1<$(OPT)?1:$(OPT)))")
 OPT2 := $(shell echo "$$((2<$(OPT)?2:$(OPT)))")
 
+ifneq (,$(SANITIZE))
+  CXXFLAGS += -fsanitize=$(SANITIZE)
+  CFLAGS += -fsanitize=$(SANITIZE)
+  FCFLAGS += -fsanitize=$(SANITIZE)
+  LDFLAGS += -fsanitize=$(SANITIZE)
+  SYM = 1
+endif
+
 ifneq (0,$(SYM))
   OPTFLAGS += $(DBG_FLAG)
   LDFLAGS += $(DBG_FLAG)
@@ -608,12 +616,6 @@ ifneq (0,$(SYM))
     endif
   else # GNU
     FCFLAGS += -fbacktrace -fno-omit-frame-pointer
-  endif
-  ifneq (,$(SANITIZE))
-    CXXFLAGS += -fsanitize=$(SANITIZE)
-    CFLAGS += -fsanitize=$(SANITIZE)
-    FCFLAGS += -fsanitize=$(SANITIZE)
-    LDFLAGS += -fsanitize=$(SANITIZE)
   endif
 endif
 
