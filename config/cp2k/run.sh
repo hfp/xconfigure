@@ -194,7 +194,11 @@ else
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   # Depending on OpenMPI version: package <-> socket
-  MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
+  if mpirun --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS)) true 2>/dev/null; then
+    MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
+  else
+    MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
+  fi
 fi
 
 if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ] && [ ! "${SLURM_NODELIST}" ]; then
