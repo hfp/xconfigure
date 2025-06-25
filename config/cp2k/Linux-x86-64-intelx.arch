@@ -575,7 +575,6 @@ else # GNU GCC
     FCFLAGS += -finit-derived -finit-real=snan -finit-integer=-42
     FCFLAGS += -fcheck=all -fbounds-check
     DFLAGS += __CHECK_DIAG
-    SANITIZE = leak
   endif
   ifneq (0,$(FPE))
     FCFLAGS += -ffpe-trap=invalid,zero,overflow -fsignaling-nans
