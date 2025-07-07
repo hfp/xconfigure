@@ -1016,7 +1016,7 @@ endif
 endif
 
 ifneq (0,$(MKL))
-  DFLAGS += __MKL __FFTW3
+  DFLAGS += __MKL __FFTW3 __FFTW3_MKL
   DFLAGS += $(if $(filter 1,$(MKL_DIRECT)),MKL_DIRECT_CALL_SEQ)
   ifeq (,$(MKL_INCFILE))
     IFLAGS += $(MKLROOT)/include
