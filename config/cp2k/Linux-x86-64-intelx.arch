@@ -6,7 +6,7 @@ CPP           = $(NULL)
 ACC           = $(NULL)
 OFFLOAD_CC    = $(NULL)
 OFFLOAD_FLAGS = $(NULL)
-DFLAGS        = __HAS_IEEE_EXCEPTIONS __DBCSR_DISABLE_WORKSHARE
+DFLAGS        = __MAX_CONTR=4 __HAS_IEEE_EXCEPTIONS __DBCSR_DISABLE_WORKSHARE
 #DFLAGS       += __NO_IPI_DRIVER __NO_SOCKETS
 #CSTD          = -std=c99
 #CSTD          = -std=c11
@@ -697,7 +697,7 @@ ifneq (0,$(LIBINT)) # incl. undefined
   LIBINTROOT := $(realpath $(LIBINTROOT))
   ifneq (,$(LIBINTROOT))
     $(info LIBINTROOT: $(LIBINTROOT))
-    DFLAGS += __LIBINT __MAX_CONTR=4
+    DFLAGS += __LIBINT
     IFLAGS += $(LIBINTROOT)/include
     ifneq (,$(wildcard $(LIBINTROOT)/lib64/libint2.*))
       LIBS += $(LIBINTROOT)/lib64/libint2.a
