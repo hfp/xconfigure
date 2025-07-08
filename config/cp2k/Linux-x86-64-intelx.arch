@@ -546,6 +546,9 @@ else # GNU GCC
   FCFLAGS += -Wno-argument-mismatch -fallow-argument-mismatch
   ifeq (0,$(DBG))
     OPTFLAGS += -funroll-loops -ftree-vectorize
+    ifneq (,$(filter-out 0 1 2,$(OPT)))
+      OPTFLAGS += -funsafe-math-optimizations
+    endif
     #FCFLAGS += -fstack-arrays
     ifneq (0,$(BLAS))
     ifeq (0,$(MATMUL))
