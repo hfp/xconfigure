@@ -58,7 +58,15 @@ if [ ! "${EXE}" ]; then
   EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
   export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
 fi
-EXE=$(cd "$(dirname "${EXE}")" && pwd -P)/$(basename "${EXE}")
+EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
+EXE=${EXEDIR}/$(basename "${EXE}")
+
+if [ -e "${EXE}" ]; then
+  export LD_LIBRARY_PATH=${EXEDIR}:${LD_LIBRARY_PATH}
+else
+  >&2 echo "ERROR: ${EXE} executable not found!"
+  exit 1
+fi
 
 if [ "$1" ]; then
   if [ -f "$1" ]; then
