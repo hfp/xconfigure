@@ -625,6 +625,16 @@ IOMPFLAG := -qopenmp
 GOMPFLAG := -fopenmp
 ifneq (0,$(OMP))
   OPTFLAGS += $(if $(filter-out 0,$(INTEL)),$(IOMPFLAG),$(GOMPFLAG))
+  ifneq (0,$(INTEL))
+    DFLAGS += _OPENMP_SIMD
+    OPTFLAGS += $(IOMPFLAG)-simd
+  else # GNU
+    ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
+    # GNU: https://github.com/cp2k/dbcsr/issues/217
+      DFLAGS += _OPENMP_SIMD
+      OPTFLAGS += $(GOMPFLAG)-simd
+    endif
+  endif
 endif
 
 ifneq (0,$(DYNAMIC))
@@ -912,18 +922,10 @@ ifneq (,$(LIBXSMMROOT))
     LIBXSMM_DSTDIR := $(CP2KHOME)/$(LIBDIRNAME)/$(ARCH)/$(ONEVERSION)/libxsmm
     DFLAGS += __LIBXSMM=$(LIBXSMM)
     ifneq (0,$(GNU))
-      ifneq (0,$(DBG))
-      # suppress "Fortran runtime warning:"
-        LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
-      endif
-      ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
-      # GNU: https://github.com/cp2k/dbcsr/issues/217
-        DFLAGS += _OPENMP_SIMD
-        OPTFLAGS += $(GOMPFLAG)-simd
-      endif
-    else
-      DFLAGS += _OPENMP_SIMD
-      OPTFLAGS += $(IOMPFLAG)-simd
+    ifneq (0,$(DBG))
+    # suppress "Fortran runtime warning:"
+      LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
+    endif
     endif
     IFLAGS += $(LIBXSMM_DSTDIR)/include
 
@@ -1199,8 +1201,10 @@ FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call pref
 # apply opt-level at link-line to avoid Intel Compiler remark #10440
 LDFLAGS   += -O$(OPT) $(IPOFLAGS)
 
-ifeq (0,$(GNU))
 ifneq (0,$(INTEL))
+  ifneq (,$(filter-out 0 1,$(OMP)))
+    FCFLAGS += -fopenmp-default-allocator
+  endif
   # workaround for certain bits introduced by GCC 7.0
   ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
     DFLAGS +=_Float128=__float128
@@ -1216,7 +1220,6 @@ ifneq (0,$(INTEL))
     LDFLAGS += -static-intel
   endif
   endif
-endif
 endif
 ifneq (0,$(STATIC))
   ifneq (1,$(STATIC)) # 2
