@@ -1203,7 +1203,7 @@ LDFLAGS   += -O$(OPT) $(IPOFLAGS)
 
 ifneq (0,$(INTEL))
   ifneq (,$(filter-out 0 1,$(OMP)))
-    FCFLAGS += -fopenmp-default-allocator
+    FCFLAGS += -fopenmp-default-allocator=omp_default_mem
   endif
   # workaround for certain bits introduced by GCC 7.0
   ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
