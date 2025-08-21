@@ -123,7 +123,7 @@ DUMPAST ?= 0
 SSE ?= 0
 AVX ?= 0
 MPI ?= 1
-OMP ?= 1
+OMP ?= 2
 DBG ?= $(DUMPAST)
 CHK ?= $(DBG)
 SYM ?= $(DBG)
@@ -1202,8 +1202,10 @@ FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call pref
 LDFLAGS   += -O$(OPT) $(IPOFLAGS)
 
 ifneq (0,$(INTEL))
+  ifneq (1,$(INTEL))
   ifneq (,$(filter-out 0 1,$(OMP)))
     FCFLAGS += -fopenmp-default-allocator=omp_default_mem
+  endif
   endif
   # workaround for certain bits introduced by GCC 7.0
   ifneq (0,$(shell echo "$$((180002 >= $(CC_VERSION_NUM) && 0 != $(CC_VERSION_NUM)))"))
