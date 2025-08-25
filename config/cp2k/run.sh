@@ -144,6 +144,7 @@ else
 fi
 
 #HPCWL_COMMAND_PREFIX="aps -c mpi,omp"
+#HPCWL_COMMAND_PREFIX="gdb -ex run -ex backtrace --args"
 #MPIRUNPREFX="perf stat -e tlb:tlb_flush,irq_vectors:call_function_entry,syscalls:sys_enter_munmap,syscalls:sys_enter_madvise,syscalls:sys_enter_brk"
 #MPIRUNPREFX="numactl --cpunodebind=0 --membind=0 --"
 
