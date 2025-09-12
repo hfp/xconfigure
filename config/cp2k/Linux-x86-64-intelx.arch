@@ -542,8 +542,10 @@ else # GNU GCC
       endif
     endif
   endif
-  FCFLAGS += -ffree-form -ffree-line-length-none
-  FCFLAGS += -Wno-argument-mismatch -fallow-argument-mismatch
+  FCFLAGS += -ffree-form -ffree-line-length-none -Wno-argument-mismatch
+  ifneq (0,$(shell echo "$$((100000 <= $(FC_VERSION_NUM)))"))
+    FCFLAGS += -fallow-argument-mismatch
+  endif
   ifeq (0,$(DBG))
     OPTFLAGS += -funroll-loops -ftree-vectorize
     ifneq (,$(filter-out 0 1 2,$(OPT)))
