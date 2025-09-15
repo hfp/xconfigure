@@ -3,7 +3,8 @@
 #
 ROOT=${PWD}
 ROOT=$(cd "$(dirname "$0")" && pwd -P)
-BUILD=Linux-x86-64-intelx
+
+BUILD=${CP2K_BUILD-Linux-x86-64-intelx}
 VERSION=psmp
 
 # Threads per core
