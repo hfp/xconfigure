@@ -29,9 +29,11 @@ then
 fi
 
 if [ ! "${TUNE}" ] || [ "0" != "${TUNE}" ]; then
-  CP2K_GLIBC_TUNABLES="glibc.cpu.hwcaps=-AVX2"
+  CP2K_GLIBC_TUNABLES="glibc.malloc.trim_threshold=-1"
   CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
-  CP2K_GLIBC_TUNABLES+=":glibc.malloc.trim_threshold=-1"
+  if [ "x86_64" != "$(uname -m)" ]; then
+    CP2K_GLIBC_TUNABLES+=":glibc.cpu.hwcaps=-AVX2"
+  fi
 fi
 if [ "${CP2K_GLIBC_TUNABLES}" ]; then
   if [ "${GLIBC_TUNABLES}" ]; then
