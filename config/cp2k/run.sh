@@ -161,7 +161,9 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 # additional command-line arguments
 ARGS="$*"
 
-if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
+if [[ "${I_MPI_ROOT}" && "0" != "${IMPI}" ]] || \
+   [[ "${MPICH}" && "0" != "${MPICH}" ]];
+then
   #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
   #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
   MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
@@ -186,11 +188,13 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
     if [ "0" != "${I_MPI_OFFLOAD}" ] && \
        command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
     then
+      export MPICH_GPU_SUPPORT_ENABLED=${MPICH_GPU_SUPPORT_ENABLED:-1}
       export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
     else
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
     fi
+    export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
   fi
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
@@ -199,7 +203,7 @@ if [ "${I_MPI_ROOT}" ] && [ "0" != "${IMPI}" ]; then
   #
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
-else
+elif command -v mpirun >/dev/null; then
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
@@ -216,9 +220,16 @@ if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ] && [ ! "${SLURM_NODELIST}" ]; then
 fi
 
 if [ "1" != "$((NRANKS*NUMNODES))" ] || [ "${HST}" ] || [ "${PREFX}" ]; then
-  RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
-      -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
-    ${EXE} ${WORKLOAD} ${ARGS}"
+  if command -v mpirun >/dev/null; then
+    RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
+        -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
+      ${EXE} ${WORKLOAD} ${ARGS}"
+  else
+    RUN="${MPIRUNPREFX} srun \
+        --cpu-bind=socket \
+        ${NUMACTL} ${PREFX} \
+      ${EXE} ${WORKLOAD} ${ARGS}"
+  fi
 else
   RUN="${MPIRUNPREFX} ${NUMACTL} ${EXE} ${WORKLOAD} ${ARGS}"
 fi
