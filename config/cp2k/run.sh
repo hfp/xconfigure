@@ -28,10 +28,10 @@ then
   fi
 fi
 
-if [ ! "${TUNE}" ] || [ "0" != "${TUNE}" ]; then
+if [ "0" != "${TUNE}" ]; then
   CP2K_GLIBC_TUNABLES="glibc.malloc.trim_threshold=-1"
   CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
-  if [ "x86_64" != "$(uname -m)" ]; then
+  if [ "x86_64" = "$(uname -m)" ]; then
     CP2K_GLIBC_TUNABLES+=":glibc.cpu.hwcaps=-AVX2"
   fi
 fi
@@ -179,7 +179,7 @@ then
   if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
     export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
   fi
-  if [ ! "${MPI_OPT}" ] || [ "0" != "${MPI_OPT}" ]; then
+  if [ "0" != "${MPI_OPT}" ]; then
     export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
     export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
     export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
@@ -194,9 +194,13 @@ then
       export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
     else
+      export MPICH_GPU_SUPPORT_ENABLED=${I_MPI_OFFLOAD:-0}
       export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
     fi
     export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
+  else
+    export MPICH_GPU_SUPPORT_ENABLED=${I_MPI_OFFLOAD:-0}
+    export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
   fi
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
