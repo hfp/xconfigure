@@ -163,6 +163,11 @@ PREFX=${HPCWL_COMMAND_PREFIX}
 # additional command-line arguments
 ARGS="$*"
 
+MPIRUN=$(command -v mpirun)
+if [ ! "${MPIRUN}" ]; then
+  MPIRUN=$(command -v mpiexec)
+fi
+
 if [[ "${I_MPI_ROOT}" && "0" != "${IMPI}" ]] || \
    [[ "${MPICH}" && "0" != "${MPICH}" ]];
 then
@@ -209,12 +214,12 @@ then
   #
   #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
   #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
-elif command -v mpirun >/dev/null; then
+elif [ "${MPIRUN}" ]; then
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   # Depending on OpenMPI version: package <-> socket
-  if mpirun --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS)) true 2>/dev/null; then
+  if ${MPIRUN} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS)) true 2>/dev/null; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
   else
     MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
@@ -226,8 +231,8 @@ if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ] && [ ! "${SLURM_NODELIST}" ]; then
 fi
 
 if [ "1" != "$((NRANKS*NUMNODES))" ] || [ "${HST}" ] || [ "${PREFX}" ]; then
-  if command -v mpirun >/dev/null; then
-    RUN="${MPIRUNPREFX} mpirun ${HST} ${MPIRUNFLAGS} \
+  if [ "${MPIRUN}" ]; then
+    RUN="${MPIRUNPREFX} ${MPIRUN} ${HST} ${MPIRUNFLAGS} \
         -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
       ${EXE} ${WORKLOAD} ${ARGS}"
   else
@@ -286,23 +291,25 @@ if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   echo
 fi
 
-# prolog
-PROLOG=${PROLOG:-${CHECK}}
-if [ "${CHECK_EXE}" ] && [ -e "${CHECK_EXE}" ]; then
-  echo "*** CHECK ***"
-  eval "mpirun ${HST} -np ${NUMNODES} ${CHECK_EXE} 2>/dev/null"
-  echo "*************"
-fi
-if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
-  echo "*** PROLOG ***"
-  if command -v numactl >/dev/null; then
-    eval "mpirun ${HST} -np ${NUMNODES} numactl -H 2>/dev/null"
-    echo
+# check and prolog
+if [ "${MPIRUN}" ]; then
+  if [ "${CHECK_EXE}" ] && [ -e "${CHECK_EXE}" ]; then
+    echo "*** CHECK ***"
+    eval "${MPIRUN} ${HST} -np ${NUMNODES} ${CHECK_EXE} 2>/dev/null"
+    echo "*************"
   fi
-  if command -v clinfo >/dev/null; then
-    eval "mpirun ${HST} -np ${NUMNODES} clinfo -l 2>/dev/null"
+  PROLOG=${PROLOG:-${CHECK}}
+  if [ "${PROLOG}" ] && [ "0" != "${PROLOG}" ] && [ "${HOSTS}" ]; then
+    echo "*** PROLOG ***"
+    if command -v numactl >/dev/null; then
+      eval "${MPIRUN} ${HST} -np ${NUMNODES} numactl -H 2>/dev/null"
+      echo
+    fi
+    if command -v clinfo >/dev/null; then
+      eval "${MPIRUN} ${HST} -np ${NUMNODES} clinfo -l 2>/dev/null"
+    fi
+    echo "**************"
   fi
-  echo "**************"
 fi
 
 # print job command
@@ -312,11 +319,13 @@ echo
 eval "${RUN}"
 
 # epilog
-EPILOG=${EPILOG:-${CHECK}}
-if [ "${EPILOG}" ] && [ "0" != "${EPILOG}" ] && [ "${HOSTS}" ]; then
-  echo "*** EPILOG ***"
-  if command -v clinfo >/dev/null; then
-    eval "mpirun ${HST} -np ${NUMNODES} clinfo -l 2>/dev/null"
+if [ "${MPIRUN}" ]; then
+  EPILOG=${EPILOG:-${CHECK}}
+  if [ "${EPILOG}" ] && [ "0" != "${EPILOG}" ] && [ "${HOSTS}" ]; then
+    echo "*** EPILOG ***"
+    if command -v clinfo >/dev/null; then
+      eval "${MPIRUN} ${HST} -np ${NUMNODES} clinfo -l 2>/dev/null"
+    fi
+    echo "**************"
   fi
-  echo "**************"
 fi
