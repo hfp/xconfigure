@@ -28,7 +28,7 @@ then
   fi
 fi
 
-if [ "0" != "${TUNE}" ]; then
+if [ "${TUNE}" ] && [ "0" != "${TUNE}" ]; then
   CP2K_GLIBC_TUNABLES="glibc.malloc.trim_threshold=-1"
   CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
   if [ "x86_64" = "$(uname -m)" ]; then
@@ -248,14 +248,12 @@ NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
 MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
 MT=$((HT<=MAXNT?HT:MAXNT))
 NTHREADS=${OMP_NUM_THREADS:-$((MC*MT))}
+if [ "1" != "${HT}" ] && [ "1" = "${MT}" ]; then
+  export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
+  export OMP_PLACES=${OMP_PLACES:-cores}
+fi
 if [ ! "${OMP_NUM_THREADS}" ]; then
   export OMP_NUM_THREADS=${NTHREADS}
-fi
-if [ "0" != "${OMP_OPT}" ]; then
-  if [ ! "${OMP_PLACES}" ] && [ "1" = "${MT}" ]; then
-    export OMP_PLACES=cores
-  fi
-  export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
 fi
 
 # change into workload directory
