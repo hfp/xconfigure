@@ -248,15 +248,13 @@ NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
 MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
 MT=$((HT<=MAXNT?HT:MAXNT))
 NTHREADS=${OMP_NUM_THREADS:-$((MC*MT))}
-if [ "${NT}" != "$((NRANKS*NTHREADS))" ]; then
-  if [ ! "${OMP_NUM_THREADS}" ]; then
-    export OMP_NUM_THREADS=${NTHREADS}
-  fi
+if [ ! "${OMP_NUM_THREADS}" ]; then
+  export OMP_NUM_THREADS=${NTHREADS}
+fi
+if [ "0" != "${OMP_OPT}" ]; then
   if [ ! "${OMP_PLACES}" ] && [ "1" = "${MT}" ]; then
     export OMP_PLACES=cores
   fi
-fi
-if [ "0" != "${OMP_OPT}" ]; then
   export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
 fi
 
