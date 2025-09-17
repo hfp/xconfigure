@@ -171,49 +171,47 @@ fi
 if [[ "${I_MPI_ROOT}" && "0" != "${IMPI}" ]] || \
    [[ "${MPICH}" && "0" != "${MPICH}" ]];
 then
-  #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
-  #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
-  MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
-  if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
-    if ! [[ ${BOOTSTRAP} =~ ^[+-]?[0-9]+$ ]]; then
-      MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ${BOOTSTRAP}"
-    else
-      MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
+  if [ "${MPIRUN}" ]; then
+    #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
+    #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
+    MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
+    if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
+      if ! [[ ${BOOTSTRAP} =~ ^[+-]?[0-9]+$ ]]; then
+        MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ${BOOTSTRAP}"
+      else
+        MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
+      fi
     fi
-  fi
-  if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
-    export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
-  fi
-  if [ "0" != "${MPI_OPT}" ]; then
-    export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
-    export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
-    export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
-    export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
+    if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
+      export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
+    fi
+    if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
+      export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
+    fi
+    if [ "0" != "${MPI_OPT}" ]; then
+      export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
+      export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
+      export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
+      export I_MPI_ADJUST_BCAST=${I_MPI_ADJUST_BCAST:-1}
+    fi
     if [ "1" = "${NUMNODES}" ]; then
       export I_MPI_FABRICS=${I_MPI_FABRICS:-shm}
     fi
-    if [ "0" != "${I_MPI_OFFLOAD}" ] && \
-       command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
-    then
-      export MPICH_GPU_SUPPORT_ENABLED=${MPICH_GPU_SUPPORT_ENABLED:-1}
-      export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
-      export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
-    else
-      export MPICH_GPU_SUPPORT_ENABLED=${I_MPI_OFFLOAD:-0}
-      export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
-    fi
-    export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
+    export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
+    #
+    #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
+    #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
+  fi
+  if [ "0" != "${I_MPI_OFFLOAD}" ] && \
+     command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
+  then
+    export MPICH_GPU_SUPPORT_ENABLED=${MPICH_GPU_SUPPORT_ENABLED:-1}
+    export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
+    export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-1}
   else
-    export MPICH_GPU_SUPPORT_ENABLED=${I_MPI_OFFLOAD:-0}
     export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
   fi
-  if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
-    export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
-  fi
-  export I_MPI_SHM_HEAP=${I_MPI_SHM_HEAP:-1}
-  #
-  #export I_MPI_PIN_DOMAIN=${I_MPI_PIN_DOMAIN:-auto}
-  #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
+  export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
 elif [ "${MPIRUN}" ]; then
   if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
@@ -258,8 +256,9 @@ if [ "${NT}" != "$((NRANKS*NTHREADS))" ]; then
     export OMP_PLACES=cores
   fi
 fi
-# OMP_PROC_BIND: default
-export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
+if [ "0" != "${OMP_OPT}" ]; then
+  export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
+fi
 
 # change into workload directory
 cd "$(dirname "${WORKLOAD}")" || exit
