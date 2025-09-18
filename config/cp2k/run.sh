@@ -28,18 +28,11 @@ then
   fi
 fi
 
-if [ "${TUNE}" ] && [ "0" != "${TUNE}" ]; then
+if [ "0" != "${TUNE}" ]; then
   CP2K_GLIBC_TUNABLES="glibc.malloc.trim_threshold=-1"
   CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
   if [ "x86_64" = "$(uname -m)" ]; then
     CP2K_GLIBC_TUNABLES+=":glibc.cpu.hwcaps=-AVX2"
-  fi
-fi
-if [ "${CP2K_GLIBC_TUNABLES}" ]; then
-  if [ "${GLIBC_TUNABLES}" ]; then
-    export GLIBC_TUNABLES="${GLIBC_TUNABLES}:${CP2K_GLIBC_TUNABLES}"
-  else
-    export GLIBC_TUNABLES="${CP2K_GLIBC_TUNABLES}"
   fi
 fi
 
@@ -187,6 +180,13 @@ then
     fi
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
       export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
+    fi
+    if [ "${CP2K_GLIBC_TUNABLES}" ]; then
+      if [ "${GLIBC_TUNABLES}" ]; then
+        export GLIBC_TUNABLES="${GLIBC_TUNABLES}:${CP2K_GLIBC_TUNABLES}"
+      else
+        export GLIBC_TUNABLES="${CP2K_GLIBC_TUNABLES}"
+      fi
     fi
     if [ "0" != "${MPI_OPT}" ]; then
       export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
