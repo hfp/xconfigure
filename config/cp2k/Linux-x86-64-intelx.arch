@@ -1070,9 +1070,6 @@ ifneq (0,$(MKL))
         -Wl,--end-group
     endif
   endif
-  LIBS += -Wl,--as-needed
-  LIBS += -lpthread -ldl $(if $(filter-out 0,$(INTEL)),-limf,-lm)
-  LIBS += -Wl,--no-as-needed
 else ifneq (0,$(BLAS)) # generic
   ifneq (,$(AOCL_ROOT))
     ifeq (0,$(STATIC)) # shared
@@ -1240,7 +1237,10 @@ endif
 LIBPATHS := $(foreach DIR,$(LIBRARY_PATHS),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 LIBSTUBS := $(foreach DIR,$(LIBRARY_STUBS),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 # Collect LIBPATHS and LIBSTUBS into LIBS
-LIBS += $(LIBPATHS) $(LIBSTUBS) -Wl,--as-needed -lstdc++ -l$(OMPRT) -Wl,--no-as-needed
+LIBS += $(LIBPATHS) $(LIBSTUBS)
+LIBS += -Wl,--as-needed
+LIBS += -lstdc++ -l$(OMPRT) -lpthread -ldl $(if $(filter-out 0,$(INTEL)),-limf,-lm)
+LIBS += -Wl,--no-as-needed
 
 cleanup = $(foreach FLAG,$1,$(FLAG))
 LDFLAGS := $(filter-out -ipo -ipo-separate,$(call cleanup,$(LDFLAGS)))
