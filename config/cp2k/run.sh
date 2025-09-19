@@ -181,13 +181,6 @@ then
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
       export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
     fi
-    if [ "${CP2K_GLIBC_TUNABLES}" ]; then
-      if [ "${GLIBC_TUNABLES}" ]; then
-        export GLIBC_TUNABLES="${GLIBC_TUNABLES}:${CP2K_GLIBC_TUNABLES}"
-      else
-        export GLIBC_TUNABLES="${CP2K_GLIBC_TUNABLES}"
-      fi
-    fi
     if [ "0" != "${MPI_OPT}" ]; then
       export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
       export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
@@ -221,6 +214,14 @@ elif [ "${MPIRUN}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
   else
     MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
+  fi
+fi
+
+if [ "${MPIRUN}" ] && [ "${CP2K_GLIBC_TUNABLES}" ]; then
+  if [ "${GLIBC_TUNABLES}" ]; then
+    export GLIBC_TUNABLES="${GLIBC_TUNABLES}:${CP2K_GLIBC_TUNABLES}"
+  else
+    export GLIBC_TUNABLES="${CP2K_GLIBC_TUNABLES}"
   fi
 fi
 
