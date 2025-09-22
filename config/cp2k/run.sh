@@ -11,8 +11,10 @@ VERSION=psmp
 MAXNT=${MAXNT:-1}
 
 # consider the following in .bashrc
-# ulimit -s unlimited
-# ulimit -c0
+if [ "$(command -v ulimit)" ]; then
+  ulimit -s unlimited 2>/dev/null
+  ulimit -c0 2>/dev/null
+fi
 
 export CP2K_DATA_DIR=${CP2K_DATA_DIR:-${ROOT}/data}
 #NUMACTL="numactl --preferred=1"
