@@ -12,9 +12,9 @@ MAXNT=${MAXNT:-1}
 
 # consider the following in .bashrc
 if [ "$(command -v ulimit)" ]; then
-  ulimit -s unlimited 2>/dev/null
-  ulimit -c0 2>/dev/null
-fi
+  ulimit -s unlimited
+  ulimit -c0
+fi 2>/dev/null
 
 export CP2K_DATA_DIR=${CP2K_DATA_DIR:-${ROOT}/data}
 #NUMACTL="numactl --preferred=1"
@@ -53,7 +53,11 @@ fi
 
 if [ ! "${EXE}" ]; then
   EXEVER=${EXEVER:-exe}
-  EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
+  if [ "/" != "${EXEVER:0:1}" ]; then
+    EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
+  else
+    EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
+  fi
   export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
 fi
 EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
@@ -236,9 +240,9 @@ if [ "1" != "$((NRANKS*NUMNODES))" ] || [ "${HST}" ] || [ "${PREFX}" ]; then
     RUN="${MPIRUNPREFX} ${MPIRUN} ${HST} ${MPIRUNFLAGS} \
         -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
       ${EXE} ${WORKLOAD} ${ARGS}"
-  else
+  elif [ "$(command -v srun)" ]; then
     RUN="${MPIRUNPREFX} srun \
-        --cpu-bind=socket \
+        --cpu-bind=sockets \
         ${NUMACTL} ${PREFX} \
       ${EXE} ${WORKLOAD} ${ARGS}"
   fi
