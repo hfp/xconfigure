@@ -72,12 +72,15 @@ IFX := $(call which,ifx)
 ICX := $(call which,icx)
 ICP := $(call which,icpx)
 
+GCC_AR := $(if $(call which,gcc-ar),gcc-ar,ar)
+GCC_RANLIB := $(if $(call which,gcc-ranlib),gcc-ranlib,$(if $(call which,ranlib),ranlib,$(GCC_AR)))
+
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
 INTEL_FORCE := $(NULL)
 ifeq (,$(filter-out 0,$(GNU)))
   INTEL_FORCE := $(if $(filter-out 0,$(INTEL)),$(filter 0,$(GNU)))
-  XIAR := $(if $(call which,xiar),xiar,ar)
+  XIAR := $(if $(call which,xiar),xiar,$(GCC_AR))
   ifeq (,$(shell echo "$${FC}"))
     ifneq (,$(filter ifx ifx2,$(notdir $(IFX))$(INTEL)))
       FC := ifx
@@ -100,8 +103,6 @@ ifeq (,$(filter-out 0,$(GNU)))
     endif
   endif
   GNU := 0
-else
-  GCC_AR := $(call which,gcc-ar)
 endif
 
 # check if the Intel Development Tools are available
@@ -204,8 +205,8 @@ ifneq (0,$(MPI))
       FC  := mpiifort
       LD  := mpiifort
     else ifneq (,$(call which,mpiifx))
-      RANLIB := ar -s
-      AR  := ar -r
+      RANLIB := $(GCC_RANLIB) -s
+      AR  := $(GCC_AR) -r
       CXX := mpiicpx
       CC  := mpiicx
       FC  := mpiifx
@@ -219,8 +220,8 @@ ifneq (0,$(MPI))
       LD  := mpiifort -fc=ifx
     endif
   else # GNU
-    RANLIB := gcc-ranlib
-    AR  := $(if $(GCC_AR),gcc-ar,ar) -r
+    RANLIB := $(GCC_RANLIB)
+    AR  := $(GCC_AR) -r
     CXX := mpicxx
     CC  := mpicc
     FC  := mpif90
@@ -235,16 +236,16 @@ else ifeq (0,$(GNU))
     FC  := ifort
     LD  := ifort
   else
-    RANLIB := ar -s
-    AR  := ar -r
+    RANLIB := $(GCC_RANLIB) -s
+    AR  := $(GCC_AR) -r
     CXX := icpx
     CC  := icx
     FC  := ifx
     LD  := ifx
   endif
 else # GNU
-  RANLIB := gcc-ranlib
-  AR  := $(if $(GCC_AR),gcc-ar,ar) -r
+  RANLIB := $(GCC_RANLIB)
+  AR  := $(GCC_AR) -r
   CXX := g++
   CC  := gcc
   FC  := gfortran
@@ -626,21 +627,34 @@ endif
 IOMPFLAG := -qopenmp
 GOMPFLAG := -fopenmp
 ifneq (0,$(OMP))
-  OPTFLAGS += $(if $(filter-out 0,$(INTEL)),$(IOMPFLAG),$(GOMPFLAG))
   ifneq (0,$(INTEL))
     DFLAGS += _OPENMP_SIMD
-    OPTFLAGS += $(IOMPFLAG)-simd
+    OPTFLAGS += $(IOMPFLAG)-simd $(IOMPFLAG)
   else # GNU
     ifeq (,$(filter _0_ __,_$(SIMD)_)) # force-enable with SIMD=1
     # GNU: https://github.com/cp2k/dbcsr/issues/217
       DFLAGS += _OPENMP_SIMD
       OPTFLAGS += $(GOMPFLAG)-simd
     endif
+    ifneq (Darwin,$(UNAME))
+      OPTFLAGS += $(GOMPFLAG)
+    else # macOS
+      CXXLAGS += -Xpreprocessor $(GOMPFLAG)
+      CFLAGS += -Xpreprocessor $(GOMPFLAG)
+      FCFLAGS += $(GOMPFLAG)
+      OMPRT := omp
+    endif
   endif
 endif
 
-ifneq (0,$(DYNAMIC))
-  LDFLAGS += -Wl,--export-dynamic
+ifneq (Darwin,$(UNAME))
+  ifneq (0,$(DYNAMIC))
+    LDFLAGS += -Wl,--export-dynamic
+  endif
+  XLIB_BEGIN ?= -Wl,--as-needed
+  XLIB_END ?= -Wl,--no-as-needed
+else # macOS
+  LDFLAGS += -Xlinker
 endif
 
 ifeq (0,$(LEGACY))
@@ -852,7 +866,7 @@ ifneq (0,$(SLATE)) # incl. undefined
     SCALAPACK_ADDON += -L$(SLATEROOT)/$(SLATE_LDIR) -lslate_scalapack_api
     SCALAPACK_ADDON += -Wl,-rpath,$(SLATEROOT)/$(SLATE_LDIR)
     ifneq (,$(ICX)) # if Slate was eventually built with Intel Compiler
-      SCALAPACK_ADDON += -Wl,--as-needed
+      SCALAPACK_ADDON += $(XLIB_BEGIN)
       ifneq (2,$(INTEL))
         SCALAPACK_ADDON += -lsycl -lur_loader -lomptarget
         ifneq (0,$(GNU))
@@ -860,7 +874,7 @@ ifneq (0,$(SLATE)) # incl. undefined
           OMPRT = iomp5
         endif
       endif
-      SCALAPACK_ADDON += -Wl,--no-as-needed
+      SCALAPACK_ADDON += $(XLIB_END)
     endif
   endif
 endif
@@ -896,7 +910,7 @@ ifneq (,$(ELPAROOT))
         ifneq (,$(INTEL_LDIR))
           LIBS += -L$(INTEL_LDIR) -Wl,-rpath,$(INTEL_LDIR)
         endif
-        LIBS += -Wl,--as-needed
+        LIBS += $(XLIB_BEGIN)
         LIBS += -lmkl_sycl
         ifneq (2,$(INTEL))
           LIBS += -lsycl
@@ -907,7 +921,7 @@ ifneq (,$(ELPAROOT))
         else
           LDFLAGS += -fsycl
         endif
-        LIBS += -Wl,--no-as-needed
+        LIBS += $(XLIB_END)
         DFLAGS += __ELPA_INTEL_GPU
         MKL_FCRTL = intel
         #MKL_BITS = ilp64
@@ -925,8 +939,10 @@ ifneq (,$(LIBXSMMROOT))
     DFLAGS += __LIBXSMM=$(LIBXSMM)
     ifneq (0,$(GNU))
     ifneq (0,$(DBG))
+    ifneq (Darwin,$(UNAME))
     # suppress "Fortran runtime warning:"
       LDFLAGS += -Wl,--wrap=_gfortran_runtime_warning_at
+    endif
     endif
     endif
     IFLAGS += $(LIBXSMM_DSTDIR)/include
@@ -1197,8 +1213,9 @@ endif
 CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
 CFLAGS    += $(OPTFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
 FCFLAGS   += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS))
-# apply opt-level at link-line to avoid Intel Compiler remark #10440
-LDFLAGS   += -O$(OPT) $(IPOFLAGS)
+ifneq (0,$(IPO)) # apply opt-level at link-line to avoid Intel Compiler remark #10440
+  LDFLAGS   += -O$(OPT) $(IPOFLAGS)
+endif
 
 ifneq (0,$(INTEL))
   ifneq (1,$(INTEL))
@@ -1228,8 +1245,10 @@ ifneq (0,$(STATIC))
     LDFLAGS += -static-mpi
   endif
   endif
+  ifneq (Darwin,$(UNAME))
   ifneq (2,$(STATIC)) # 3
     LDFLAGS += -static-libgcc -static-libstdc++
+  endif
   endif
 endif
 
@@ -1238,9 +1257,9 @@ LIBPATHS := $(foreach DIR,$(LIBRARY_PATHS),$(if $(filter -L$(DIR),$(LIBS)),$(NUL
 LIBSTUBS := $(foreach DIR,$(LIBRARY_STUBS),$(if $(filter -L$(DIR),$(LIBS)),$(NULL),-L$(DIR)))
 # Collect LIBPATHS and LIBSTUBS into LIBS
 LIBS += $(LIBPATHS) $(LIBSTUBS)
-LIBS += -Wl,--as-needed
+LIBS += $(XLIB_BEGIN)
 LIBS += -lstdc++ -l$(OMPRT) -lpthread -ldl $(if $(filter-out 0,$(INTEL)),-limf,-lm)
-LIBS += -Wl,--no-as-needed
+LIBS += $(XLIB_END)
 
 cleanup = $(foreach FLAG,$1,$(FLAG))
 LDFLAGS := $(filter-out -ipo -ipo-separate,$(call cleanup,$(LDFLAGS)))
@@ -1276,5 +1295,4 @@ xc.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
 endif
 grid_dgemm_prepare_pab.o: CFLAGS += -O$(OPT2)
 endif
-#dbm_multiply.o: CFLAGS += -qno-openmp -Wno-recommended-option $(GOMPFLAG)
 endif
