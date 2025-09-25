@@ -215,11 +215,13 @@ elif [ "${MPIRUN}" ]; then
   if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
-  # Depending on OpenMPI version: package <-> socket
-  if ${MPIRUN} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS)) true 2>/dev/null; then
-    MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
-  else
-    MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
+  if [ "0" != "${MPI_OPT}" ]; then
+    # Depending on OpenMPI version: package <-> socket
+    if ${MPIRUN} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS)) true 2>/dev/null; then
+      MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
+    else
+      MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):socket:PE=$((NC/NRANKS))"
+    fi
   fi
 fi
 
