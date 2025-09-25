@@ -181,7 +181,7 @@ then
         MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
       fi
     fi
-    if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
+    if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
       export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
     fi
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
@@ -212,7 +212,7 @@ then
   fi
   export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
 elif [ "${MPIRUN}" ]; then
-  if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
+  if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   # Depending on OpenMPI version: package <-> socket
