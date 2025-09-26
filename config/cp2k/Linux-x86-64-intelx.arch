@@ -280,18 +280,21 @@ MKL_MPIRTL ?= $(if $(filter-out 0,$(IMPI)),intelmpi,openmpi)
 
 # enable Intel MKL (if available)
 MKL := 0
+MKL_AUTO := 0
 ifneq (0,$(BLAS))
 ifneq (,$(filter x86_64,$(MNAME)))
-  ifeq (,$(MKLROOT))
-    MKL_INCFILE := $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h)))
-    ifneq (,$(MKL_INCFILE))
-      MKLROOT := $(realpath $(dir $(MKL_INCFILE))/..)
+  ifneq (0,$(MKL_AUTO))
+    ifeq (,$(MKLROOT))
+      MKL_INCFILE := $(lastword $(sort $(wildcard /opt/intel/compilers_and_libraries_*/linux/mkl/include/mkl.h)))
+      ifneq (,$(MKL_INCFILE))
+        MKLROOT := $(realpath $(dir $(MKL_INCFILE))/..)
+      endif
     endif
-  endif
-  ifeq (,$(MKLROOT))
-    MKL_INCFILE := $(wildcard /usr/include/mkl/mkl.h)
-    ifneq (,$(MKL_INCFILE))
-      MKLROOT := $(realpath $(dir $(MKL_INCFILE))/../..)
+    ifeq (,$(MKLROOT))
+      MKL_INCFILE := $(wildcard /usr/include/mkl/mkl.h)
+      ifneq (,$(MKL_INCFILE))
+        MKLROOT := $(realpath $(dir $(MKL_INCFILE))/../..)
+      endif
     endif
   endif
   ifneq (,$(MKLROOT))
