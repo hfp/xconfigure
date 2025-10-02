@@ -51,14 +51,6 @@ export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 
 if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
-  if [ -e "${HERE}/fortran/Makefile" ] || [ -e "${HERE}/fortran/Makefile.in" ]; then
-    sed -i '/fortran_example:/!b;n;s/CXX/FC/g' "${HERE}"/fortran/Makefile*
-  fi
-  if [ -e "${HERE}/fortran/Makefile" ]; then
-    cd "${HERE}/fortran" || exit 1
-    make distclean
-    cd "${HERE}" || exit 1
-  fi
   if [ -e "${HERE}/autogen.sh" ]; then
     if [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/include" ]; then
       export CPATH=${BOOST_ROOT}/include:${CPATH}
@@ -76,6 +68,14 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     --with-real-type=libint2::simd::VectorAVXDouble --enable-fma \
     --with-cxxgen-optflags=\"${CXXFLAGS}\" \
     $*"
+  if [ -e "${HERE}/fortran/Makefile" ] || [ -e "${HERE}/fortran/Makefile.in" ]; then
+    sed -i '/fortran_example:/!b;n;s/CXX/FC/g' "${HERE}"/fortran/Makefile*
+    if [ -e "${HERE}/fortran/Makefile" ]; then
+      cd "${HERE}/fortran" || exit 1
+      make distclean 2>/dev/null || true
+      cd "${HERE}" || exit 1
+    fi
+  fi
   if [ -e "${HERE}/autogen.sh" ]; then
     make export -j "$(nproc)"
     tar -xf libint-cp2k-lmax6.tgz --strip-components=1 --overwrite
@@ -85,11 +85,17 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
 fi
 
 # preconfigured
-if [ ! -e "${HERE}/CMakeLists.txt" ] || [ ! "$(command -v cmake)" ]; then
+if [ -e "${HERE}/CMakeLists.txt" ] && [ "$(command -v cmake)" ]; then
+  PROPERTY="PROPERTIES LINKER_LANGUAGE Fortran"
+  if [ ! "$(sed -n "/${PROPERTY}/p")" ]; then
+    sed -i "s/\( *\)\(add_executable(fortran_\)\([^ ]\+\)\( ..*\)/\1\2\3\4\n\1set_target_properties(fortran_\3 ${PROPERTY})/" \
+      "${HERE}/CMakeLists.txt"
+  fi
+  rm -f "${HERE}/CMakeCache.txt"
+  cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
+    -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
+else
   echo "Error: XCONFIGURE requires CMake to build LIBINT!"
   exit 1
 fi
-rm -f "${HERE}/CMakeCache.txt"
-cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
-  -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-  -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
