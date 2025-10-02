@@ -85,13 +85,17 @@ for FILE in ${FILES}; do
   RANKS=$(grep "\(mpirun\|mpiexec\)" "${FILE}" | grep -o "\-\(perhost\|npernode\)..*$" | tr -s " " | cut -d" " -f2 | tail -n1 | tr -d -c "[:digit:]")
   if [ ! "${RANKS}" ]; then
     RANKS=$(grep "GLOBAL| Total number of message passing processes" "${FILE}" | grep -m1 -o "[0-9][0-9]*")
-    if [ ! "${RANKS}" ]; then RANKS=1; fi
   fi
-  if [ ! "${NODERANKS}" ]; then
+  if [ ! "${RANKS}" ]; then RANKS=1; fi
+  # OpenMPI
+  NODES=$(grep "cpu-bind=" "${FILE}" | cut -d- -f3 | cut -d, -f1 | sort -u | wc -l)
+  if [ ! "${NODES}" ]; then # fallback
     for TOKEN in $(tr -s "[=_=][=-=]" " " <<<"${BASENAME}"); do
       NODES=$(sed -n "s/^\([0-9][0-9]*\)\(x[0-9][0-9]*\)*$/\1/p;s/^\([0-9][0-9]*\)n$/\1/p;s/^n\([0-9][0-9]*\)$/\1/p" <<<"${TOKEN}")
       if [ "${NODES}" ]; then break; fi
     done
+  fi
+  if [ ! "${NODERANKS}" ]; then
     NODERANKS=${RANKS}
     if [ "${NODES}" ] && [ "0" != "${NODES}" ] && [ "0" != "$((NODES<=NODERANKS))" ]; then
       RANKS=$((NODERANKS/NODES))
