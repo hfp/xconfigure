@@ -60,7 +60,7 @@ fi
 EXTRA=$1
 
 for PATTERN in ${PATTERNS}; do
-  FILES+="$(find ${FILEPATH} -maxdepth "${DEPTH}" ! -type d -name "${PATTERN}" | grep -v "..*\.sh\|CMakeLists\.txt") "
+  FILES+="$(find "${FILEPATH}" -maxdepth "${DEPTH}" ! -type d -name "${PATTERN}" | grep -v "..*\.sh\|CMakeLists\.txt") "
 done
 FILES=$(xargs -n1 <<<"${FILES}")
 if [ ! "${FILES}" ]; then
