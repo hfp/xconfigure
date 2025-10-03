@@ -1019,7 +1019,7 @@ ifneq (0,$(MPI))
     endif
     endif
   endif
-  ifneq (,$(MKLROOT)) # link as part of MKL even for non-MKL ScaLAPACK
+  ifneq (,$(if $(SCALAPACKDIR),$(NULL),$(MKLROOT)))
     SCALAPACKDIR := $(MKLROOT)/lib/intel64
     SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
   else # not via MKL
