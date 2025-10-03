@@ -212,6 +212,9 @@ then
   fi
   export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
 elif [ "${MPIRUN}" ]; then
+  if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
+    MPIRUNFLAGS="${MPIRUNFLAGS} --oversubscribe"
+  fi
   if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
