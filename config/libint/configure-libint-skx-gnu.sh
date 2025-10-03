@@ -87,7 +87,7 @@ fi
 # preconfigured
 if [ -e "${HERE}/CMakeLists.txt" ] && [ "$(command -v cmake)" ]; then
   PROPERTY="PROPERTIES LINKER_LANGUAGE Fortran"
-  if [ ! "$(sed -n "/${PROPERTY}/p")" ]; then
+  if [ ! "$(sed -n "/${PROPERTY}/p" "${HERE}/CMakeLists.txt")" ]; then
     sed -i "s/\( *\)\(add_executable(fortran_\)\([^ ]\+\)\( ..*\)/\1\2\3\4\n\1set_target_properties(fortran_\3 ${PROPERTY})/" \
       "${HERE}/CMakeLists.txt"
   fi
