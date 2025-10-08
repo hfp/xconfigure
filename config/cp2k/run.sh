@@ -187,7 +187,7 @@ then
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
       export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
     fi
-    if [ "0" != "${MPI_OPT}" ]; then
+    if [ "${MPI_OPT}" ] && [ "0" != "${MPI_OPT}" ]; then
       export I_MPI_COLL_INTRANODE=${I_MPI_COLL_INTRANODE:-pt2pt}
       export I_MPI_DYNAMIC_CONNECTION=${I_MPI_DYNAMIC_CONNECTION:-1}
       export I_MPI_ADJUST_REDUCE=${I_MPI_ADJUST_REDUCE:-1}
