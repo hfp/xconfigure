@@ -139,6 +139,7 @@ IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
 OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
 #MATMUL ?= $(if $(filter-out 1,$(INTEL)),1,0)
 LIBEXT ?= $(if $(filter-out 0,$(STATIC)),a,so)
+LIBFBX ?= $(if $(filter-out a,$(LIBEXT)),a,so)
 
 # NDEBUG=0: keep all assertions active
 # NDEBUG=1: apply to DBCSR (should be fine)
@@ -896,15 +897,21 @@ ifneq (,$(ELPAROOT))
   ifneq (,$(ELPAINCDIR))
   ifneq (,$(ELPALIBDIR))
     ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
+    ifeq (,$(ELPALIB))
+      ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBFBX),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBFBX))))
+      ELPAEXT := $(LIBFBX)
+    else
+      ELPAEXT := $(LIBEXT)
+    endif
   endif
   endif
   ifneq (,$(ELPALIB))
     IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
     DFLAGS += __ELPA=$(ELPA)
-    ifeq (0,$(STATIC))
+    ifneq (a,$(ELPAEXT))
       LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
-    else
-      LIBS += $(ELPALIBDIR)/lib$(ELPALIB).a
+    else # link static archive
+      LIBS += $(ELPALIBDIR)/lib$(ELPALIB).$(ELPAEXT)
     endif
     ifneq (0,$(CUDA))
       DFLAGS += __ELPA_NVIDIA_GPU
