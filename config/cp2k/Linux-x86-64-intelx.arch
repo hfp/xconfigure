@@ -707,8 +707,8 @@ ifneq (0,$(LIBXSMM)) # incl. undefined
   else ifneq (,$(wildcard $(TOOLSRC)/toolchain/build/libxsmm*/Makefile))
     LIBXSMMROOT ?= $(abspath $(dir $(lastword $(sort $(wildcard $(TOOLSRC)/toolchain/build/libxsmm*/Makefile)))))
   endif
-  LIBXSMMROOT := $(realpath $(LIBXSMMROOT))
   ifneq (,$(LIBXSMMROOT))
+    LIBXSMMROOT := $(realpath $(LIBXSMMROOT))
     $(info LIBXSMMROOT: $(LIBXSMMROOT))
   endif
 endif
@@ -726,8 +726,8 @@ ifneq (0,$(LIBINT)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/libint/$(CFG)))
     LIBINTROOT ?= $(abspath $(HOME)/libint/$(CFG))
   endif
-  LIBINTROOT := $(realpath $(LIBINTROOT))
   ifneq (,$(LIBINTROOT))
+    LIBINTROOT := $(realpath $(LIBINTROOT))
     $(info LIBINTROOT: $(LIBINTROOT))
     DFLAGS += __LIBINT
     IFLAGS += $(LIBINTROOT)/include
@@ -755,8 +755,8 @@ ifneq (0,$(PLUMED)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/plumed/$(CFG)))
     PLUMEDROOT ?= $(abspath $(HOME)/plumed/$(CFG))
   endif
-  PLUMEDROOT := $(realpath $(PLUMEDROOT))
   ifneq (,$(PLUMEDROOT))
+    PLUMEDROOT := $(realpath $(PLUMEDROOT))
     $(info PLUMEDROOT: $(PLUMEDROOT))
     DFLAGS += __PLUMED2
     # avoid duplicated libraries (-ldl -lstdc++)
@@ -777,8 +777,8 @@ ifneq (0,$(LIBXC)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/libxc/$(CFG)))
     LIBXCROOT ?= $(abspath $(HOME)/libxc/$(CFG))
   endif
-  LIBXCROOT := $(realpath $(LIBXCROOT))
   ifneq (,$(LIBXCROOT))
+    LIBXCROOT := $(realpath $(LIBXCROOT))
     $(info LIBXCROOT: $(LIBXCROOT))
     DFLAGS += __LIBXC
     IFLAGS += $(LIBXCROOT)/include
@@ -808,9 +808,9 @@ ifneq (0,$(LIBGRPP)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/libgrpp/$(CFG)))
     LIBGRPPROOT ?= $(abspath $(HOME)/libgrpp/$(CFG))
   endif
-  LIBGRPPROOT := $(realpath $(LIBGRPPROOT))
   ifneq (,$(LIBGRPPROOT))
   ifneq (,$(wildcard $(LIBGRPPROOT)/lib/liblibgrpp.a))
+    LIBGRPPROOT := $(realpath $(LIBGRPPROOT))
     $(info LIBGRPPROOT: $(LIBGRPPROOT))
     LIBS += $(LIBGRPPROOT)/lib/liblibgrpp.a
     IFLAGS += $(LIBGRPPROOT)/include
@@ -845,6 +845,7 @@ ifneq (0,$(ELPA)) # incl. undefined
     ELPAROOT ?= $(abspath $(HOME)/elpa/$(CFG))
   endif
   ifneq (,$(ELPAROOT))
+    ELPAROOT := $(realpath $(ELPAROOT))
     $(info ELPAROOT: $(ELPAROOT))
   endif
 endif
@@ -862,8 +863,8 @@ ifneq (0,$(SLATE)) # incl. undefined
   else ifneq (,$(wildcard $(HOME)/slate/$(CFG)))
     SLATEROOT ?= $(abspath $(HOME)/slate/$(CFG))
   endif
-  SLATEROOT := $(realpath $(SLATEROOT))
   ifneq (,$(SLATEROOT))
+    SLATEROOT := $(realpath $(SLATEROOT))
     $(info SLATEROOT: $(SLATEROOT))
     SLATE_LDIR := $(if $(wildcard $(SLATEROOT)/lib64),lib64,lib)
     SCALAPACK_ADDON += -L$(SLATEROOT)/$(SLATE_LDIR) -lslate_scalapack_api
