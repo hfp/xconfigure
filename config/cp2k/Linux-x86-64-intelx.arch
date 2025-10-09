@@ -144,7 +144,6 @@ IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
 OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
 #MATMUL ?= $(if $(filter-out 1,$(INTEL)),1,0)
 LIBEXT ?= $(if $(filter-out 0,$(STATIC)),a,so)
-LIBFBX ?= $(if $(filter-out a,$(LIBEXT)),a,so)
 
 # NDEBUG=0: keep all assertions active
 # NDEBUG=1: apply to DBCSR (should be fine)
@@ -899,50 +898,44 @@ ifneq (0,$(ELPA))
 ifneq (,$(ELPAROOT))
   ELPAINCDIR := $(dir $(firstword $(wildcard $(ELPAROOT)/include/*/elpa/elpa_*constants.h)))
   ELPALIBDIR := $(firstword $(wildcard $(ELPAROOT)/lib64 $(wildcard $(ELPAROOT)/lib)))
-  ifneq (,$(ELPAINCDIR))
-  ifneq (,$(ELPALIBDIR))
-    ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
-    ifeq (,$(ELPALIB))
-      ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBFBX),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBFBX))))
-      ELPAEXT := $(LIBFBX)
-    else
-      ELPAEXT := $(LIBEXT)
+
+  ifneq (2,$(words $(ELPAINCDIR) $(ELPALIBDIR)))
+    ifneq (0,$(CUDA))
+      ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
+    else ifeq (,$(if $(ICX),$(filter-out 0 1 2,$(OCL))))
+      ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
+    else # ELPA was eventually built with Intel Compiler and 3 <= OCL
+      ELPALSO := $(patsubst $(ELPALIBDIR)/lib%.so,%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.so)))
+      ELPALAR := $(patsubst $(ELPALIBDIR)/lib%.a,%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.a)))
     endif
-  endif
   endif
   ifneq (,$(ELPALIB))
     IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
-    DFLAGS += __ELPA=$(ELPA)
-    ifneq (a,$(ELPAEXT))
+    DFLAGS += __ELPA=$(ELPA) $(if $(filter-out 0,$(CUDA)),__ELPA_NVIDIA_GPU)
+    ifeq (0,$(STATIC))
       LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
     else # link static archive
       LIBS += $(ELPALIBDIR)/lib$(ELPALIB).$(ELPAEXT)
     endif
-    ifneq (0,$(CUDA))
-      DFLAGS += __ELPA_NVIDIA_GPU
-    else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
-      ifneq (,$(ICX)) # ELPA was eventually built with Intel Compiler
-      ifneq (a,$(ELPAEXT))
-        LIBS += $(ELPALIBDIR)/lib$(ELPALIB).a
-        LIBS += -L$(ICXROOT)/lib -Wl,-rpath,$(ICXROOT)/lib
-        LIBS += $(XLIB_BEGIN)
-        LIBS += -lmkl_sycl
-        ifneq (2,$(INTEL))
-          LIBS += -lsycl
-          ifneq (0,$(GNU))
-            LIBS += -lsvml
-            OMPRT = iomp5
-          endif
-        else
-          LDFLAGS += -fsycl
-        endif
-        LIBS += $(XLIB_END)
-        DFLAGS += __ELPA_INTEL_GPU
-        MKL_FCRTL = intel
-        #MKL_BITS = ilp64
+  else ifeq (2,$(words $(ELPALSO) $(ELPALAR)))
+    IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
+    DFLAGS += __ELPA=$(ELPA) __ELPA_INTEL_GPU
+    MKL_FCRTL = intel
+    #MKL_BITS = ilp64
+    LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALSO)
+    LIBS += $(ELPALIBDIR)/lib$(ELPALAR).a
+    LIBS += $(XLIB_BEGIN)
+    LIBS += -lmkl_sycl
+    ifneq (2,$(INTEL))
+      LIBS += -lsycl
+      ifneq (0,$(GNU))
+        LIBS += -lsvml
+        OMPRT = iomp5
       endif
-      endif
+    else
+      LDFLAGS += -fsycl
     endif
+    LIBS += $(XLIB_END)
   endif
 endif
 endif
