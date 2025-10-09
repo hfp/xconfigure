@@ -922,6 +922,8 @@ ifneq (,$(ELPAROOT))
       DFLAGS += __ELPA_NVIDIA_GPU
     else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
       ifneq (,$(ICX)) # ELPA was eventually built with Intel Compiler
+      ifneq (a,$(ELPAEXT))
+        LIBS += $(ELPALIBDIR)/lib$(ELPALIB).a
         LIBS += -L$(ICXROOT)/lib -Wl,-rpath,$(ICXROOT)/lib
         LIBS += $(XLIB_BEGIN)
         LIBS += -lmkl_sycl
@@ -938,6 +940,7 @@ ifneq (,$(ELPAROOT))
         DFLAGS += __ELPA_INTEL_GPU
         MKL_FCRTL = intel
         #MKL_BITS = ilp64
+      endif
       endif
     endif
   endif
