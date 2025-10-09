@@ -68,12 +68,17 @@ endif
 prefix_iflags = $(addprefix -I,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 prefix_dflags = $(addprefix -D,$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${14} ${15} ${16})
 
+GCC_AR := $(if $(call which,gcc-ar),gcc-ar,ar)
+GCC_RANLIB := $(if $(call which,gcc-ranlib),gcc-ranlib,$(if $(call which,ranlib),ranlib,$(GCC_AR)))
+
 IFX := $(call which,ifx)
 ICX := $(call which,icx)
 ICP := $(call which,icpx)
 
-GCC_AR := $(if $(call which,gcc-ar),gcc-ar,ar)
-GCC_RANLIB := $(if $(call which,gcc-ranlib),gcc-ranlib,$(if $(call which,ranlib),ranlib,$(GCC_AR)))
+ifneq (,$(ICX))
+  ICXROOT := $(realpath $(dir $(ICX))/..)
+  ICXLDIR := $(if $(wildcard $(ICXROOT)/lib64),lib64,lib)
+endif
 
 # Automatically pickup the environment (make -e is not required),
 # or pickup the Intel Compiler (if available).
@@ -870,7 +875,7 @@ ifneq (0,$(SLATE)) # incl. undefined
     SLATE_LDIR := $(if $(wildcard $(SLATEROOT)/lib64),lib64,lib)
     SCALAPACK_ADDON += -L$(SLATEROOT)/$(SLATE_LDIR) -lslate_scalapack_api
     SCALAPACK_ADDON += -Wl,-rpath,$(SLATEROOT)/$(SLATE_LDIR)
-    ifneq (,$(ICX)) # if Slate was eventually built with Intel Compiler
+    ifneq (,$(ICX)) # Slate was eventually built with Intel Compiler
       SCALAPACK_ADDON += $(XLIB_BEGIN)
       ifneq (2,$(INTEL))
         SCALAPACK_ADDON += -lsycl -lur_loader -lomptarget
@@ -916,11 +921,8 @@ ifneq (,$(ELPAROOT))
     ifneq (0,$(CUDA))
       DFLAGS += __ELPA_NVIDIA_GPU
     else ifneq (,$(filter-out 0 1 2,$(OCL))) # 3 <= OCL
-      ifneq (,$(ICX)) # if ELPA was eventually built with Intel Compiler
-        INTEL_LDIR := $(realpath $(dir $(ICX))/../lib)
-        ifneq (,$(INTEL_LDIR))
-          LIBS += -L$(INTEL_LDIR) -Wl,-rpath,$(INTEL_LDIR)
-        endif
+      ifneq (,$(ICX)) # ELPA was eventually built with Intel Compiler
+        LIBS += -L$(ICXROOT)/lib -Wl,-rpath,$(ICXROOT)/lib
         LIBS += $(XLIB_BEGIN)
         LIBS += -lmkl_sycl
         ifneq (2,$(INTEL))
@@ -1155,11 +1157,9 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LDIR)
         IFLAGS += $(OPENCL_ROOT)/include
       else ifneq (,$(ICX))
-        OPENCL_ROOT := $(abspath $(dir $(ICX))/..)
-        CLINC := $(wildcard $(OPENCL_ROOT)/include/sycl/CL/cl.h $(OPENCL_ROOT)/include/CL/cl.h)
+        CLINC := $(wildcard $(ICXROOT)/include/sycl/CL/cl.h $(ICXROOT)/include/CL/cl.h)
         ifneq (,$(CLINC))
-          OPENCL_LDIR := $(if $(wildcard $(OPENCL_ROOT)/lib64),lib64,lib)
-          LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LDIR) -L$(OPENCL_ROOT)/compiler/lib/intel64
+          LIBS += -L$(ICXROOT)/$(ICXLDIR) -L$(ICXROOT)/compiler/lib/intel64
           IFLAGS += $(abspath $(dir $(firstword $(CLINC)))/..)
         endif
       endif
