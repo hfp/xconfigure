@@ -211,6 +211,7 @@ then
     export I_MPI_OFFLOAD=${I_MPI_OFFLOAD:-0}
   fi
   export MPICH_MALLOC_FALLBACK=${MPICH_MALLOC_FALLBACK:-1}
+  export FI_MLX_INJECT=${FI_MLX_INJECT:-0}
 elif [ "${MPIRUN}" ]; then
   if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --oversubscribe"
