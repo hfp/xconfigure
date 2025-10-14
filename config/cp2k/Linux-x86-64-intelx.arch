@@ -1028,6 +1028,7 @@ ifneq (0,$(MPI))
   ifneq (,$(if $(SCALAPACKDIR),$(NULL),$(MKLROOT)))
     SCALAPACKDIR := $(MKLROOT)/lib/intel64
     SCALAPACKLIB := mkl_scalapack_$(MKL_BITS)
+    DFLAGS += __SCALAPACK_NO_WA
   else # not via MKL
     #SCALAPACKLIB := $(if $(filter-out 0,$(IMPI)),scalapack,scalapack-openmpi)
     SCALAPACKLIB := scalapack
