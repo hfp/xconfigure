@@ -216,7 +216,7 @@ elif [ "${MPIRUN}" ]; then
   if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --oversubscribe"
   fi
-  if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
+  if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ] && [ ! "${IMPI}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   if [ "0" != "${MPI_OPT}" ]; then
