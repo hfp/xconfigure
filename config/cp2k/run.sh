@@ -264,6 +264,8 @@ NTHREADS=${OMP_NUM_THREADS:-$((MC*MT))}
 if [ "1" != "${HT}" ] && [ "1" = "${MT}" ]; then
   export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
   export OMP_PLACES=${OMP_PLACES:-cores}
+else
+  export OMP_PROC_BIND=${OMP_PROC_BIND:-true}
 fi
 if [ ! "${OMP_NUM_THREADS}" ]; then
   export OMP_NUM_THREADS=${NTHREADS}
