@@ -84,10 +84,10 @@ for FILE in ${FILES}; do
   NODERANKS=$(grep "\(mpirun\|mpiexec\)" "${FILE}" | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | tail -n1 | cut -d" " -f1)
   RANKS=$(grep "\(mpirun\|mpiexec\)" "${FILE}" | grep -o "\-\(perhost\|npernode\)..*$" | tr -s " " | cut -d" " -f2 | tail -n1 | tr -d -c "[:digit:]")
   if [ ! "${RANKS}" ]; then
-    RANKS=$(grep " GLOBAL| Total number of message passing processes" "${FILE}" | grep -m1 -o "[0-9][0-9]*")
+    RANKS=$(grep " GLOBAL| Total number of message passing processes" "${FILE}" | grep -m1 -o "[0-9][0-9]*$")
   fi
   if [ ! "${RANKS}" ]; then RANKS=1; fi
-  NODES=$(grep " GLOBAL| Number of distributed systems (nodes)" "${FILE}" | grep -m1 -o "[0-9][0-9]*")
+  NODES=$(grep " GLOBAL| Number of distributed systems (nodes)" "${FILE}" | grep -m1 -o "[0-9][0-9]*$")
   if [ ! "${NODES}" ]; then # OpenMPI
     NODES=$(grep "cpu-bind=" "${FILE}" | cut -d- -f3 | cut -d, -f1 | sort -u | wc -l)
   fi
@@ -107,7 +107,7 @@ for FILE in ${FILES}; do
     NODES=$((NODERANKS/RANKS))
     TPERR=$(grep OMP_NUM_THREADS "${FILE}" | tail -n1 | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")
     if [ ! "${TPERR}" ]; then
-      TPERR=$(grep " GLOBAL| Number of threads for this process" "${FILE}" | grep -m1 -o "[0-9][0-9]*")
+      TPERR=$(grep " GLOBAL| Number of threads for this process" "${FILE}" | grep -m1 -o "[0-9][0-9]*$")
       if [ ! "${TPERR}" ] || [ "0" = "${TPERR}" ]; then TPERR=1; fi
     fi
     DURATION=$(grep "CP2K                                 1" "${FILE}" | tr -s "\n" " " | tr -s " " | cut -d" " -f7)
