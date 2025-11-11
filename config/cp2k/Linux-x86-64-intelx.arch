@@ -210,8 +210,8 @@ ifneq (0,$(MPI))
       FC  := mpiifort
       LD  := mpiifort
     else ifneq (,$(call which,mpiifx))
-      RANLIB := $(GCC_RANLIB) -s
-      AR  := $(GCC_AR) -r
+      RANLIB := $(if $(call which,ranlib),ranlib,$(GCC_RANLIB))
+      AR  := $(if $(call which,ar),ar,$(GCC_AR)) -r
       CXX := mpiicpx
       CC  := mpiicx
       FC  := mpiifx
@@ -241,8 +241,8 @@ else ifeq (0,$(GNU))
     FC  := ifort
     LD  := ifort
   else
-    RANLIB := $(GCC_RANLIB) -s
-    AR  := $(GCC_AR) -r
+    RANLIB := $(if $(call which,ranlib),ranlib,$(GCC_RANLIB))
+    AR  := $(if $(call which,ar),ar,$(GCC_AR)) -r
     CXX := icpx
     CC  := icx
     FC  := ifx
