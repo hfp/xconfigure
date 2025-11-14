@@ -200,7 +200,14 @@ endif
 
 SCALAPACK ?= $(MPI)
 ifneq (0,$(MPI))
-  DFLAGS += __parallel $(if $(filter-out 1,$(MPI)),__MPI_VERSION=$(MPI),__MPI_VERSION=3)
+  DFLAGS += __parallel
+  ifneq (,$(filter-out 1,$(MPI)))
+    DFLAGS += __MPI_VERSION=3 __MPI_F08
+  else ifneq (,$(MPI_VERSION))
+    DFLAGS += __MPI_VERSION=$(MPI_VERSION)
+  else
+    DFLAGS += __MPI_VERSION=3
+  endif
   ifeq (0,$(GNU))
     ifeq (1,$(INTEL)) # fallback to next-gen in case of C/C++
       RANLIB := $(XIAR) -s
