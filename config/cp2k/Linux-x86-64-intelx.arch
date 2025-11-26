@@ -1299,7 +1299,9 @@ dbm_miniapp.o: CSTD = $(NULL)
 # compiler specific workarounds
 ifneq (0,$(INTEL))
 hfx_contraction_methods.o: FCFLAGS += -O$(OPT1)
-ifeq (1,$(INTEL)) # IFORT
+ifneq (1,$(INTEL)) # IFX
+pw_poisson_methods.o: FCFLAGS += -O0
+else # IFORT
 grid_dgemm_prepare_pab.o: CFLAGS += -O$(OPT2)
 mp2_optimize_ri_basis.o: FCFLAGS += -O0
 paw_basis_types.o: FCFLAGS += -O$(OPT1)
