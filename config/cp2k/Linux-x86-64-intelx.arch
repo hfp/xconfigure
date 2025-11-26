@@ -135,6 +135,7 @@ CHK ?= $(DBG)
 SYM ?= $(DBG)
 FPE ?= 0
 IPO ?= 0
+USM ?= 0
 VMAX ?= 0
 STATIC ?= 1
 DYNAMIC ?= 1
@@ -275,13 +276,6 @@ else ifeq (cuda,$(USE_ACCEL))
 else ifneq (,$(USE_ACCEL))
   $(info ================================================================================)
   $(info USE_ACCEL=$(USE_ACCEL) not fully supported!)
-endif
-
-USM ?= 0
-ifneq (0,$(USM))
-ifneq (,$(USE_ACCEL))
-  DFLAGS += __OFFLOAD_UNIFIED_MEMORY
-endif
 endif
 
 ifneq (,$(filter-out 0,$(CUDA) $(OCL)))
@@ -1229,6 +1223,12 @@ else # ACC off
     OPTFLAGS += -qno-offload
   endif
   endif
+endif
+
+ifneq (0,$(USM))
+ifneq (,$(USE_ACCEL))
+  DFLAGS += __OFFLOAD_UNIFIED_MEMORY
+endif
 endif
 
 CXXFLAGS  += $(OPTFLAGS) $(IPOFLAGS) $(call prefix_dflags,$(DFLAGS)) $(call prefix_iflags,$(IFLAGS)) #-std=c++0x
