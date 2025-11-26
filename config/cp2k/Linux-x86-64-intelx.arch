@@ -138,7 +138,6 @@ IPO ?= 0
 VMAX ?= 0
 STATIC ?= 1
 DYNAMIC ?= 1
-BEEP ?= 0
 
 IMPI ?= $(if $(I_MPI_ROOT),$(MPI),0)
 OMPRT ?= $(if $(filter-out 0,$(GNU)),gomp,iomp5)
@@ -1289,25 +1288,20 @@ OFFLOAD_TARGET := $(USE_ACCEL)
 OFFLOAD_FLAGS := $(ACCFLAGS)
 OFFLOAD_CC := $(ACC)
 
-
-dbm_miniapp.o: CSTD = $(NULL)
-
 ifneq (0,$(NDEBUG))
 environment.o: FCFLAGS += -UNDEBUG
 grid_library.o: CFLAGS += -UNDEBUG
 endif
 
-ifeq (1,$(INTEL))
-mp2_optimize_ri_basis.o: FCFLAGS += -O0
-endif
+# general workarounds
+dbm_miniapp.o: CSTD = $(NULL)
 
-ifeq (0,$(GNU))
-ifneq (,$(filter-out 0,$(BEEP)))
-ifneq (,$(filter-out 0 1,$(INTEL)))
-mp2_ri_gpw.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
-pw_methods.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
-xc.o: FCFLAGS += -qno-openmp -D_OPENMP -recursive
-endif
+# compiler specific workarounds
+ifneq (0,$(INTEL))
+hfx_contraction_methods.o: FCFLAGS += -O$(OPT1)
+ifeq (1,$(INTEL)) # IFORT
 grid_dgemm_prepare_pab.o: CFLAGS += -O$(OPT2)
+mp2_optimize_ri_basis.o: FCFLAGS += -O0
+paw_basis_types.o: FCFLAGS += -O$(OPT1)
 endif
 endif
