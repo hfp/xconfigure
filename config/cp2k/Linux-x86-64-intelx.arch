@@ -277,6 +277,13 @@ else ifneq (,$(USE_ACCEL))
   $(info USE_ACCEL=$(USE_ACCEL) not fully supported!)
 endif
 
+USM ?= 0
+ifneq (0,$(USM))
+ifneq (,$(USE_ACCEL))
+  DFLAGS += __OFFLOAD_UNIFIED_MEMORY
+endif
+endif
+
 ifneq (,$(filter-out 0,$(CUDA) $(OCL)))
   NVCC_FILE := $(call which,nvcc)
   NVCC := $(notdir $(NVCC_FILE))
