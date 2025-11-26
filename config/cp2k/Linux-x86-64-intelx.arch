@@ -358,7 +358,7 @@ else
 endif
 
 # Diagnostic message to be turned off
-DIAG_DISABLE := 8290,8291,10010,10212,10411,10448,11060
+DIAG_DISABLE := 8290,8291,10010,10212,10411,10440,10448,11060
 
 CXX_VERSION_OUT := $(shell $(CXX) --version 2>/dev/null | head -n1)
 CC_VERSION_OUT := $(shell $(CC) --version 2>/dev/null | head -n1)
