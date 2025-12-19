@@ -55,6 +55,10 @@ if [ "$1" ] && [ -e "$1" ]; then
   fi
   shift
 else
+  if [ "$1" ] && [[ $1 =~ ^[1-9][0-9]*$ ]]; then
+    FILTER_NODES=$1
+    shift
+  fi
   FILEPATH="."
 fi
 EXTRA=$1
@@ -105,6 +109,7 @@ for FILE in ${FILES}; do
   fi
   if [ "${NODERANKS}" ] && [ "${RANKS}" ] && [ "0" != "${RANKS}" ]; then
     NODES=$((NODERANKS/RANKS))
+    if [ "${FILTER_NODES}" ] && [ "${FILTER_NODES}" != "${NODES}" ]; then continue; fi
     TPERR=$(grep OMP_NUM_THREADS "${FILE}" | tail -n1 | sed -n "s/.*\sOMP_NUM_THREADS=\([0-9][0-9]*\)\s.*/\1/p")
     if [ ! "${TPERR}" ]; then
       TPERR=$(grep " GLOBAL| Number of threads for this process" "${FILE}" | grep -m1 -o "[0-9][0-9]*$")
