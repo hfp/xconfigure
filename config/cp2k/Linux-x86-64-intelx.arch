@@ -1161,7 +1161,7 @@ dbm_multiply_opencl.o: dbm_multiply_opencl.c $(ALL_HEADERS) $(OPENCL_DBM_SRC).h
         LIBS += -L$(OPENCL_ROOT)/$(OPENCL_LDIR)
         IFLAGS += $(OPENCL_ROOT)/include
       else ifneq (,$(ICX))
-        CLINC := $(wildcard $(ICXROOT)/include/sycl/CL/cl.h $(ICXROOT)/include/CL/cl.h)
+        CLINC := $(wildcard $(ICXROOT)/include/CL/cl.h $(ICXROOT)/include/sycl/CL/cl.h $(ICXROOT)/include/sycl/detail/cl.h)
         ifneq (,$(CLINC))
           LIBS += -L$(ICXROOT)/$(ICXLDIR) -L$(ICXROOT)/compiler/lib/intel64
           IFLAGS += $(abspath $(dir $(firstword $(CLINC)))/..)
