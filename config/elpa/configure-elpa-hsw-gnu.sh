@@ -44,8 +44,9 @@ fi
 
 CONFOPTS+=" --without-threading-support-check-during-build --disable-avx512"
 CONFOPTS+=" --disable-single-precision --disable-skew-symmetric-support"
-CONFOPTS+=" --disable-fortran-tests --disable-c-tests --disable-cpp-tests"
 CONFOPTS+=" --disable-scalapack-tests --without-test-programs"
+CONFOPTS+=" --disable-fortran-tests --enable-Fortran-tests"
+CONFOPTS+=" --disable-c-tests --disable-cpp-tests"
 
 MKL_OMPRTL="gnu_thread"
 MKL_FCRTL="gf"
