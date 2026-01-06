@@ -103,6 +103,15 @@ fi
   --disable-mpi-module \
   --prefix="${DEST}" ${CONFOPTS} "$@"
 
+if [ -e "${HERE}/src/GPU/vendor_agnostic_general_layer_template.F90" ] && command -v patch >/dev/null; then
+  if patch -p0 --dry-run ${HERE}/src/GPU/vendor_agnostic_general_layer_template.F90 ${HERE}/vendor_agnostic_general_layer_template.F90.diff >/dev/null; then
+    patch -p0 ${HERE}/src/GPU/vendor_agnostic_general_layer_template.F90 ${HERE}/vendor_agnostic_general_layer_template.F90.diff
+  fi
+fi
+
 if [ -e "${HERE}/Makefile" ]; then
-  sed -i "s/all-am:\(.*\) \$(PROGRAMS)/all-am:\1/" Makefile
+  TARGET=$(sed -n 's/\(libelpa_..*_public.la\):..*/\1/p' ${HERE}/Makefile)
+  sed -i "s/all-am:\(.*\)\$(PROGRAMS)\(.*\)/all-am:\1\2/" ${HERE}/Makefile
+  sed -i "s/all-am:\(.*\)\$(LTLIBRARIES)\(.*\)/all-am:\1\2/" ${HERE}/Makefile
+  sed -i "s/all-am:\(.*\)/all-am: ${TARGET}\1/" ${HERE}/Makefile
 fi
