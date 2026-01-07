@@ -905,15 +905,14 @@ ifneq (0,$(ELPA))
 ifneq (,$(ELPAROOT))
   ELPAINCDIR := $(dir $(firstword $(wildcard $(ELPAROOT)/include/*/elpa/elpa_*constants.h)))
   ELPALIBDIR := $(firstword $(wildcard $(ELPAROOT)/lib64 $(wildcard $(ELPAROOT)/lib)))
-
-  ifneq (2,$(words $(ELPAINCDIR) $(ELPALIBDIR)))
-    ifneq (0,$(CUDA))
-      ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
-    else ifeq (,$(if $(ICX),$(filter-out 0 1 2,$(OCL))))
+  ELPAINTELX := $(if $(ICX),$(filter-out 0 1 2,$(OCL)))
+  ELPAGPUDIR := $(if $(ELPAINTELX),$(wildcard $(dir $(ELPAROOT))$(subst gnu,intel,$(notdir $(ELPAROOT)))/$(notdir $(ELPALIBDIR))))
+  ifeq (2,$(words $(ELPAINCDIR) $(ELPALIBDIR)))
+    ifeq (,$(ELPAGPUDIR))
       ELPALIB := $(patsubst $(ELPALIBDIR)/lib%.$(LIBEXT),%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.$(LIBEXT))))
     else # ELPA was eventually built with Intel Compiler and 3 <= OCL
-      ELPALSO := $(patsubst $(ELPALIBDIR)/lib%.so,%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.so)))
-      ELPALAR := $(patsubst $(ELPALIBDIR)/lib%.a,%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.a)))
+      ELPA_AR := $(patsubst $(ELPALIBDIR)/lib%.a,%,$(firstword $(wildcard $(ELPALIBDIR)/libelpa*.a)))
+      ELPA_SO := $(patsubst $(ELPAGPUDIR)/lib%.so,%,$(firstword $(wildcard $(ELPAGPUDIR)/libelpa*.so)))
     endif
   endif
   ifneq (,$(ELPALIB))
@@ -922,15 +921,15 @@ ifneq (,$(ELPAROOT))
     ifeq (0,$(STATIC))
       LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
     else # link static archive
-      LIBS += $(ELPALIBDIR)/lib$(ELPALIB).$(ELPAEXT)
+      LIBS += $(ELPALIBDIR)/lib$(ELPALIB).$(LIBEXT)
     endif
-  else ifeq (2,$(words $(ELPALSO) $(ELPALAR)))
+  else ifeq (2,$(words $(ELPA_SO) $(ELPA_AR)))
     IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
     DFLAGS += __ELPA=$(ELPA) __ELPA_INTEL_GPU
     MKL_FCRTL = intel
     #MKL_BITS = ilp64
-    LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALSO)
-    LIBS += $(ELPALIBDIR)/lib$(ELPALAR).a
+    LIBS += -L$(ELPAGPUDIR) -Wl,-rpath,$(ELPAGPUDIR) -l$(ELPA_SO)
+    LIBS += $(ELPALIBDIR)/lib$(ELPA_AR).a
     LIBS += $(XLIB_BEGIN)
     LIBS += -lmkl_sycl
     ifneq (2,$(INTEL))
