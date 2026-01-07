@@ -918,6 +918,9 @@ ifneq (,$(ELPAROOT))
   ifneq (,$(ELPALIB))
     IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
     DFLAGS += __ELPA=$(ELPA) $(if $(filter-out 0,$(CUDA)),__ELPA_NVIDIA_GPU)
+    ifneq (0,$(OCL))
+      DFLAGS += __NO_OFFLOAD_ELPA
+    endif
     ifeq (0,$(STATIC))
       LIBS += -L$(ELPALIBDIR) -Wl,-rpath,$(ELPALIBDIR) -l$(ELPALIB)
     else # link static archive
