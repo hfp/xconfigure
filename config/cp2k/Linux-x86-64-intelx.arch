@@ -929,8 +929,9 @@ ifneq (,$(ELPAROOT))
   else ifeq (2,$(words $(ELPA_SO) $(ELPA_AR)))
     IFLAGS += $(ELPAINCDIR) $(ELPAINCDIR)/../modules
     DFLAGS += __ELPA=$(ELPA) __ELPA_INTEL_GPU
-    MKL_FCRTL = intel
     #MKL_BITS = ilp64
+    MKL_FCRTL = intel
+    MKL_STATIC = 0
     LIBS += -L$(ELPAGPUDIR) -Wl,-rpath,$(ELPAGPUDIR) -l$(ELPA_SO)
     LIBS += $(ELPALIBDIR)/lib$(ELPA_AR).a
     LIBS += $(XLIB_BEGIN)
