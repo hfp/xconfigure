@@ -241,7 +241,10 @@ if [ "${HOSTS}" ] && [ "1" != "${NUMNODES}" ] && [ ! "${SLURM_NODELIST}" ]; then
   HST="-host ${HOSTS}"
 fi
 
-if [ "1" != "$((NRANKS*NUMNODES))" ] || [ "${HST}" ] || [ "${PREFX}" ]; then
+if [ ! "${MPI_OPT}" ] || [ "0" = "${MPI_OPT}" ] || \
+   [ "1" != "$((NRANKS*NUMNODES))" ] || \
+   [ "${HST}" ] || [ "${PREFX}" ];
+then
   if [ "${MPIRUN}" ]; then
     RUN="${MPIRUNPREFX} ${MPIRUN} ${HST} ${MPIRUNFLAGS} \
         -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
