@@ -16,6 +16,10 @@ if [ "$(command -v ulimit)" ]; then
   ulimit -c0
 fi 2>/dev/null
 
+if [ ! "$(command -v gdb)" ]; then
+  alias gdb=gdb-oneapi
+fi
+
 export CP2K_DATA_DIR=${CP2K_DATA_DIR:-${ROOT}/data}
 #NUMACTL="numactl --preferred=1"
 
