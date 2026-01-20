@@ -133,7 +133,7 @@ OMP ?= 2
 DBG ?= $(DUMPAST)
 CHK ?= $(DBG)
 SYM ?= $(DBG)
-FPE ?= 0
+FPE ?= $(DBG)
 IPO ?= 0
 USM ?= 0
 VMAX ?= 0
@@ -594,7 +594,7 @@ else # GNU GCC
   endif
   ifneq (0,$(CHK))
     FCFLAGS += -finit-derived -finit-real=snan -finit-integer=-42
-    FCFLAGS += -fcheck=all -fbounds-check
+    FCFLAGS += -fcheck=all,no-array-temps -fbounds-check
     DFLAGS += __CHECK_DIAG
   endif
   ifneq (0,$(FPE))
