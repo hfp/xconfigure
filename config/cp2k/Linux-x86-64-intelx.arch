@@ -10,7 +10,7 @@ DFLAGS        = __MAX_CONTR=4 __HAS_IEEE_EXCEPTIONS __DBCSR_DISABLE_WORKSHARE
 #DFLAGS       += __NO_IPI_DRIVER __NO_SOCKETS
 #CSTD          = -std=c99
 #CSTD          = -std=c11
-OPTFLAGS      = $(NULL)
+OPTFLAGS      = $(CMNFLAGS)
 CFLAGS        = $(CSTD) -fPIC
 CXXFLAGS      = $(NULL) -fPIC
 FCFLAGS       = $(NULL) -fPIC #-parallel
@@ -470,7 +470,7 @@ ifeq (0,$(GNU)) # Intel
     else ifneq (0,$(SSE))
       TARGET := -xSSE3
     else
-      TARGET := -xHost
+      TARGET := $(if $(XOPT),-x$(XOPT),-xHost)
       ifneq (,$(CPUINFO))
         ifneq (,$(shell grep -om1 '\bavx512vl\b' $(CPUINFO)))
           ifeq (1,$(INTEL))
@@ -544,7 +544,8 @@ else # GNU GCC
     else ifneq (0,$(SSE))
       TARGET := -mSSE3
     else
-      TARGET := -march=native -mtune=native
+      TARGET := -march=$(if $(XOPT),$(XOPT),native)
+      TARGET += -mtune=$(if $(XOPT),$(XOPT),native)
       ifneq (,$(CPUINFO))
         ifneq (,$(shell grep -om1 '\bavx512vl\b' $(CPUINFO)))
           TARGET += $(if $(filter-out 0,$(VMAX)),-mprefer-vector-width=512)
