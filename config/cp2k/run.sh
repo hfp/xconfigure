@@ -269,6 +269,9 @@ NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
 MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
 MT=$((HT<=MAXNT?HT:MAXNT))
 NTHREADS=${OMP_NUM_THREADS:-$((MC*MT))}
+if [ "${VERBOSE}" ] && [ "0" != "${VERBOSE}" ]; then
+  echo "OMP: NS=${NS} NC=${NC} NT=${NT} MAXHT=${MAXNT} HT=${HT} MT=${MT}"
+fi
 if [ "1" != "${HT}" ] && [ "1" = "${MT}" ]; then
   export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
   export OMP_PLACES=${OMP_PLACES:-cores}
