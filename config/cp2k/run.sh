@@ -156,6 +156,8 @@ fi
 #MPIRUNPREFX="numactl --cpunodebind=0 --membind=0 --"
 
 PREFX=${HPCWL_COMMAND_PREFIX}
+#EVNTS="BR_MISP_RETIRED.ALL_BRANCHES,BR_INST_RETIRED.ALL_BRANCHES,MEM_INST_RETIRED.ALL_STORES,MEM_INST_RETIRED.ALL_LOADS"
+#PREFX="${PREFX} -gtool 'emon -v -q -X -t0 -C "${EVNTS}":$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'vtune -r vtune -data-limit 0 -collect hotspots -knob sampling-mode=hw -knob enable-stack-collection=true:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=survey:$((NRANKS/2))=exclusive'"
 #PREFX="${PREFX} -gtool 'advisor -project-dir=advisor --collect=tripcounts --flop:$((NRANKS/2))=exclusive'"
