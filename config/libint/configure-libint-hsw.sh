@@ -124,9 +124,16 @@ if [ -e "${HERE}/CMakeLists.txt" ] && [ "$(command -v cmake)" ]; then
       "${HERE}/CMakeLists.txt"
   fi
   rm -f "${HERE}/CMakeCache.txt"
+  sed -i "s/^include(autocmake_safeguards)/#include(autocmake_safeguards)/" "${HERE}/CMakeLists.txt"
   cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
     -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON
+    -DLIBINT2_REQUIRE_CXX_API=OFF -DLIBINT2_ENABLE_FORTRAN=ON \
+    -DLIBINT2_REQUIRE_CXX_API_COMPILED=OFF -DREQUIRE_CXX_API_COMPILED=OFF \
+    -DREQUIRE_CXX_API=OFF -DENABLE_FORTRAN=ON -DMAX_AM=6 -DOPT_AM=3 \
+    -DLIBINT2_ERI3_MAX_AM=8,7 -DERI3_MAX_AM=8,7 \
+    -DLIBINT2_ERI2_MAX_AM=8,7 -DERI2_MAX_AM=8,7 \
+    -DLIBINT2_ERI_MAX_AM=6,5 -DERI_MAX_AM=6,5 \
+    -DLIBINT2_MAX_AM=6 -DLIBINT2_OPT_AM=3
 else
   echo "Error: XCONFIGURE requires CMake to build LIBINT!"
   exit 1
