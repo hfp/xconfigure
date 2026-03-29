@@ -63,6 +63,7 @@ if [ ! "${EXE}" ]; then
     EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
   fi
   export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
+  export LIBXSTREAM_VERBOSE=${LIBXSTREAM_VERBOSE:-1}
 fi
 EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
 EXE=${EXEDIR}/$(basename "${EXE}")
