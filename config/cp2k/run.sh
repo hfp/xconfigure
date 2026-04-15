@@ -36,7 +36,8 @@ fi
 
 if [ "0" != "${TUNE}" ]; then
   CP2K_GLIBC_TUNABLES="glibc.malloc.trim_threshold=-1"
-  CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
+  # glibc.malloc.mmap_max=0 can cause issues (GmmLib)
+  #CP2K_GLIBC_TUNABLES+=":glibc.malloc.mmap_max=0"
   if [ "x86_64" = "$(uname -m)" ]; then
     CP2K_GLIBC_TUNABLES+=":glibc.cpu.hwcaps=-AVX2"
   fi
