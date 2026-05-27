@@ -123,11 +123,16 @@ else
   NS=1 NC=1 NT=1 HT=1
 fi
 
-if [ "$1" ]; then
-  NRANKS=$1
-  shift
-elif [ "${SLURM_NTASKS_PER_NODE}" ]; then
+if [ "${SLURM_NTASKS_PER_NODE}" ]; then
   NRANKS=${SLURM_NTASKS_PER_NODE}
+elif [ "$1" ]; then
+  if [[ $1 =~ ^[1-9][0-9]*$ ]]; then
+    NRANKS=$1
+    shift
+  else
+    >&2 echo "ERROR: $1 does not specify rank-count per node!"
+    exit 1
+  fi
 else
   NRANKS=${NC}
 fi
@@ -140,12 +145,17 @@ else
   HOSTS=${HOSTS:-localhost}
 fi
 
-if [ "$1" ]; then
-  HOSTS=$(cut -d, -f"1-$1" <<<"${HOSTS}")
-  NUMNODES=$1
-  shift
-elif [ "${SLURM_JOB_NUM_NODES}" ]; then
+if [ "${SLURM_JOB_NUM_NODES}" ]; then
   NUMNODES=${SLURM_JOB_NUM_NODES}
+elif [ "$1" ]; then
+  if [[ $1 =~ ^[1-9][0-9]*$ ]]; then
+    HOSTS=$(cut -d, -f"1-$1" <<<"${HOSTS}")
+    NUMNODES=$1
+    shift
+  else
+    >&2 echo "ERROR: $1 does not specify node-count!"
+    exit 1
+  fi
 else
   NUMCOMMA=$(tr -cd ',' <<<"${HOSTS}" | wc -c)
   NUMNODES=$((NUMCOMMA+1))
