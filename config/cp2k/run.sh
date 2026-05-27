@@ -211,7 +211,7 @@ then
     #export I_MPI_PIN_ORDER=${I_MPI_PIN_ORDER:-bunch}
   fi
   if [ "0" != "${I_MPI_OFFLOAD}" ] && \
-     command -v ldd >/dev/null && ldd "${EXE}" | grep -q libOpenCL;
+     command -v ldd >/dev/null && ldd "${EXE}" 2>/dev/null | grep -q libOpenCL;
   then
     export MPICH_GPU_SUPPORT_ENABLED=${MPICH_GPU_SUPPORT_ENABLED:-1}
     export I_MPI_OFFLOAD_RDMA=${I_MPI_OFFLOAD_RDMA:-1}
@@ -304,7 +304,7 @@ echo
 if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   # print details about executable
   echo "EXE: ${EXE}"
-  ldd "${EXE}"
+  ldd "${EXE}" 2>/dev/null
   echo
   # print environment
   ENVPAT="^LD_PRELOAD\|^GLIBC_\|^LIBXS\|^CUDA_\|^DBCSR_\|^ACC_\|^DBM_\|^MKL\|^OPENCL_\|^[^ _].*=[0-9][0-9]*$"
