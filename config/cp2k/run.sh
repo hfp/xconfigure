@@ -4,7 +4,7 @@
 ROOT=${PWD}
 ROOT=$(cd "$(dirname "$0")" && pwd -P)
 
-BUILD=${CP2K_BUILD-Linux-x86-64-intelx}
+BUILD=${CP2K_BUILD}
 VERSION=psmp
 
 # Threads per core
@@ -58,9 +58,14 @@ fi
 
 if [ ! "${EXE}" ]; then
   EXEVER=${EXEVER:-exe}
+  BUILD=${BUILD:-Linux-x86-64-intelx}
   if [ "/" != "${EXEVER:0:1}" ]; then
     EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
   else
+    EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
+  fi
+  if [ ! -e "${EXE}" ]; then
+    EXEVER=build; BUILD=bin
     EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
   fi
   export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
