@@ -68,8 +68,11 @@ if [ ! "${EXE}" ]; then
     EXEVER=build; BUILD=bin
     EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
   fi
-  export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
-  export LIBXSTREAM_VERBOSE=${LIBXSTREAM_VERBOSE:-1}
+  if [ "0" != "${VERBOSE}" ]; then
+    export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
+    export LIBXSTREAM_VERBOSE=${LIBXSTREAM_VERBOSE:-1}
+    export LIBXS_GEMM_PRINT=${LIBXS_GEMM_PRINT:-0}
+  fi
 fi
 EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
 EXE=${EXEDIR}/$(basename "${EXE}")
