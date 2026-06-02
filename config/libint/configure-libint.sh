@@ -89,6 +89,8 @@ if [ -e "${HERE}/configure.in" ] || [ -e "${HERE}/autogen.sh" ]; then
     elif [ "${BOOST_ROOT}" ] && [ -d "${BOOST_ROOT}/boost" ]; then
       export CPATH=${BOOST_ROOT}:${CPATH}
     fi
+    # Make install target pass (not aware of BOOST_ROOT)
+    mkdir -p ${HERE}/src/lib/libint/library-prefix/src/library-build/include/libint2/boost
     "${HERE}/autogen.sh"
   elif [ ! -e "${HERE}/configure" ]; then
     autoconf
@@ -126,6 +128,7 @@ if [ -e "${HERE}/CMakeLists.txt" ] && [ "$(command -v cmake)" ]; then
   rm -f "${HERE}/CMakeCache.txt"
   sed -i "s/^include(autocmake_safeguards)/#include(autocmake_safeguards)/" "${HERE}/CMakeLists.txt"
   cmake . -DCMAKE_INSTALL_PREFIX="${DEST}" \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
     -DLIBINT2_REQUIRE_CXX_API=OFF -DLIBINT2_ENABLE_FORTRAN=ON \
     -DLIBINT2_REQUIRE_CXX_API_COMPILED=OFF -DREQUIRE_CXX_API_COMPILED=OFF \
