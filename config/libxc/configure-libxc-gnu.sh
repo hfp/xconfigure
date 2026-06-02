@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--with-pic"
 TARGET="-march=native -mtune=native"
 
 export FLAGS="-O3 ${TARGET}"

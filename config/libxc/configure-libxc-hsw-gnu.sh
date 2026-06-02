@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--with-pic"
 TARGET="-march=core-avx2"
 
 export FLAGS="-O3 ${TARGET}"

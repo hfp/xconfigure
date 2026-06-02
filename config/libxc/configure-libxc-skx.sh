@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--with-pic"
 TARGET="-xCORE-AVX512"
 
 # consider more accurate FP-model

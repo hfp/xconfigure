@@ -27,7 +27,7 @@ if [ "${HERE}" = "${DEST}" ]; then
   fi
 fi
 
-CONFOPTS=""
+CONFOPTS="--with-pic"
 TARGET="-xHost"
 
 # consider more accurate FP-model
