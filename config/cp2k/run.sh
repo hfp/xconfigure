@@ -4,8 +4,8 @@
 ROOT=${PWD}
 ROOT=$(cd "$(dirname "$0")" && pwd -P)
 
+VERSION=${CP2K_VERSION:-psmp}
 BUILD=${CP2K_BUILD}
-VERSION=psmp
 
 # Threads per core
 MAXNT=${MAXNT:-1}
