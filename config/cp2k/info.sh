@@ -121,7 +121,7 @@ for FILE in ${FILES}; do
       echo -e -n "$(printf %-23.23s "${BASENAME}")\t${NODES}\t${RANKS}\t${TPERR}"
       echo -e -n "\t$((86400/TWALL))\t${DURATION}"
       if [ "${EXTRA}" ]; then
-        EXTRAVAL=$(grep -m1 "${EXTRA}" "${FILE}" | sed "s/\s*\w*${EXTRA}\w*\s*//" | tr -s " " | cut -d" " -f5)
+        EXTRAVAL=$(grep -m1 "^\s*\w*${EXTRA}" "${FILE}" | sed "s/\s*\w*${EXTRA}\w*\s*//" | tr -s " " | cut -d" " -f5)
         echo -e -n "\t\t${EXTRAVAL}"
       fi
       NDEVS=$(grep -m1 "\[0\] MPI startup(): \(Stacks\|Tiles\).*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
