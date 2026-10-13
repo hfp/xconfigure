@@ -7,6 +7,7 @@ This document describes building CP2K with CMake and with dependencies built by 
 * [LIBINT](../libint/README.md#libint): `libint/gnu`
 * [LIBXC](../libxc/README.md#libxc): `libxc/gnu`
 * [LIBXS](https://github.com/hfp/libxs): `libxs` (required for GPUs)
+* [LIBXSMM](https://github.com/libxsmm/libxsmm): `libxsmm` (optional, along with LIBXS)
 * [LIBXSTREAM](https://github.com/hfp/libxstream): `libxstream` (GPUs)
 * `cp2k`
 
@@ -33,7 +34,7 @@ cmake --build build-gnu-cpu --target install -j $(nproc)
 cmake --build build-gnu-gpu --target install -j $(nproc)
 ```
 
-For each dependency, the first of `../<name>/gnu-cpu` (`gnu-gpu`), `../<name>/gnu`, and `../<name>` containing a CMake or pkg-config package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K. Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
+For each dependency, the first of `../<name>/gnu-cpu` (`gnu-gpu`), `../<name>/gnu`, `../<name>`, `$<NAME>ROOT` (e.g., `LIBXSROOT`), and the same folders in `$HOME` containing a library or package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K. Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
 
 ```bash
 CMAKE_PREFIX_PATH=$HOME/elpa/gnu ./configure-cp2k.sh gnu -DCP2K_USE_ELPA=ON

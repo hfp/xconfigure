@@ -12,7 +12,8 @@
 
 if [ "" = "$1" ]; then PRFX=gnu-cpu-shared; else PRFX=$1-cpu-shared; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=$(cd "${HERE}/.." && pwd -P)/dbcsr/${PRFX}
+ROOT=$(cd "${HERE}/.." && pwd -P)
+DEST=${ROOT}/dbcsr/${PRFX}
 BUILD=build-${PRFX}
 
 if [ ! -e "${HERE}/src/dbcsr_api.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
@@ -20,12 +21,25 @@ if [ ! -e "${HERE}/src/dbcsr_api.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   exit 1
 fi
 
+# sibling folder, $LIBXSROOT (LIBXSTREAMROOT), or $HOME
+# shellcheck disable=SC2043
+for DEP in libxs; do
+  VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
+  for DIR in "${ROOT}/${DEP}" "${!VAR}" "${HOME}/${DEP}"; do
+    if [ "${DIR}" ] && [ "$(ls "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
+      echo "Found ${DEP}: ${DIR}"
+      PREFIXES="${PREFIXES:+${PREFIXES};}${DIR}"
+      break
+    fi
+  done
+done
+
 # DBCSR sets its own optimization level per build type
 TARGET="-march=native -mtune=native"
 
 cmake -S "${HERE}" -B "${BUILD}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \
-  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIXES}" \
   -DCMAKE_C_COMPILER=mpicc -DCMAKE_C_FLAGS="${TARGET}" \
   -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_CXX_FLAGS="${TARGET}" \
   -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_Fortran_FLAGS="${TARGET}" \

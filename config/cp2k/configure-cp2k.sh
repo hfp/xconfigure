@@ -21,16 +21,20 @@ if [ ! -e "${HERE}/src/cp2k_info.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   exit 1
 fi
 
-# dependencies installed next to CP2K, e.g., ../libint/gnu (flavor-specific first)
-for DEP in dbcsr libint libxc libwignernj libxs; do
-  for DIR in "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}"; do
-    if [ "$(ls -d "${DIR}"/lib*/cmake "${DIR}"/lib*/pkgconfig 2>/dev/null)" ]; then
+# sibling folder (flavor-specific first), $<NAME>ROOT, or $HOME
+for DEP in dbcsr libint libxc libwignernj libxs libxsmm; do
+  VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
+  for DIR in "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
+             "${HOME}/${DEP}/${PRFX}-cpu" "${HOME}/${DEP}/${PRFX}" "${HOME}/${DEP}";
+  do
+    if [ "${DIR}" ] && [ "$(ls -d "${DIR}"/lib*/cmake "${DIR}"/lib*/pkgconfig "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
       echo "Found ${DEP}: ${DIR}"
       PREFIXES="${PREFIXES:+${PREFIXES};}${DIR}"
       case "${DEP}" in
         libint) CONFOPTS+=" -DCP2K_USE_LIBINT2=ON" ;;
         libxc) CONFOPTS+=" -DCP2K_USE_LIBXC=ON" ;;
         libxs) CONFOPTS+=" -DCP2K_USE_LIBXS=ON" ;;
+        libxsmm) CONFOPTS+=" -DCP2K_USE_LIBXSMM=ON" ;;
       esac
       break
     fi

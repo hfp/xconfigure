@@ -11,11 +11,9 @@ chmod +x configure-get.sh
 ./configure-get.sh dbcsr
 ```
 
-There are four flavors, which differ by the accelerator backend ("cpu" or "gpu") and by the kind of library (static or "shared"). The build relies on the GNU Compiler Collection and on MPI compiler wrappers (`mpicc`, `mpicxx`, `mpif90`). [LIBXS](https://github.com/hfp/libxs) is used for host-side small matrix multiplications, and the GPU flavors rely on OpenCL and [LIBXSTREAM](https://github.com/hfp/libxstream). Dependencies are found via `CMAKE_PREFIX_PATH`.
+There are four flavors, which differ by the accelerator backend ("cpu" or "gpu") and by the kind of library (static or "shared"). The build relies on the GNU Compiler Collection and on MPI compiler wrappers (`mpicc`, `mpicxx`, `mpif90`). [LIBXS](https://github.com/hfp/libxs) is used for host-side small matrix multiplications, and the GPU flavors rely on OpenCL and [LIBXSTREAM](https://github.com/hfp/libxstream). LIBXS and LIBXSTREAM are looked up next to DBCSR (`../libxs`), via `LIBXSROOT` (`LIBXSTREAMROOT`), and in `$HOME/libxs` (`$HOME/libxstream`), and the found locations are printed. Other locations can be supplied using the `CMAKE_PREFIX_PATH` environment variable.
 
 ```bash
-export CMAKE_PREFIX_PATH="$HOME/libxs;$HOME/libxstream"
-
 ./configure-dbcsr-gpu-shared.sh
 cmake --build build-gnu-gpu-shared --target install -j $(nproc)
 ```
