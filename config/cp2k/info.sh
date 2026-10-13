@@ -129,8 +129,11 @@ for FILE in ${FILES}; do
         EXTRAVAL=$(grep -m1 "^\s*\w*${EXTRA}" "${FILE}" | sed "s/\s*\w*${EXTRA}\w*\s*//" | tr -s " " | cut -d" " -f5)
         echo -e -n "\t\t${EXTRAVAL}"
       fi
-      NDEVS=$(grep -m1 "\[0\] MPI startup(): \(Stacks\|Tiles\).*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
       ACCON=$(grep -m1 " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
+      NDEVS=$(grep -m1 "\[0\] MPI startup(): GPUs\s*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
+      if [ ! "${NDEVS}" ]; then
+        NDEVS=$(grep -m1 "\[0\] MPI startup(): \(Stacks\|Tiles\).*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
+      fi
       if [ ! "${NDEVS}" ]; then NDEVS=${ACCON}; fi
       if [ ! "${NDEVS}" ]; then NDEVS=0; fi
       if [ ! "${ACCON}" ]; then NDEVS=0; fi
