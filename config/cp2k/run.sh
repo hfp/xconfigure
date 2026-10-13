@@ -57,12 +57,25 @@ if [ "${JOBID}" ]; then  # cleanup
 fi
 
 if [ ! "${EXE}" ]; then
-  AUTOEXE=1
-  BUILD=${BUILD:-gnu}
-  # installation folder of configure-cp2k*.sh, otherwise its build folder
-  EXE=$(cd "${ROOT}/.." && pwd -P)/cp2k/${BUILD}/bin/cp2k.${VERSION}
+  EXEVER=${EXEVER:-exe}
+  BUILD=${BUILD:-Linux-x86-64-intelx}
+  if [ "/" != "${EXEVER:0:1}" ]; then
+    EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
+  else
+    EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
+  fi
   if [ ! -e "${EXE}" ]; then
-    EXE=${ROOT}/build-${BUILD}/bin/cp2k.${VERSION}
+    EXEVER=build; BUILD=bin
+    EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
+  fi
+  # CMake build folders (build, build-*), most recent first
+  if [ ! -e "${EXE}" ]; then
+    # shellcheck disable=SC2012
+    CANDIDATE=$(ls -1t "${ROOT}/build${CP2K_BUILD:+-${CP2K_BUILD}}"*/bin/cp2k."${VERSION}" 2>/dev/null | head -n1)
+    if [ ! "${CANDIDATE}" ]; then  # installation folder of configure-cp2k*.sh
+      CANDIDATE=$(cd "${ROOT}/.." && pwd -P)/cp2k/${CP2K_BUILD:-gnu}/bin/cp2k.${VERSION}
+    fi
+    if [ -e "${CANDIDATE}" ]; then EXE=${CANDIDATE}; fi
   fi
   if [ "0" != "${VERBOSE}" ]; then
     export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
@@ -70,8 +83,10 @@ if [ ! "${EXE}" ]; then
     export LIBXS_GEMM_PRINT=${LIBXS_GEMM_PRINT:-0}
   fi
 fi
-EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
-EXE=${EXEDIR}/$(basename "${EXE}")
+if [ -d "$(dirname "${EXE}")" ]; then
+  EXEDIR=$(cd "$(dirname "${EXE}")" && pwd -P)
+  EXE=${EXEDIR}/$(basename "${EXE}")
+fi
 
 if [ -e "${EXE}" ]; then
   export LD_LIBRARY_PATH=${EXEDIR}:${LD_LIBRARY_PATH}
@@ -84,11 +99,11 @@ if [ "$1" ]; then
   if [ -f "$1" ]; then
     WORKLOAD=$(cd "$(dirname "$1")" && pwd -P)/$(basename "$1")
     shift
-  elif [ "${AUTOEXE}" ]; then
+  elif [ "${EXEVER}" ]; then
     >&2 echo "ERROR: workload $1 is not an input file!"
     exit 1
   fi
-elif [ "${AUTOEXE}" ]; then
+elif [ "${EXEVER}" ]; then
   >&2 echo "Please use: $0 /file/to/workload.inp [ranks-per-node [num-nodes]]"
   exit 1
 fi
@@ -204,7 +219,7 @@ then
         MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
       fi
     fi
-    if [ "${AUTOEXE}" ] && [ "0" != "${VERBOSE}" ]; then
+    if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
       export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
     fi
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
@@ -239,7 +254,7 @@ elif [ "${MPIRUN}" ]; then
   if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --oversubscribe"
   fi
-  if [ "${AUTOEXE}" ] && [ "0" != "${VERBOSE}" ] && [ ! "${IMPI}" ]; then
+  if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ] && [ ! "${IMPI}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   if [ "0" != "${MPI_OPT}" ]; then
@@ -315,7 +330,7 @@ fi
 echo
 
 # print additional info
-if [ "${AUTOEXE}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
+if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   # print details about executable
   echo "EXE: ${EXE}"
   ldd "${EXE}" 2>/dev/null

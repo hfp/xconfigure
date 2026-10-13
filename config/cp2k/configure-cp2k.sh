@@ -54,4 +54,5 @@ cmake -S "${HERE}" -B "${BUILD}" \
   -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_Fortran_FLAGS="${TARGET}" \
   -DCP2K_USE_MPI=ON -DCP2K_USE_ACCEL=NONE ${CONFOPTS} \
   "$@" && \
-echo "Next: cmake --build ${BUILD} --target install -j $(nproc)"
+echo "Next: cmake --build ${BUILD} -j $(nproc)" && \
+echo "  or: cmake --build ${BUILD} --target install -j $(nproc)  # installs into ${DEST}"

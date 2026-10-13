@@ -21,13 +21,14 @@ if [ ! -e "${HERE}/src/dbcsr_api.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   exit 1
 fi
 
-# sibling folder, $LIBXSROOT (LIBXSTREAMROOT), or $HOME
-for DEP in libxs libxstream; do
+# sibling folder, $<NAME>ROOT (e.g., LIBXSROOT), or $HOME
+for DEP in libxs libxsmm libxstream; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
   for DIR in "${ROOT}/${DEP}" "${!VAR}" "${HOME}/${DEP}"; do
     if [ "${DIR}" ] && [ "$(ls "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
       echo "Found ${DEP}: ${DIR}"
       PREFIXES="${PREFIXES:+${PREFIXES};}${DIR}"
+      if [ "libxsmm" = "${DEP}" ]; then CONFOPTS+=" -DUSE_LIBXSMM=ON"; fi
       break
     fi
   done
@@ -36,6 +37,7 @@ done
 # DBCSR sets its own optimization level per build type
 TARGET="-march=native -mtune=native"
 
+# shellcheck disable=SC2086
 cmake -S "${HERE}" -B "${BUILD}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${PREFIXES}" \
@@ -43,6 +45,6 @@ cmake -S "${HERE}" -B "${BUILD}" \
   -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_CXX_FLAGS="${TARGET}" \
   -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_Fortran_FLAGS="${TARGET}" \
   -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DWITH_EXAMPLES=OFF \
-  -DUSE_MPI=ON -DUSE_OPENMP=ON -DUSE_LIBXS=ON -DUSE_ACCEL=opencl \
+  -DUSE_MPI=ON -DUSE_OPENMP=ON -DUSE_LIBXS=ON ${CONFOPTS} -DUSE_ACCEL=opencl \
   "$@" && \
 echo "Next: cmake --build ${BUILD} --target install -j $(nproc)"

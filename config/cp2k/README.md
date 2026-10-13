@@ -24,15 +24,17 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-To configure, build, and install CP2K (`../cp2k/gnu-cpu`), or CP2K with GPU support by the means of OpenCL (`../cp2k/gnu-gpu`):
+To configure and build CP2K (`build-gnu-cpu`), or CP2K with GPU support by the means of OpenCL (`build-gnu-gpu`):
 
 ```bash
 ./configure-cp2k.sh
-cmake --build build-gnu-cpu --target install -j $(nproc)
+cmake --build build-gnu-cpu -j $(nproc)
 
 ./configure-cp2k-gpu.sh
-cmake --build build-gnu-gpu --target install -j $(nproc)
+cmake --build build-gnu-gpu -j $(nproc)
 ```
+
+CP2K can be run from where it was built, e.g., `build-gnu-cpu/bin/cp2k.psmp` (see "Running CP2K" below). Optionally, `--target install` installs into `../cp2k/gnu-cpu` (`../cp2k/gnu-gpu`).
 
 For each dependency, the first of `../<name>/gnu-cpu` (`gnu-gpu`), `../<name>/gnu`, `../<name>`, `$<NAME>ROOT` (e.g., `LIBXSROOT`), and the same folders in `$HOME` containing a library or package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K. Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
 
@@ -48,7 +50,14 @@ The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled 
 
 ## Running CP2K<a name="run-instructions"></a><a name="performance"></a>
 
-<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads become even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. To ease running CP2K, there are a number of supportive scripts provided by XCONFIGURE: `plan.sh` (see [here](plan.md)), `run.sh` (see [here](https://raw.githubusercontent.com/hfp/xconfigure/main/config/cp2k/run.sh)), and `info.sh`. The run-script executes `../cp2k/gnu/bin/cp2k.psmp` (e.g., `CP2K_BUILD=gnu-gpu` selects another installation, and `EXE` selects an executable).
+<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads become even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. To ease running CP2K, there are a number of supportive scripts provided by XCONFIGURE: `plan.sh` (see [here](plan.md)), `run.sh` (see [here](https://raw.githubusercontent.com/hfp/xconfigure/main/config/cp2k/run.sh)), and `info.sh`.
+
+The run-script can be symlinked into CP2K's root directory (`ln -s /path/to/xconfigure/config/cp2k/run.sh`). Unless `EXE` names the executable, the run-script looks for `cp2k.psmp` (`CP2K_VERSION=ssmp` for `cp2k.ssmp`) in the following order:
+
+* `exe/Linux-x86-64-intelx` (legacy build, `CP2K_BUILD` selects another ARCH)
+* `build/bin` relative to the current directory (legacy location)
+* the most recent of `build*/bin` in CP2K's root directory (`CP2K_BUILD=gnu-gpu` restricts the search to `build-gnu-gpu*`)
+* `../cp2k/gnu/bin` (installation, `CP2K_BUILD` selects another tagname)
 
 <a name="info-script"></a>As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (`.txt` and `.out` extension by default). Log files can be captured with "tee", or the output is captured by the job scheduler.
 

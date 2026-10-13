@@ -11,7 +11,7 @@ chmod +x configure-get.sh
 ./configure-get.sh dbcsr
 ```
 
-There are four flavors, which differ by the accelerator backend ("cpu" or "gpu") and by the kind of library (static or "shared"). The build relies on the GNU Compiler Collection and on MPI compiler wrappers (`mpicc`, `mpicxx`, `mpif90`). [LIBXS](https://github.com/hfp/libxs) is used for host-side small matrix multiplications, and the GPU flavors rely on OpenCL and [LIBXSTREAM](https://github.com/hfp/libxstream). LIBXS and LIBXSTREAM are looked up next to DBCSR (`../libxs`), via `LIBXSROOT` (`LIBXSTREAMROOT`), and in `$HOME/libxs` (`$HOME/libxstream`), and the found locations are printed. Other locations can be supplied using the `CMAKE_PREFIX_PATH` environment variable.
+There are four flavors, which differ by the accelerator backend ("cpu" or "gpu") and by the kind of library (static or "shared"). The build relies on the GNU Compiler Collection and on MPI compiler wrappers (`mpicc`, `mpicxx`, `mpif90`). [LIBXS](https://github.com/hfp/libxs) is used for host-side small matrix multiplications, and the GPU flavors rely on OpenCL and [LIBXSTREAM](https://github.com/hfp/libxstream). LIBXS, LIBXSMM (optional), and LIBXSTREAM are looked up next to DBCSR (e.g., `../libxs`), via `LIBXSROOT` (`LIBXSMMROOT`, `LIBXSTREAMROOT`), and in `$HOME` (e.g., `$HOME/libxs`), and the found locations are printed. LIBXSMM is enabled if found. Other locations can be supplied using the `CMAKE_PREFIX_PATH` environment variable.
 
 ```bash
 ./configure-dbcsr-gpu-shared.sh
