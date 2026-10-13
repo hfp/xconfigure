@@ -24,10 +24,12 @@ nav:
 - Applications:
   - CP2K: cp2k/README.md
   - LIBXSMM: libxsmm/README.md
+  - DBCSR: dbcsr/README.md
   - LIBINT: libint/README.md
   - PLUMED: plumed/README.md
   - LIBMED: libmed/README.md
   - LIBXC: libxc/README.md
+  - LIBWIGNERNJ: libwignernj/README.md
   - METIS: metis/README.md
   - HDF5: hdf5/README.md
   - ELPA: elpa/README.md

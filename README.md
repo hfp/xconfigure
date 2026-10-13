@@ -1,6 +1,6 @@
 # XCONFIGURE
 
-XCONFIGURE is a collection of configure wrapper scripts for various HPC applications. The purpose of the scripts is to configure the application in question to make use of Intel's software development tools (Intel Compiler, Intel MPI, Intel MKL). XCONFIGURE helps to rely on a "build recipe", which is known to expose the highest performance or to reliably complete the build process.
+XCONFIGURE is a collection of configure wrapper scripts for various HPC applications. The purpose of the scripts is to configure the application in question with optimized flags for the system running the script, primarily using the GNU Compiler Collection (`configure-<name>.sh`) and alternatively the Intel Compiler (`configure-<name>-icx.sh`). XCONFIGURE helps to rely on a "build recipe", which is known to expose the highest performance or to reliably complete the build process.
 
 > [Contributions](CONTRIBUTING.md#contributing) are very welcome!
 
@@ -11,14 +11,14 @@ wget --no-check-certificate https://github.com/hfp/xconfigure/raw/main/configure
 chmod +x configure-get.sh
 
 echo "EXAMPLE: recipe for LIBXC"
-./configure-get.sh libxc hsw
+./configure-get.sh libxc
 ```
 
 On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder directly or use the [documentation](https://xconfigure.readthedocs.io/) and then follow the build recipe of the desired application or library.
 
 ## Documentation
 
-* [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), and [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm).
+* [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBWIGNERNJ](https://github.com/hfp/xconfigure/tree/master/config/libwignernj), [DBCSR](https://github.com/hfp/xconfigure/tree/master/config/dbcsr), and [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm).
 * [**PDF**](https://github.com/hfp/xconfigure/raw/main/xconfigure.pdf): a single documentation file.
 
 ## Related Projects

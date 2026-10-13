@@ -10,58 +10,55 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../libxc/${PRFX}-skx
+DEST=${HERE}/../metis/${PRFX}
+CMAKE=$(command -v cmake)
 
-if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ "" = "${CMAKE}" ]; then
+  echo "Error: missing CMake!"
+  exit 1
+fi
+
+if [ ! -e "${HERE}/BUILD.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
 if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: LIBXC source directory equals installation folder!"
+  echo "Warning: METIS source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
   fi
 fi
 
-CONFOPTS="--with-pic"
-TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
+# CMake 4 removed compatibility with versions older than 3.5
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
 
-export FLAGS="-O3 ${TARGET}"
+CONFOPTS="openmp=1"
+TARGET="-xHost"
+
+# consider more accurate FP-model
+#FPCMODEL = -fp-model precise
+#FPFMODEL = -fp-model source
+
+export FLAGS="-fPIC ${TARGET}" #-ipo-separate
 export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
-export LIBS=""
+export CFLAGS="${FLAGS} ${FPCMODEL}"
+export CXXFLAGS="${FLAGS} ${FPCMODEL}"
+export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 
-export AR="gcc-ar"
-export FC="gfortran"
-export CC="gcc"
-export CXX="g++"
+AR="ar"
+CXX="icpx"
+CC="icx"
+FC="ifx"
 
+export FC CC CXX AR
 export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
 export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
 export F77FLAGS=${FCFLAGS}
 export F90FLAGS=${FCFLAGS}
 export FFLAGS=${FCFLAGS}
 
-cat << EOM > .autom4te.cfg
-begin-language: "Autoconf-without-aclocal-m4"
-args: --no-cache
-end-language: "Autoconf-without-aclocal-m4"
-EOM
-
-libtoolize
-aclocal
-autoheader
-automake -a
-autoconf
-
-eval "./configure \
-  --prefix=${DEST} ${CONFOPTS} \
-  --host=x86_64-unknown-linux-gnu \
-  $*"
-
+make config prefix="${DEST}" cc="${CC}" ${CONFOPTS} "$@"

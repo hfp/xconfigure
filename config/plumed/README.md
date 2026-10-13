@@ -12,19 +12,15 @@ chmod +x configure-get.sh
 ./configure-get.sh plumed
 ```
 
-Please make the intended compiler available on the command line. For instance, many HPC centers rely on `module load`.
-
-```bash
-source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
-```
+The scripts rely on the GNU Compiler Collection (`configure-plumed.sh`) or on the Intel Compiler (`configure-plumed-icx.sh`), and code is generated for the system running the script.
 
 **Note**: Please make the "python" command available, which may point to Python2 or Python3. For example, create a `bin` directory at `$HOME` (`mkdir -p ${HOME}/bin`), and create a symbolic link to either Python2 or Python3 (e.g., `ln -s /usr/bin/python3 ${HOME}/bin/python`).
 
-For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+To configure, build, and install (`../plumed/gnu`):
 
 ```bash
 make distclean
-./configure-plumed-skx.sh
+./configure-plumed.sh
 make -j; make install
 ```
 

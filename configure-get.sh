@@ -33,8 +33,7 @@ BASEURL=https://github.com/hfp/xconfigure/raw/main/config
 ERROR_NOTFOUND=8
 APPLICATION=$1
 #NBACKUPS=3
-ARCHS=$2
-KINDS=$3
+FLAVORS=$2
 
 if [ ! "${BASENAME}" ] || [ ! "${CHMOD}" ] || [ ! "${WGET}" ] || [ ! "${TAIL}" ] || \
    [ ! "${CUT}" ] || [ ! "${TR}" ] || [ ! "${LS}" ] || [ ! "${RM}" ] || [ ! "${MV}" ];
@@ -49,7 +48,7 @@ if [ "${TIMEOUT}" ] && [ "${TIMEOUT_ARGS}" ]; then
 fi
 
 if [ ! "${APPLICATION}" ]; then
-  >&2 echo "Please use: $0 <application-name>"
+  >&2 echo "Please use: $0 <application-name> [\"flavors\"]"
   exit 1
 fi
 
@@ -65,47 +64,21 @@ fi
 
 echo "Be patient, it can take up to 30 seconds before progress is shown..."
 echo
-if [ "$(${WGET} -q -S --spider "${BASEURL}/${APPLICATION}/README.md" 2>/dev/null | ${SED} -n '/200 OK/p')" ]; then
+if [ ! "$(${WGET} -q -S --spider "${BASEURL}/${APPLICATION}/README.md" 2>&1 | ${SED} -n '/200 OK/p')" ]; then
   >&2 echo "ERROR: cannot find a recipe for application \"${APPLICATION}\"!"
   exit 1
 fi
 
 MSGBUFFER=$(mktemp .configure-XXXXXX.buf)
-if [ ! "${ARCHS}" ]; then
-  ARCHS="gnu snb hsw knl skx"
+if [ ! "${FLAVORS}" ]; then
+  FLAVORS="icx"
 fi
-if [ ! "${KINDS}" ]; then
-  KINDS="omp gnu gnu-omp"
-  for KIND in ${KINDS}; do
-    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${KIND}.sh" 2>"${MSGBUFFER}"; echo "$?")" ]; then
-      ${SED} "" "${MSGBUFFER}"
-    fi
-  done
-  for ARCH in ${ARCHS}; do
-    if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}.sh" 2>"${MSGBUFFER}"; echo "$?")" ]; then
-      ${SED} "" "${MSGBUFFER}"
-    fi
-    for KIND in ${KINDS}; do
-      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh" 2>"${MSGBUFFER}"; echo "$?")" ]; then
-        ${SED} "" "${MSGBUFFER}"
-      fi
-    done
-  done
-  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh" 2>"${MSGBUFFER}"; echo "$?")" ]; then
+for FLAVOR in "" ${FLAVORS}; do
+  FILE=configure-${APPLICATION}${FLAVOR:+-${FLAVOR}}.sh
+  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/${FILE}" 2>"${MSGBUFFER}"; echo "$?")" ]; then
     ${SED} "" "${MSGBUFFER}"
   fi
-else
-  for ARCH in ${ARCHS}; do
-    for KIND in ${KINDS}; do
-      if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/configure-${APPLICATION}-${ARCH}-${KIND}.sh" 2>"${MSGBUFFER}"; echo "$?")" ]; then
-        ${SED} "" "${MSGBUFFER}"
-      fi
-    done
-  done
-  if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/configure-${APPLICATION}.sh" 2>"${MSGBUFFER}"; echo "$?")" ]; then
-    ${SED} "" "${MSGBUFFER}"
-  fi
-fi
+done
 
 # attempt to get a list of non-default file names, and then download each file
 if [ "${ERROR_NOTFOUND}" != "$(${WGET} -N "${BASEURL}/${APPLICATION}/.filelist" 2>"${MSGBUFFER}"; echo "$?")" ]; then

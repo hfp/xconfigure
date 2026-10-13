@@ -1,0 +1,4 @@
+configure-dbcsr-cpu.sh
+configure-dbcsr-cpu-shared.sh
+configure-dbcsr-gpu.sh
+configure-dbcsr-gpu-shared.sh

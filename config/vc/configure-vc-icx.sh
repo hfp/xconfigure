@@ -10,54 +10,40 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../hdf5/${PRFX}-skx
+DEST=${HERE}/../vc/${PRFX}
+CMAKE=$(command -v cmake)
 
-if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ "" = "${CMAKE}" ]; then
+  echo "Error: missing CMake!"
+  exit 1
+fi
+
+if [ ! -e "${HERE}/CMakeLists.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
 if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: HDF5 source directory equals installation folder!"
+  echo "Warning: Vc source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
   fi
+else
+  rm -f "${HERE}/CMakeCache.txt"
 fi
 
-CONFOPTS="--disable-dependency-tracking --enable-fortran --enable-parallel"
-TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
+# CMake 4 removed compatibility with versions older than 3.5
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
 
-export FLAGS="-O3 ${TARGET}"
-export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
+CONFOPTS="-DBUILD_TESTING=OFF"
 
-export AR="gcc-ar"
-export FC="mpif90"
-export CC="mpicc"
-export CXX="mpicxx"
+rm -rf "${HERE}/build"
+mkdir -p "${HERE}/build"
+cd "${HERE}/build" || exit 1
 
-export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
-export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
-
-cat << EOM > .autom4te.cfg
-begin-language: "Autoconf-without-aclocal-m4"
-args: --no-cache
-end-language: "Autoconf-without-aclocal-m4"
-EOM
-
-libtoolize
-aclocal
-#autoheader
-#automake -a
-autoconf
-
-eval "./configure \
-  --prefix=${DEST} ${CONFOPTS} \
-  --host=x86_64-unknown-linux-gnu \
-  $*"
-
+cmake -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_CXX_COMPILER=icpx ${CONFOPTS} "$@" "${HERE}"
+echo
+echo "Remember to \"cd build\" before \"make; make install\""

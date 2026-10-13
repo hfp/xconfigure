@@ -57,16 +57,12 @@ if [ "${JOBID}" ]; then  # cleanup
 fi
 
 if [ ! "${EXE}" ]; then
-  EXEVER=${EXEVER:-exe}
-  BUILD=${BUILD:-Linux-x86-64-intelx}
-  if [ "/" != "${EXEVER:0:1}" ]; then
-    EXE=${ROOT}/${EXEVER}/${BUILD}/cp2k.${VERSION}
-  else
-    EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
-  fi
+  AUTOEXE=1
+  BUILD=${BUILD:-gnu}
+  # installation folder of configure-cp2k*.sh, otherwise its build folder
+  EXE=$(cd "${ROOT}/.." && pwd -P)/cp2k/${BUILD}/bin/cp2k.${VERSION}
   if [ ! -e "${EXE}" ]; then
-    EXEVER=build; BUILD=bin
-    EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
+    EXE=${ROOT}/build-${BUILD}/bin/cp2k.${VERSION}
   fi
   if [ "0" != "${VERBOSE}" ]; then
     export ACC_OPENCL_VERBOSE=${ACC_OPENCL_VERBOSE:-1}
@@ -88,11 +84,11 @@ if [ "$1" ]; then
   if [ -f "$1" ]; then
     WORKLOAD=$(cd "$(dirname "$1")" && pwd -P)/$(basename "$1")
     shift
-  elif [ "${EXEVER}" ]; then
+  elif [ "${AUTOEXE}" ]; then
     >&2 echo "ERROR: workload $1 is not an input file!"
     exit 1
   fi
-elif [ "${EXEVER}" ]; then
+elif [ "${AUTOEXE}" ]; then
   >&2 echo "Please use: $0 /file/to/workload.inp [ranks-per-node [num-nodes]]"
   exit 1
 fi
@@ -208,7 +204,7 @@ then
         MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ssh"
       fi
     fi
-    if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
+    if [ "${AUTOEXE}" ] && [ "0" != "${VERBOSE}" ]; then
       export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
     fi
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
@@ -243,7 +239,7 @@ elif [ "${MPIRUN}" ]; then
   if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --oversubscribe"
   fi
-  if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ] && [ ! "${IMPI}" ]; then
+  if [ "${AUTOEXE}" ] && [ "0" != "${VERBOSE}" ] && [ ! "${IMPI}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
   fi
   if [ "0" != "${MPI_OPT}" ]; then
@@ -319,7 +315,7 @@ fi
 echo
 
 # print additional info
-if [ "${EXEVER}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
+if [ "${AUTOEXE}" ] || [[ "${VERBOSE}" && "0" != "${VERBOSE}" ]]; then
   # print details about executable
   echo "EXE: ${EXE}"
   ldd "${EXE}" 2>/dev/null

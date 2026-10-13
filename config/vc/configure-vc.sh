@@ -10,7 +10,7 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../vc/${PRFX}
 CMAKE=$(command -v cmake)
@@ -35,12 +35,15 @@ else
   rm -f "${HERE}/CMakeCache.txt"
 fi
 
+# CMake 4 removed compatibility with versions older than 3.5
+export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
 CONFOPTS="-DBUILD_TESTING=OFF"
 
 rm -rf "${HERE}/build"
 mkdir -p "${HERE}/build"
 cd "${HERE}/build" || exit 1
 
-cmake -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_CXX_COMPILER=icpc ${CONFOPTS} "$@" "${HERE}"
+cmake -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_CXX_COMPILER=g++ ${CONFOPTS} "$@" "${HERE}"
 echo
 echo "Remember to \"cd build\" before \"make; make install\""

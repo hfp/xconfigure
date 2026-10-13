@@ -10,7 +10,7 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
 DEST=${HERE}/../plumed/${PRFX}
 
@@ -28,20 +28,25 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS="--disable-shared --disable-libsearch --disable-doc --enable-asmjit"
-TARGET="-march=native -mtune=native"
+TARGET="-xHost"
 
-export FLAGS="-O3 ${TARGET} -D__PLUMED_HAS_MPI -D__PLUMED_HAS_FFTW -D__PLUMED_HAS_ZLIB -I${MKLROOT}/include/fftw"
+# consider more accurate FP-model
+#FPCMODEL = -fp-model precise
+#FPFMODEL = -fp-model source
+
+export FLAGS="-O2 ${TARGET}" #-ipo-separate
 export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
+export CFLAGS="${FLAGS} ${FPCMODEL}"
+export CXXFLAGS="${FLAGS} ${FPCMODEL}"
+export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
 
-export AR="gcc-ar"
-export FC="mpif90"
-export CC="mpicc"
-export CXX="mpicxx"
+AR="ar"
+CXX="mpiicpx"
+CC="mpiicx"
+FC="mpiifx"
 
+export CXX CC FC AR
 export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
 export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
 export F77FLAGS=${FCFLAGS}

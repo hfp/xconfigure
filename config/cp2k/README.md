@@ -1,172 +1,53 @@
 # CP2K<a name="cp2k-open-source-molecular-dynamics"></a>
 
-This document describes building CP2K with several (optional) libraries, which may be beneficial for functionality or performance.
+This document describes building CP2K with CMake and with dependencies built by XCONFIGURE. All packages are placed into a common directory (`$HOME` is assumed), and the dependencies are installed next to CP2K:
 
-* [LIBXSMM](https://github.com/libxsmm/libxsmm) targets DBCSR, DBM/DBT, GRID, and other components
-* [LIBINT](../libint/README.md#libint) enables a wide range of workloads (almost necessary)
-* [LIBXC](../libxc/README.md#libxc) enables exchange-correlation functionals for DFT
-* MPI is auto-detected (Intel MPI and OpenMPI supported)
-* MKL or Intel Math Kernel Library:
-    * Provides LAPACK/BLAS and ScaLAPACK library
-    * Provides FFTw library
+* [DBCSR](../dbcsr/README.md): `dbcsr/gnu-cpu`, `dbcsr/gnu-gpu`, etc. (required)
+* [LIBWIGNERNJ](../libwignernj/README.md): `libwignernj/gnu` (required)
+* [LIBINT](../libint/README.md#libint): `libint/gnu`
+* [LIBXC](../libxc/README.md#libxc): `libxc/gnu`
+* [LIBXS](https://github.com/hfp/libxs): `libxs` (required for GPUs)
+* [LIBXSTREAM](https://github.com/hfp/libxstream): `libxstream` (GPUs)
+* `cp2k`
 
-For functionality and performance, the dependencies are almost necessary or highly recommended. For instance, [LIBXSMM](../libxsmm/README.md#libxsmm) has been incorporated since [CP2K&#160;3.0](https://www.cp2k.org/version_history) and enables high performance in several components of CP2K. The optional [ELPA](../elpa/README.md#eigenvalue-solvers-for-petaflop-applications-elpa) library for matrix diagonalization eventually improves the performance over ScaLAPACK (also refer to `PREFERRED_DIAG_LIBRARY` in [CP2K's Input Reference](https://manual.cp2k.org/trunk/CP2K_INPUT.html)).
+The prerequisites are the GNU Compiler Collection, MPI (compiler wrappers `mpicc`, `mpicxx`, and `mpif90`), CMake, Python, and LAPACK/ScaLAPACK as well as FFTW, e.g., Intel&#160;MKL (`MKLROOT`).
 
-**Note**: CP2K's `install_cp2k_toolchain.sh` (under `tools/toolchain`) as well as CMake based builds are out of scope in this document (see official [CP2K guide](https://www.cp2k.org/howto:compile)).
-
-XCONFIGURE provides a collection of helper scripts, optional patches, and an ARCH-file supporting:
-
-* GNU Compiler Collection (default, if `ifx` or `ifort` are not available, explicit with `make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1`)
-* Intel Compiler (default, if `ifx` is available, explicit with `make ARCH=Linux-x86-64-intelx VERSION=psmp INTEL=2`)
-
-**Note**: Intel Classic Compiler is used by default, if `ifort` is available but `ifx` or `gfortran` are not available, and it can be explicitly selected with `make ARCH=Linux-x86-64-intelx VERSION=psmp INTEL=1`).
-
-## Step-by-step Guide<a name="current-release"></a>
-
-This step-by-step guide assumes the GNU Compiler Collection (GNU&#160;Fortran), Intel&#160;MPI and Intel&#160;MKL as prerequisites (adding an Intel repository to the Linux distribution's package manager, installing Intel MKL and Intel MPI or supporting an HPC fabric is out of scope in this document. Building LIBXSMM, LIBINT, and LIBXC are part of the steps.
-
-<a name="offline-environment"></a>**Note**: in an offline environment, it is best to [download](https://github.com/hfp/xconfigure/archive/refs/heads/main.zip) the entire XCONFIGURE project upfront and to upload it to the target system. Offline limitations can be worked around and overcome with additional steps. This step-by-step guide assumes Internet connectivity.
-
-For the following steps, it is necessary to place LIBINT, LIBXC, LIBXSMM, and CP2K into a common directory (`$HOME` is assumed). The resulting folder structure looks like:
-
-* libint-v2.6.0-cp2k-lmax-6
-* libint/gnu
-* libxc-6.2.2
-* libxc/gnu
-* libxsmm
-* cp2k
-
-**1**) <a name="getting-started"></a>First, please download `configure-get.sh` to any location and make the prerequisites available (GNU Compiler Collection, Intel MPI and Intel MKL):
-
-```bash
-wget https://github.com/hfp/xconfigure/raw/main/configure-get.sh
-chmod +x configure-get.sh
-
-source /opt/intel/oneapi/mpi/latest/env/vars.sh
-source /opt/intel/oneapi/mkl/latest/env/vars.sh
-```
-
-**2**) <a name="libint-and-libxc-dependencies"></a>The second step builds a LIBINT which is already [preconfigured](https://github.com/cp2k/libint-cp2k/releases) for CP2K. To fully [bootstrap LIBINT](../libint/README.md#boostrap-for-cp2k) is out of scope for this step.
-
-```bash
-cd $HOME && curl -s https://api.github.com/repos/cp2k/libint-cp2k/releases/latest \
-| grep "browser_download_url" | grep "lmax-6" \
-| sed "s/..*: \"\(..*[^\"]\)\".*/url \1/" \
-| curl -LOK-
-```
-
-A rate limit applies to anonymous GitHub API requests of the same origin. If the download fails, it can be worth trying an authenticated request relying on a GitHub account (`-u "user:password"`).
-
-```bash
-cd $HOME && tar xvf libint-v2.6.0-cp2k-lmax-6.tgz
-rm libint-v2.6.0-cp2k-lmax-6.tgz
-cd libint-v2.6.0-cp2k-lmax-6
-
-/path/to/configure-get.sh libint
-./configure-libint-gnu.sh
-
-make -j $(nproc)
-make install
-make distclean
-```
-
-There can be issues about target flags requiring a build-system able to execute compiled binaries. To avoid cross-compilation (not supported here), please rely on a build-host matching the capabilities of the target system.
-
-**3**) The third step is to build LIBXC.
-
-```bash
-cd $HOME && wget https://gitlab.com/libxc/libxc/-/archive/6.2.2/libxc-6.2.2.tar.bz2
-tar xvf libxc-6.2.2.tar.bz2
-
-rm libxc-6.2.2.tar.bz2
-cd libxc-6.2.2
-
-/path/to/configure-get.sh libxc
-./configure-libxc-gnu.sh
-
-make -j $(nproc)
-make install
-make distclean
-```
-
-During configuration, please disregard any messages suggesting `libtoolize --force`.
-
-**4**) The fourth step makes LIBXSMM available, which is compiled as part of the last step.
-
-```bash
-#cd $HOME && git clone https://github.com/libxsmm/libxsmm.git && cd libxsmm && git checkout develop
-cd $HOME && wget https://github.com/libxsmm/libxsmm/archive/refs/heads/develop.zip
-unzip $HOME/libxsmm-develop.zip && ln -s libxsmm-develop libxsmm
-#cd $HOME/libxsmm && make GNU=1 -j $(nproc)
-```
-
-It can be useful to build LIBXSMM also in a separate fashion (see last/commented line above). This can be useful for building a standalone reproducer in DBCSR's GPU backend as well as CP2K's DBM reproducer.
-
-**5**) <a name="getting-the-source-code"></a>This last step builds CP2K and LIBXSMM inside CP2K's source directory. A serial version `VERSION=ssmp` as opposed to `VERSION=psmp` is possible, however OpenMP remains a requirement of CP2K's code base.
-
-<a name="missing-git-submodules"></a>Downloading GitHub-generated assets from [https://github.com/cp2k/cp2k/releases](https://github.com/cp2k/cp2k/releases) like "*Source code (zip)*" or "*Source code (tar.gz)*" will miss submodules which are subsequently missed when building CP2K.
+## Build Instructions<a name="build-instructions"></a><a name="current-release"></a>
 
 ```bash
 cd $HOME && git clone https://github.com/cp2k/cp2k.git
-cd $HOME/cp2k && git pull && git submodule update --init --recursive
-cd $HOME/cp2k/exts/dbcsr && git checkout develop && git pull
+cd cp2k
 
-cd $HOME/cp2k && /path/to/configure-get.sh cp2k
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+chmod +x configure-get.sh
+./configure-get.sh cp2k
 ```
 
-**Offline environment**: no Internet connectivity is out of scope in this guide (`configure-get.sh`), but one can:
+To configure, build, and install CP2K (`../cp2k/gnu-cpu`), or CP2K with GPU support by the means of OpenCL (`../cp2k/gnu-gpu`):
 
 ```bash
-cd $HOME/cp2k
-cp /path/to/xconfigure/config/cp2k/*.sh .
-cp /path/to/xconfigure/config/cp2k/Linux-x86-64-intelx.* arch
-# git apply cpassert.git.diff
+./configure-cp2k.sh
+cmake --build build-gnu-cpu --target install -j $(nproc)
+
+./configure-cp2k-gpu.sh
+cmake --build build-gnu-gpu --target install -j $(nproc)
 ```
 
-<a name="build-instructions"></a>Building CP2K proceeds with:
+For each dependency, the first of `../<name>/gnu-cpu` (`gnu-gpu`), `../<name>/gnu`, and `../<name>` containing a CMake or pkg-config package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K. Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
 
 ```bash
-cd $HOME/cp2k
-# rm -rf exe lib obj
-make ARCH=Linux-x86-64-intelx VERSION=psmp GNU=1 cp2k -j $(nproc)
+CMAKE_PREFIX_PATH=$HOME/elpa/gnu ./configure-cp2k.sh gnu -DCP2K_USE_ELPA=ON
 ```
 
-The initial output of the build looks like:
-
-```text
-Discovering programs ...
-================================================================================
-Using the following libraries:
-LIBXSMMROOT=/path/to/libxsmm
-LIBINTROOT=/path/to/libint/gnu
-LIBXCROOT=/path/to/libxc/gnu
-================================================================================
-LIBXSMM develop (Linux)
---------------------------------------------------------------------------------
-```
-
-Once the build is completed, the CP2K executable is ready (`exe/Linux-x86-64-intelx/cp2k.psmp`):
-
-```text
-$ LIBXSMM_VERBOSE=1 exe/Linux-x86-64-intelx/cp2k.psmp
-  [...]
-  LIBXSMM_VERSION: develop
-  LIBXSMM_TARGET: spr
-```
-
-The ARCH-file attempts to auto-detect optional libraries using `I_MPI_ROOT`, `MKLROOT` environment variables as well as searching certain standard locations. LIBXSMM, LIBINT, and LIBXC are expected in directories parallel to CP2K's root directory. In general, build-keys such as `LIBXSMMMROOT`, `LIBINTROOT`, `LIBXCROOT`, `ELPAROOT`, and others are supported. There are several other build-keys to customize the build (e.g., `SYM=1`, `DBG=1`, `OPT=2`, `NDEBUG=0`, `AVX=2`, or `IMPI=0`).
+Code is generated for the system running the script (`-march=native`), i.e., a build system matching the target system is assumed.
 
 ## CP2K on GPUs
 
-Please apply `USE_ACCEL=opencl` (like `USE_ACCEL=cuda` for CUDA) to XCONFIGURE's [build instructions](#build-instructions). The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component.
-
-Further, DBCSR can be built standalone and used to exercise and test GPU acceleration as well, which is not subject of XCONFIGURE. Further, within DBCSR some driver code exists to exercise GPU performance in a standalone fashion (does not even rely on DBCSR's build system; see [DBCSR ACCelerator Interface](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/index.html)). The OpenCL backend in DBCSR provides [tuned kernels](https://github.com/cp2k/dbcsr/tree/develop/src/acc/opencl/smm/params) for CP2K. Similarly, CP2K's DBM component (`/path/to/cp2k/src/dbm`) can be built and exercised in a standalone fashion.
-
-The OpenCL backend has comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific kernels.
+The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component. The OpenCL backend has comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific kernels. DBCSR as well as CP2K's DBM component (`src/dbm`) can be exercised in a standalone fashion.
 
 ## Running CP2K<a name="run-instructions"></a><a name="performance"></a>
 
-<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads become even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. To ease running CP2K, there are a number of supportive scripts provided by XCONFIGURE: `plan.sh` (see [here](plan.md)), `run.sh` (see [here](https://raw.githubusercontent.com/hfp/xconfigure/main/config/cp2k/run.sh)), and `info.sh`.
+<a name="running-the-application"></a>Running CP2K may go beyond a single node, and pinning processes and threads become even more important. There are several schemes available. As a rule of thumb, a high rank-count for lower node-counts may yield best results unless the workload is very memory intensive. In the latter case, lowering the number of MPI-ranks per node is effective especially if a larger amount of memory is replicated rather than partitioned by the rank-count. In contrast (communication bound), a lower rank count for multi-node computations may be desired. To ease running CP2K, there are a number of supportive scripts provided by XCONFIGURE: `plan.sh` (see [here](plan.md)), `run.sh` (see [here](https://raw.githubusercontent.com/hfp/xconfigure/main/config/cp2k/run.sh)), and `info.sh`. The run-script executes `../cp2k/gnu/bin/cp2k.psmp` (e.g., `CP2K_BUILD=gnu-gpu` selects another installation, and `EXE` selects an executable).
 
 <a name="info-script"></a>As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (`.txt` and `.out` extension by default). Log files can be captured with "tee", or the output is captured by the job scheduler.
 

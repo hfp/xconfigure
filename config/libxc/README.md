@@ -1,33 +1,34 @@
 # LIBXC
 
-To [download](https://gitlab.com/libxc/libxc/-/releases), configure, build, and install [LIBXC](https://www.tddft.org/programs/libxc/)&#160;2.x, 3.x (CP2K&#160;5.1 and earlier is only compatible with LIBXC&#160;3.0 or earlier), 4.x (CP2K&#160;7.1 and earlier is only compatible with LIBXC&#160;4.x), or 5.x (CP2K&#160;8.1 and later require LIBXC&#160;5.x), one may proceed as shown below. For CP2K, see also [How to compile the CP2K code](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2k-libxc-optional-wider-choice-of-xc-functionals)). In general, only the latest major release of LIBXC (by the time of the CP2K-release) is supported.
+To [download](https://www.cp2k.org/static/downloads/), configure, build, and install [LIBXC](https://libxc.gitlab.io/) for CP2K (LIBXC&#160;7.1 or later), one may proceed as shown below.
 
 ```bash
-wget --content-disposition https://www.tddft.org/programs/libxc/down.php?file=6.2.2/libxc-6.2.2.tar.gz
-tar xvf libxc-6.2.2.tar.gz
-cd libxc-6.2.2
+wget https://www.cp2k.org/static/downloads/libxc-7.1.2.tar.bz2
+tar xvf libxc-7.1.2.tar.bz2
+cd libxc-7.1.2
 
 wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```
 
-Please make the Intel Compiler available on the command line. This depends on the environment. For instance, many HPC centers rely on `module load`.
+To configure, build, and install using the GNU Compiler Collection (`../libxc/gnu`):
 
 ```bash
-source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
+./configure-libxc.sh
+cmake --build build-gnu --target install -j $(nproc)
 ```
 
-For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+To use the Intel Compiler instead (`../libxc/icx`):
 
 ```bash
-make distclean
-./configure-libxc-skx.sh
-make -j; make install
+./configure-libxc-icx.sh
+cmake --build build-icx --target install -j $(nproc)
 ```
 
-**Note**: Please disregard messages during configuration suggesting `libtoolize --force`.
+The Fortran interface and third-order derivatives (`MAXORDER=3`) are built as needed by CP2K. An optional first argument ("tagname") changes the name of the build and installation folder. Further arguments are passed to CMake.
 
 ## References
 
-[https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2k-libxc-optional-wider-choice-of-xc-functionals](https://github.com/cp2k/cp2k/blob/master/INSTALL.md#2k-libxc-optional-wider-choice-of-xc-functionals)
+[https://libxc.gitlab.io/](https://libxc.gitlab.io/)  
+[https://gitlab.com/libxc/libxc](https://gitlab.com/libxc/libxc)

@@ -12,45 +12,23 @@
 
 if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../metis/${PRFX}-skx
-CMAKE=$(command -v cmake)
+DEST=$(cd "${HERE}/.." && pwd -P)/libwignernj/${PRFX}
+BUILD=build-${PRFX}
 
-if [ "" = "${CMAKE}" ]; then
-  echo "Error: missing CMake!"
-  exit 1
-fi
-
-if [ ! -e "${HERE}/BUILD.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/wignernjConfig.cmake.in" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
-if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: METIS source directory equals installation folder!"
-  read -p "Are you sure? Y/N" -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
-  fi
-fi
+TARGET="-march=native -mtune=native"
+FLAGS="-O2 ${TARGET}"
 
-CONFOPTS="openmp=1"
-TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
-
-export FLAGS="-fPIC ${TARGET}"
-export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
-
-export AR="gcc-ar"
-export FC="gfortran"
-export CC="gcc"
-export CXX="g++"
-
-export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
-export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
-
-make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"
+cmake -S "${HERE}" -B "${BUILD}" \
+  -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS_RELEASE="${FLAGS} -DNDEBUG" \
+  -DBUILD_SHARED_LIBS=OFF -DWIGNERNJ_BUILD_LTO=OFF \
+  -DWIGNERNJ_BUILD_FORTRAN=OFF -DWIGNERNJ_BUILD_EXAMPLES=OFF \
+  -DWIGNERNJ_BUILD_TESTS=OFF -DWIGNERNJ_BUILD_CXX_TESTS=OFF \
+  "$@" && \
+echo "Next: cmake --build ${BUILD} --target install -j $(nproc)"

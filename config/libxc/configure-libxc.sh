@@ -10,90 +10,25 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=intel; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../libxc/${PRFX}
+DEST=$(cd "${HERE}/.." && pwd -P)/libxc/${PRFX}
+BUILD=build-${PRFX}
 
-if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/CMakeLists.txt" ] || [ ! -e "${HERE}/src/xc.h" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
-if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: LIBXC source directory equals installation folder!"
-  read -p "Are you sure? Y/N" -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
-  fi
-fi
+TARGET="-march=native -mtune=native"
+FLAGS="-O2 ${TARGET}"
 
-CONFOPTS="--with-pic"
-TARGET="-xHost"
-
-# consider more accurate FP-model
-#FPCMODEL = -fp-model precise
-#FPFMODEL = -fp-model source
-
-export FLAGS="-O2 ${TARGET}" #-ipo-separate
-export LDFLAGS=""
-export CFLAGS="${FLAGS} ${FPCMODEL}"
-export CXXFLAGS="${FLAGS} ${FPCMODEL}"
-export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
-export LIBS=""
-
-AR=$(command -v xiar || echo "ar")
-if [ "1" != "${INTEL}" ]; then
-  CXX=$(command -v mpiicpx || echo "mpiicpc -cxx=icpx")
-  CC=$(command -v mpiicx || echo "mpiicc -cc=icx")
-  FC=$(command -v mpiifx || echo "mpiifort -fc=ifx")
-else
-  CXX="mpiicpc -cxx=$(command -v icpc || echo icpx)"
-  CC="mpiicc -cc=$(command -v icc || echo icx)"
-  FC="mpiifort"
-fi
-
-export FC CC CXX AR
-export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
-export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
-
-CC_VERSION_STRING=$(${CC} --version 2>/dev/null | head -n1 | sed "s/..* \([0-9][0-9]*\.[0-9][0-9]*\.*[0-9]*\)[ \S]*.*/\1/")
-CC_VERSION_MAJOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f1)
-CC_VERSION_MINOR=$(echo "${CC_VERSION_STRING}" | cut -d"." -f2)
-CC_VERSION_PATCH=$(echo "${CC_VERSION_STRING}" | cut -d"." -f3)
-CC_VERSION_COMPONENTS=$(echo "${CC_VERSION_MAJOR} ${CC_VERSION_MINOR} ${CC_VERSION_PATCH}" | wc -w)
-if [ "3" = "${CC_VERSION_COMPONENTS}" ]; then
-  CC_VERSION=$((CC_VERSION_MAJOR * 10000 + CC_VERSION_MINOR * 100 + CC_VERSION_PATCH))
-elif [ "2" = "${CC_VERSION_COMPONENTS}" ]; then
-  CC_VERSION=$((CC_VERSION_MAJOR * 10000 + CC_VERSION_MINOR * 100))
-  CC_VERSION_PATCH=0
-else
-  CC_VERSION_STRING=""
-  CC_VERSION=0
-fi
-
-if [ "0" != "$((180000<=CC_VERSION && 180001>CC_VERSION))" ] || \
-   [ "0" != "$((170006>CC_VERSION && 0!=CC_VERSION))" ]; \
-then
-  export CC="${CC} -D_Float128=__float128"
-fi
-
-cat << EOM > .autom4te.cfg
-begin-language: "Autoconf-without-aclocal-m4"
-args: --no-cache
-end-language: "Autoconf-without-aclocal-m4"
-EOM
-
-libtoolize
-aclocal
-autoheader
-automake -a
-autoconf
-
-eval "./configure \
-  --prefix=${DEST} ${CONFOPTS} \
-  --host=x86_64-unknown-linux-gnu \
-  $*"
-
+cmake -S "${HERE}" -B "${BUILD}" \
+  -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS_RELEASE="${FLAGS} -DNDEBUG" \
+  -DCMAKE_Fortran_COMPILER=gfortran -DCMAKE_Fortran_FLAGS_RELEASE="${FLAGS}" \
+  -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF \
+  -DENABLE_FORTRAN=ON -DMAXORDER=3 \
+  "$@" && \
+echo "Next: cmake --build ${BUILD} --target install -j $(nproc)"

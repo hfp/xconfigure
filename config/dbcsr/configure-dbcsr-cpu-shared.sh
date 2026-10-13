@@ -10,47 +10,26 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=gnu-cpu-shared; else PRFX=$1-cpu-shared; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../metis/${PRFX}
-CMAKE=$(command -v cmake)
+DEST=$(cd "${HERE}/.." && pwd -P)/dbcsr/${PRFX}
+BUILD=build-${PRFX}
 
-if [ "" = "${CMAKE}" ]; then
-  echo "Error: missing CMake!"
-  exit 1
-fi
-
-if [ ! -e "${HERE}/BUILD.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/src/dbcsr_api.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
-if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: METIS source directory equals installation folder!"
-  read -p "Are you sure? Y/N" -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
-  fi
-fi
-
-CONFOPTS="openmp=1"
+# DBCSR sets its own optimization level per build type
 TARGET="-march=native -mtune=native"
 
-export FLAGS="-fPIC ${TARGET}"
-export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
-
-export AR="gcc-ar"
-export FC="gfortran"
-export CC="gcc"
-export CXX="g++"
-
-export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
-export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
-
-make config prefix="${DEST}" cc=${CC} ${CONFOPTS} "$@"
+cmake -S "${HERE}" -B "${BUILD}" \
+  -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=mpicc -DCMAKE_C_FLAGS="${TARGET}" \
+  -DCMAKE_CXX_COMPILER=mpicxx -DCMAKE_CXX_FLAGS="${TARGET}" \
+  -DCMAKE_Fortran_COMPILER=mpif90 -DCMAKE_Fortran_FLAGS="${TARGET}" \
+  -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DWITH_EXAMPLES=OFF \
+  -DUSE_MPI=ON -DUSE_OPENMP=ON -DUSE_LIBXS=ON -DUSE_ACCEL=none \
+  "$@" && \
+echo "Next: cmake --build ${BUILD} --target install -j $(nproc)"

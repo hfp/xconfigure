@@ -10,9 +10,9 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../plumed/${PRFX}-skx
+DEST=${HERE}/../hdf5/${PRFX}
 
 if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -20,33 +20,34 @@ if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
 fi
 
 if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: PLUMED source directory equals installation folder!"
+  echo "Warning: HDF5 source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
   fi
 fi
 
-CONFOPTS="--disable-shared --disable-libsearch --disable-doc --enable-asmjit"
-TARGET="-mavx512f -mavx512cd -mavx512dq -mavx512bw -mavx512vl -mfma"
+CONFOPTS="--disable-dependency-tracking --enable-fortran --enable-parallel"
+TARGET="-xHost"
 
-export FLAGS="-O3 ${TARGET} -D__PLUMED_HAS_MPI -D__PLUMED_HAS_FFTW -D__PLUMED_HAS_ZLIB -I${MKLROOT}/include/fftw"
+# consider more accurate FP-model
+#FPCMODEL = -fp-model precise
+#FPFMODEL = -fp-model source
+
+export FLAGS="-O2 ${TARGET}" #-ipo-separate
 export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
-export LIBS="-L${MKLROOT}/lib/intel64 -lmkl_rt -lz"
+export CFLAGS="${FLAGS} -Wno-trigraphs ${FPCMODEL}"
+export CXXFLAGS="${FLAGS} -Wno-trigraphs ${FPCMODEL}"
+export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 
-export AR="gcc-ar"
-export FC="mpif90"
-export CC="mpicc"
-export CXX="mpicxx"
+AR="ar"
+CXX="mpiicpx"
+CC="mpiicx"
+FC="mpiifx"
 
+export CXX CC FC AR
 export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
 export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
-export F77FLAGS=${FCFLAGS}
-export F90FLAGS=${FCFLAGS}
-export FFLAGS=${FCFLAGS}
 
 cat << EOM > .autom4te.cfg
 begin-language: "Autoconf-without-aclocal-m4"
@@ -64,3 +65,4 @@ eval "./configure \
   --prefix=${DEST} ${CONFOPTS} \
   --host=x86_64-unknown-linux-gnu \
   $*"
+

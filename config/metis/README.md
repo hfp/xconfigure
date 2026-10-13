@@ -1,32 +1,28 @@
 # METIS
 
-To [download](http://glaros.dtc.umn.edu/gkhome/metis/metis/download), configure, build, and install METIS, one may proceed as shown below.
+To download, configure, build, and install METIS, one may proceed as shown below. METIS&#160;5.1.0 is part of ParMETIS&#160;4.0.3, which is available from [CP2K's download area](https://www.cp2k.org/static/downloads/).
 
 ```bash
-wget --content-disposition http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/metis-5.1.0.tar.gz
-tar xvf metis-5.1.0.tar.gz
-cd metis-5.1.0
+wget https://www.cp2k.org/static/downloads/parmetis-4.0.3.tar.gz
+tar xvf parmetis-4.0.3.tar.gz
+cd parmetis-4.0.3/metis
 
 wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
 chmod +x configure-get.sh
 ./configure-get.sh metis
 ```
 
-Please make the intended compiler available on the command line. For instance, many HPC centers rely on `module load`.
+The scripts rely on the GNU Compiler Collection (`configure-metis.sh`) or on the Intel Compiler (`configure-metis-icx.sh`), and code is generated for the system running the script.
 
-```bash
-source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
-```
-
-For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+To configure, build, and install (`../metis/gnu`):
 
 ```bash
 make distclean
-./configure-metis-skx.sh
+./configure-metis.sh
 make -j; make install
 ```
 
 ## References
 
-[http://glaros.dtc.umn.edu/gkhome/metis/metis/download](http://glaros.dtc.umn.edu/gkhome/metis/metis/download)  
-[http://glaros.dtc.umn.edu/gkhome/views/metis](http://glaros.dtc.umn.edu/gkhome/views/metis)
+[https://www.cp2k.org/static/downloads/](https://www.cp2k.org/static/downloads/)  
+[https://github.com/KarypisLab/METIS](https://github.com/KarypisLab/METIS)

@@ -12,13 +12,9 @@ chmod +x configure-get.sh
 ./configure-get.sh vc
 ```
 
-Please make the intended compiler available on the command line. For instance, many HPC centers rely on `module load`.
+The scripts rely on the GNU Compiler Collection (`configure-vc.sh`) or on the Intel Compiler (`configure-vc-icx.sh`), and code is generated for the system running the script.
 
-```bash
-source /opt/intel/compilers_and_libraries_2020.4.304/linux/bin/compilervars.sh intel64
-```
-
-For example, to configure and make for an Intel Xeon Scalable processor ("SKX"):
+To configure, build, and install (`../vc/gnu`):
 
 ```bash
 make distclean

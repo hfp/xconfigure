@@ -10,37 +10,25 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../vc/${PRFX}
-CMAKE=$(command -v cmake)
+DEST=$(cd "${HERE}/.." && pwd -P)/libwignernj/${PRFX}
+BUILD=build-${PRFX}
 
-if [ "" = "${CMAKE}" ]; then
-  echo "Error: missing CMake!"
-  exit 1
-fi
-
-if [ ! -e "${HERE}/CMakeLists.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
+if [ ! -e "${HERE}/wignernjConfig.cmake.in" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
-if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: Vc source directory equals installation folder!"
-  read -p "Are you sure? Y/N" -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    exit 1
-  fi
-else
-  rm -f "${HERE}/CMakeCache.txt"
-fi
+TARGET="-xHost"
+FLAGS="-O2 ${TARGET}"
 
-CONFOPTS="-DBUILD_TESTING=OFF"
-
-rm -rf "${HERE}/build"
-mkdir -p "${HERE}/build"
-cd "${HERE}/build" || exit 1
-
-cmake -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_CXX_COMPILER=g++ ${CONFOPTS} "$@" "${HERE}"
-echo
-echo "Remember to \"cd build\" before \"make; make install\""
+cmake -S "${HERE}" -B "${BUILD}" \
+  -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \
+  -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+  -DCMAKE_C_COMPILER=icx -DCMAKE_C_FLAGS_RELEASE="${FLAGS} -DNDEBUG" \
+  -DBUILD_SHARED_LIBS=OFF -DWIGNERNJ_BUILD_LTO=OFF \
+  -DWIGNERNJ_BUILD_FORTRAN=OFF -DWIGNERNJ_BUILD_EXAMPLES=OFF \
+  -DWIGNERNJ_BUILD_TESTS=OFF -DWIGNERNJ_BUILD_CXX_TESTS=OFF \
+  "$@" && \
+echo "Next: cmake --build ${BUILD} --target install -j $(nproc)"

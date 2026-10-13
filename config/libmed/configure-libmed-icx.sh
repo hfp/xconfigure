@@ -10,9 +10,9 @@
 # Hans Pabst (Intel Corp.)
 ###############################################################################
 
-if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
+if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../libxc/${PRFX}
+DEST=${HERE}/../libmed/${PRFX}
 
 if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -20,28 +20,32 @@ if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
 fi
 
 if [ "${HERE}" = "${DEST}" ]; then
-  echo "Warning: LIBXC source directory equals installation folder!"
+  echo "Warning: LIBMED source directory equals installation folder!"
   read -p "Are you sure? Y/N" -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
   fi
 fi
 
-CONFOPTS="--with-pic"
-TARGET="-march=native -mtune=native"
+CONFOPTS="--disable-dependency-tracking"
+TARGET="-xHost"
 
-export FLAGS="-O3 ${TARGET}"
+# consider more accurate FP-model
+#FPCMODEL = -fp-model precise
+#FPFMODEL = -fp-model source
+
+export FLAGS="-O2 ${TARGET}" #-ipo-separate
 export LDFLAGS=""
-export CFLAGS="${FLAGS}"
-export CXXFLAGS="${FLAGS}"
-export FCFLAGS="${FLAGS}"
-export LIBS=""
+export CFLAGS="${FLAGS} ${FPCMODEL}"
+export CXXFLAGS="${FLAGS} ${FPCMODEL}"
+export FCFLAGS="${FLAGS} ${FPFMODEL} -align array64byte"
 
-export AR="gcc-ar"
-export FC="gfortran"
-export CC="gcc"
-export CXX="g++"
+AR="ar"
+CXX="mpiicpx"
+CC="mpiicx"
+FC="mpiifx"
 
+export CXX CC FC AR
 export F77=${FC} F90=${FC} MPIFC=${FC} MPICC=${CC}
 export MPIF77=${F77} MPIF90=${F90} MPICXX=${CXX}
 export F77FLAGS=${FCFLAGS}
@@ -56,8 +60,8 @@ EOM
 
 libtoolize
 aclocal
-autoheader
-automake -a
+#autoheader
+#automake -a
 autoconf
 
 eval "./configure \
