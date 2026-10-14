@@ -13,7 +13,7 @@ chmod +x configure-get.sh
 ./configure-get.sh elpa
 ```
 
-The scripts rely on Intel&#160;MKL (`MKLROOT`), and on the GNU Compiler Collection (`configure-elpa.sh`) or the Intel Compiler (`configure-elpa-icx.sh`). Code is generated for the system running the script. To configure, build, and install (`../elpa/gnu`):
+The scripts rely on Intel&#160;MKL (`MKLROOT`), and on the GNU Compiler Collection (`configure-elpa.sh`) or the Intel Compiler (`configure-elpa-icx.sh`). Code is generated for the system running the script. To configure, build, and install (`../elpa/<arch>/gnu`):
 
 ```bash
 make clean
@@ -28,6 +28,8 @@ make clean
 OMP=0 ./configure-elpa.sh gnu-noomp
 make -j ; make install
 ```
+
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name).
 
 ## References
 

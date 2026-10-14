@@ -12,21 +12,21 @@ chmod +x configure-get.sh
 ./configure-get.sh libxc
 ```
 
-To configure, build, and install using the GNU Compiler Collection (`../libxc/gnu`):
+To configure, build, and install using the GNU Compiler Collection (`../libxc/<arch>/gnu`):
 
 ```bash
 ./configure-libxc.sh
-cmake --build build-gnu --target install -j $(nproc)
+cmake --build build-<arch>-gnu --target install -j $(nproc)
 ```
 
-To use the Intel Compiler instead (`../libxc/icx`):
+To use the Intel Compiler instead (`../libxc/<arch>/icx`):
 
 ```bash
 ./configure-libxc-icx.sh
-cmake --build build-icx --target install -j $(nproc)
+cmake --build build-<arch>-icx --target install -j $(nproc)
 ```
 
-The Fortran interface and third-order derivatives (`MAXORDER=3`) are built as needed by CP2K. An optional first argument ("tagname") changes the name of the build and installation folder. Further arguments are passed to CMake.
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name). The Fortran interface and third-order derivatives (`MAXORDER=3`) are built as needed by CP2K. An optional first argument ("tagname") changes the name of the build and installation folder. Further arguments are passed to CMake.
 
 ## References
 

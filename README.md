@@ -14,6 +14,8 @@ echo "EXAMPLE: recipe for LIBXC"
 ./configure-get.sh libxc
 ```
 
+The scripts generate code for the system running the script (`-march=native`, `-mcpu=native` on Arm, or `-xHost`). Libraries are installed next to the source code using `<name>/<arch>/<tagname>` (e.g., `libint/sapphirerapids/gnu`), and CMake-based builds use `build-<arch>-<tagname>` inside of the source folder. The `<arch>` is determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share one folder structure (NFS) among different systems, and `XCFG_ARCH` overrides the name.
+
 On systems without access to the Internet, one can [download](https://github.com/hfp/xconfigure/archive/master.zip) (or clone) the entire collection upfront. To configure an application, please open the [config](https://github.com/hfp/xconfigure/tree/master/config) folder directly or use the [documentation](https://xconfigure.readthedocs.io/) and then follow the build recipe of the desired application or library.
 
 ## Documentation

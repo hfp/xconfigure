@@ -12,8 +12,13 @@
 
 if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=$(cd "${HERE}/.." && pwd -P)/libint/${PRFX}
-BUILD=build-${PRFX}
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+if [ "aarch64" = "$(uname -m)" ]; then TARGET="-mcpu=native"; else TARGET="-march=native -mtune=native"; fi
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | gcc ${TARGET} -x c -E -v - 2>&1 | grep -m1 "/cc1 " | grep -o -E " -m(cpu|arch)=[^ +]*" | head -n1 | cut -d= -f2)}
+ARCH=${ARCH:-$(uname -m)}
+DEST=$(cd "${HERE}/.." && pwd -P)/libint/${ARCH}/${PRFX}
+BUILD=build-${ARCH}-${PRFX}
 
 if [ ! -e "${HERE}/CMakeLists.txt" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -26,7 +31,6 @@ if [ ! -e "${HERE}/include/libint2/config.h" ]; then
   exit 1
 fi
 
-TARGET="-march=native -mtune=native"
 FLAGS="-O2 ${TARGET}"
 
 # install rule expects bundled Boost even if the C++ API is disabled

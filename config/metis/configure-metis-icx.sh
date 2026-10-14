@@ -12,7 +12,12 @@
 
 if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../metis/${PRFX}
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+TARGET="-xHost"
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | icx ${TARGET} -x c -c -o /dev/null - -### 2>&1 | grep -o -E '"-target-cpu" "[^"]*"' | head -n1 | cut -d'"' -f4)}
+ARCH=${ARCH:-$(uname -m)}
+DEST=${HERE}/../metis/${ARCH}/${PRFX}
 CMAKE=$(command -v cmake)
 
 if [ "" = "${CMAKE}" ]; then
@@ -37,7 +42,6 @@ fi
 export CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 CONFOPTS="openmp=1"
-TARGET="-xHost"
 
 # consider more accurate FP-model
 #FPCMODEL = -fp-model precise

@@ -12,7 +12,12 @@
 
 if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../hdf5/${PRFX}
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+if [ "aarch64" = "$(uname -m)" ]; then TARGET="-mcpu=native"; else TARGET="-march=native -mtune=native"; fi
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | gcc ${TARGET} -x c -E -v - 2>&1 | grep -m1 "/cc1 " | grep -o -E " -m(cpu|arch)=[^ +]*" | head -n1 | cut -d= -f2)}
+ARCH=${ARCH:-$(uname -m)}
+DEST=${HERE}/../hdf5/${ARCH}/${PRFX}
 
 if [ ! -e "${HERE}/configure.ac" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -28,7 +33,6 @@ if [ "${HERE}" = "${DEST}" ]; then
 fi
 
 CONFOPTS="--disable-dependency-tracking --enable-fortran --enable-parallel"
-TARGET="-march=native -mtune=native"
 
 export FLAGS="-O3 ${TARGET}"
 export LDFLAGS=""

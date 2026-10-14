@@ -14,13 +14,15 @@ chmod +x configure-get.sh
 
 The scripts rely on the GNU Compiler Collection (`configure-metis.sh`) or on the Intel Compiler (`configure-metis-icx.sh`), and code is generated for the system running the script.
 
-To configure, build, and install (`../metis/gnu`):
+To configure, build, and install (`../metis/<arch>/gnu`):
 
 ```bash
 make distclean
 ./configure-metis.sh
 make -j; make install
 ```
+
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name).
 
 ## References
 

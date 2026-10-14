@@ -15,10 +15,10 @@ There are four flavors, which differ by the accelerator backend ("cpu" or "gpu")
 
 ```bash
 ./configure-dbcsr-gpu-shared.sh
-cmake --build build-gnu-gpu-shared --target install -j $(nproc)
+cmake --build build-<arch>-gnu-gpu-shared --target install -j $(nproc)
 ```
 
-The above installs into `../dbcsr/gnu-gpu-shared`, and similarly for `configure-dbcsr-cpu.sh` (`gnu-cpu`), `configure-dbcsr-cpu-shared.sh` (`gnu-cpu-shared`), and `configure-dbcsr-gpu.sh` (`gnu-gpu`). An optional first argument changes the "gnu" part of the name, and further arguments are passed to CMake, e.g., to select another GPU backend:
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name). The above installs into `../dbcsr/<arch>/gnu-gpu-shared`, and similarly for `configure-dbcsr-cpu.sh` (`gnu-cpu`), `configure-dbcsr-cpu-shared.sh` (`gnu-cpu-shared`), and `configure-dbcsr-gpu.sh` (`gnu-gpu`). An optional first argument changes the "gnu" part of the name, and further arguments are passed to CMake, e.g., to select another GPU backend:
 
 ```bash
 ./configure-dbcsr-gpu.sh gnu -DUSE_ACCEL=cuda -DWITH_GPU=H100

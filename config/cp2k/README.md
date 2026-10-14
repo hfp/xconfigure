@@ -2,10 +2,10 @@
 
 This document describes building CP2K with CMake and with dependencies built by XCONFIGURE. All packages are placed into a common directory (`$HOME` is assumed), and the dependencies are installed next to CP2K:
 
-* [DBCSR](../dbcsr/README.md): `dbcsr/gnu-cpu`, `dbcsr/gnu-gpu`, etc. (required)
-* [LIBWIGNERNJ](../libwignernj/README.md): `libwignernj/gnu` (required)
-* [LIBINT](../libint/README.md#libint): `libint/gnu`
-* [LIBXC](../libxc/README.md#libxc): `libxc/gnu`
+* [DBCSR](../dbcsr/README.md): `dbcsr/<arch>/gnu-cpu`, `dbcsr/<arch>/gnu-gpu`, etc. (required)
+* [LIBWIGNERNJ](../libwignernj/README.md): `libwignernj/<arch>/gnu` (required)
+* [LIBINT](../libint/README.md#libint): `libint/<arch>/gnu`
+* [LIBXC](../libxc/README.md#libxc): `libxc/<arch>/gnu`
 * [LIBXS](https://github.com/hfp/libxs): `libxs` (required for GPUs)
 * [LIBXSMM](https://github.com/libxsmm/libxsmm): `libxsmm` (optional, along with LIBXS)
 * [LIBXSTREAM](https://github.com/hfp/libxstream): `libxstream` (GPUs)
@@ -24,25 +24,25 @@ chmod +x configure-get.sh
 ./configure-get.sh cp2k
 ```
 
-To configure and build CP2K (`build-gnu-cpu`), or CP2K with GPU support by the means of OpenCL (`build-gnu-gpu`):
+To configure and build CP2K (`build-<arch>-gnu-cpu`), or CP2K with GPU support by the means of OpenCL (`build-<arch>-gnu-gpu`):
 
 ```bash
 ./configure-cp2k.sh
-cmake --build build-gnu-cpu -j $(nproc)
+cmake --build build-<arch>-gnu-cpu -j $(nproc)
 
 ./configure-cp2k-gpu.sh
-cmake --build build-gnu-gpu -j $(nproc)
+cmake --build build-<arch>-gnu-gpu -j $(nproc)
 ```
 
-CP2K can be run from where it was built, e.g., `build-gnu-cpu/bin/cp2k.psmp` (see "Running CP2K" below). Optionally, `--target install` installs into `../cp2k/gnu-cpu` (`../cp2k/gnu-gpu`).
+CP2K can be run from where it was built, e.g., `build-<arch>-gnu-cpu/bin/cp2k.psmp` (see "Running CP2K" below). Optionally, `--target install` installs into `../cp2k/<arch>/gnu-cpu` (`../cp2k/<arch>/gnu-gpu`).
 
-For each dependency, the first of `../<name>/gnu-cpu` (`gnu-gpu`), `../<name>/gnu`, `../<name>`, `$<NAME>ROOT` (e.g., `LIBXSROOT`), and the same folders in `$HOME` containing a library or package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K. Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name). For each dependency, the first of `../<name>/<arch>/gnu-cpu` (`gnu-gpu`), `../<name>/<arch>/gnu`, `../<name>/<arch>`, the same folders without `<arch>`, `$<NAME>ROOT` (e.g., `LIBXSROOT`), and the same folders in `$HOME` containing a library or package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/<arch>/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K. Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
 
 ```bash
 CMAKE_PREFIX_PATH=$HOME/elpa/gnu ./configure-cp2k.sh gnu -DCP2K_USE_ELPA=ON
 ```
 
-Code is generated for the system running the script (`-march=native`), i.e., a build system matching the target system is assumed.
+Code is generated for the system running the script (`-march=native`, or `-mcpu=native` on Arm), i.e., a build system matching the target system is assumed.
 
 ## CP2K on GPUs
 
@@ -56,8 +56,8 @@ The run-script can be symlinked into CP2K's root directory (`ln -s /path/to/xcon
 
 * `exe/Linux-x86-64-intelx` (legacy build, `CP2K_BUILD` selects another ARCH)
 * `build/bin` relative to the current directory (legacy location)
-* the most recent of `build*/bin` in CP2K's root directory (`CP2K_BUILD=gnu-gpu` restricts the search to `build-gnu-gpu*`)
-* `../cp2k/gnu/bin` (installation, `CP2K_BUILD` selects another tagname)
+* the most recent of `build-<arch>-*/bin` and `build/bin` in CP2K's root directory, where `<arch>` is determined like for building (`CP2K_BUILD=gnu-gpu` restricts the search to `build-<arch>-gnu-gpu*`)
+* `../cp2k/<arch>/gnu/bin` and `../cp2k/gnu/bin` (installation, `CP2K_BUILD` selects another tagname)
 
 <a name="info-script"></a>As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (`.txt` and `.out` extension by default). Log files can be captured with "tee", or the output is captured by the job scheduler.
 

@@ -13,7 +13,12 @@
 
 if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=${HERE}/../elpa/${PRFX}
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+TARGET="-xHost"
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | icx ${TARGET} -x c -c -o /dev/null - -### 2>&1 | grep -o -E '"-target-cpu" "[^"]*"' | head -n1 | cut -d'"' -f4)}
+ARCH=${ARCH:-$(uname -m)}
+DEST=${HERE}/../elpa/${ARCH}/${PRFX}
 
 if [[ (! -e "${HERE}/configure") && (! -e "${HERE}/autogen.sh") ]] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -59,7 +64,6 @@ MKL_OMPRTL="intel_thread"
 MKL_FCRTL="intel"
 MKL_BITS="lp64"
 
-TARGET="-xHost"
 FLAGS="-I${MKLROOT}/include -O3 ${TARGET}"
 if [ "0" != "${OMP}" ]; then
   CONFOPTS+=" --enable-openmp"

@@ -16,13 +16,15 @@ The scripts rely on the GNU Compiler Collection (`configure-libmed.sh`) or on th
 
 **Note**: Please make the "hdf5-tools" command available or pay attention to the console output after configuring libmed. In general, an HDF5 development package is necessary to pass the default configuration as implemented by XCONFIGURE. One can adjust the configure wrapper script for custom-built HDF5 by pointing to an (non-default) installation location.
 
-To configure, build, and install (`../libmed/gnu`):
+To configure, build, and install (`../libmed/<arch>/gnu`):
 
 ```bash
 make distclean
 ./configure-libmed.sh
 make -j; make install
 ```
+
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name).
 
 ## References
 

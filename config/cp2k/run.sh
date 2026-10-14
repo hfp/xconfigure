@@ -68,13 +68,26 @@ if [ ! "${EXE}" ]; then
     EXEVER=build; BUILD=bin
     EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
   fi
-  # CMake build folders (build, build-*), most recent first
+  # CMake build folders (build-<arch>-*, build), most recent first
   if [ ! -e "${EXE}" ]; then
+    # target name as determined by configure-cp2k*.sh, XCFG_ARCH overrides
+    if [ "aarch64" = "$(uname -m)" ]; then TARGET="-mcpu=native"; else TARGET="-march=native -mtune=native"; fi
+    # shellcheck disable=SC2086
+    ARCH=${XCFG_ARCH:-$(echo | gcc ${TARGET} -x c -E -v - 2>&1 | grep -m1 "/cc1 " | grep -o -E " -m(cpu|arch)=[^ +]*" | head -n1 | cut -d= -f2)}
+    ARCH=${ARCH:-$(uname -m)}
     # shellcheck disable=SC2012
-    CANDIDATE=$(ls -1t "${ROOT}/build${CP2K_BUILD:+-${CP2K_BUILD}}"*/bin/cp2k."${VERSION}" 2>/dev/null | head -n1)
-    if [ ! "${CANDIDATE}" ]; then  # installation folder of configure-cp2k*.sh
-      CANDIDATE=$(cd "${ROOT}/.." && pwd -P)/cp2k/${CP2K_BUILD:-gnu}/bin/cp2k.${VERSION}
+    if [ "${CP2K_BUILD}" ]; then
+      CANDIDATE=$(ls -1t "${ROOT}/build-${ARCH}-${CP2K_BUILD}"*/bin/cp2k."${VERSION}" 2>/dev/null | head -n1)
+    else
+      CANDIDATE=$(ls -1t "${ROOT}/build-${ARCH}-"*/bin/cp2k."${VERSION}" "${ROOT}/build/bin/cp2k.${VERSION}" 2>/dev/null | head -n1)
     fi
+    # installation folder of configure-cp2k*.sh
+    INSTDIR=$(cd "${ROOT}/.." && pwd -P)/cp2k
+    for DIR in "${INSTDIR}/${ARCH}/${CP2K_BUILD:-gnu}" "${INSTDIR}/${CP2K_BUILD:-gnu}"; do
+      if [ ! "${CANDIDATE}" ] && [ -e "${DIR}/bin/cp2k.${VERSION}" ]; then
+        CANDIDATE=${DIR}/bin/cp2k.${VERSION}
+      fi
+    done
     if [ -e "${CANDIDATE}" ]; then EXE=${CANDIDATE}; fi
   fi
   if [ "0" != "${VERBOSE}" ]; then

@@ -13,7 +13,7 @@ mpirun -np 16 \
   -genv I_MPI_PIN_DOMAIN=auto -genv I_MPI_PIN_ORDER=bunch \
   -genv OMP_PLACES=threads -genv OMP_PROC_BIND=SPREAD \
   -genv OMP_NUM_THREADS=6 \
-  cp2k/gnu/bin/cp2k.psmp workload.inp
+  cp2k/<arch>/gnu/bin/cp2k.psmp workload.inp
 ```
 
 **Note**: For hybrid codes, `I_MPI_PIN_DOMAIN=auto` is recommended as it spaces the ranks according to the number of OpenMP threads (`OMP_NUM_THREADS`). It is not necessary and not recommended to build a rather complicated `I_MPI_PIN_PROCESSOR_LIST` for hybrid codes (MPI plus OpenMP). To display and to log the pinning and thread affinization at the startup of an application, `I_MPI_DEBUG=4` can be used with no performance penalty. The recommended `I_MPI_PIN_ORDER=bunch` ensures that ranks per node are split as even as possible with respect to sockets (e.g., 36&#160;ranks on a 2x20-core system are put in 2x18 ranks instead of 20+16 ranks).
@@ -24,7 +24,7 @@ To achieve a similar placement with OpenMPI, ranks are mapped to "execution slot
 mpirun -np 16 --map-by slot:PE=3 \
   -x OMP_PLACES=threads -x OMP_PROC_BIND=SPREAD \
   -x OMP_NUM_THREADS=6 \
-  cp2k/gnu/bin/cp2k.psmp workload.inp
+  cp2k/<arch>/gnu/bin/cp2k.psmp workload.inp
 ```
 
 **Note**: Intel&#160;MPI's `I_MPI_PIN_ORDER=bunch` to balance the number of ranks between sockets (see above) appears hard to achieve with OpenMPI therefore an undersubscribed system may not be recommended. To display and to log the pinning and thread affinization at the startup of an application, `mpirun --report-bindings` can be used.
@@ -62,7 +62,7 @@ The first group of the output displays POT-style (trivial) MPI/OpenMP configurat
 mpirun -perhost 8 -host node1,node2,node3,node4,node5,node6,node7,node8 \
   -genv I_MPI_PIN_DOMAIN=auto -genv I_MPI_PIN_ORDER=bunch -genv I_MPI_DEBUG=4 \
   -genv OMP_PLACES=threads -genv OMP_PROC_BIND=SPREAD -genv OMP_NUM_THREADS=12 \
-  cp2k/gnu/bin/cp2k.psmp workload.inp
+  cp2k/<arch>/gnu/bin/cp2k.psmp workload.inp
 ```
 
 **Note**: For Intel&#160;MPI as well as OpenMPI, mpirun's host-list (`mpirun -host`) is set up with unique node-names, and this is the only style that is explained in this article. There is a competing style where nodes names are duplicated for the sake of enumerating available ranks (or "execution slots" in case of OpenMPI), which is not exercised in this article.
@@ -73,7 +73,7 @@ For OpenMPI, the quantity (per node) of the previously mentioned "execution slot
 mpirun -npernode 8 -host node1:48,node2:48,node3:48,node4:48,node5:48,node6:48,node7:48,node8:48 \
   --map-by slot:PE=6 --report-bindings \
   -x OMP_PLACES=threads -x OMP_PROC_BIND=SPREAD -x OMP_NUM_THREADS=12 \
-  cp2k/gnu/bin/cp2k.psmp workload.inp
+  cp2k/<arch>/gnu/bin/cp2k.psmp workload.inp
 ```
 
 **Note**: It can be still insufficient to augment the nodes with the expected number of slots (`:48`). If OpenMPI's mpirun is still complaining, it might be caused and solved by the job scheduler. For example, `qsub` (PBS) may be instructed with `-l select=8:mpiprocs=48` in the above case (`mpirun` in this job can use less than 48 ranks per node).

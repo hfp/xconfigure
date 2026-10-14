@@ -12,21 +12,21 @@ chmod +x configure-get.sh
 ./configure-get.sh libwignernj
 ```
 
-To configure, build, and install using the GNU Compiler Collection (`../libwignernj/gnu`):
+To configure, build, and install using the GNU Compiler Collection (`../libwignernj/<arch>/gnu`):
 
 ```bash
 ./configure-libwignernj.sh
-cmake --build build-gnu --target install -j $(nproc)
+cmake --build build-<arch>-gnu --target install -j $(nproc)
 ```
 
-To use the Intel Compiler instead (`../libwignernj/icx`):
+To use the Intel Compiler instead (`../libwignernj/<arch>/icx`):
 
 ```bash
 ./configure-libwignernj-icx.sh
-cmake --build build-icx --target install -j $(nproc)
+cmake --build build-<arch>-icx --target install -j $(nproc)
 ```
 
-An optional first argument ("tagname") changes the name of the build and installation folder. Further arguments are passed to CMake.
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name). An optional first argument ("tagname") changes the name of the build and installation folder. Further arguments are passed to CMake.
 
 ## References
 

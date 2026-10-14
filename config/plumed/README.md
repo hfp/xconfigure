@@ -16,13 +16,15 @@ The scripts rely on the GNU Compiler Collection (`configure-plumed.sh`) or on th
 
 **Note**: Please make the "python" command available, which may point to Python2 or Python3. For example, create a `bin` directory at `$HOME` (`mkdir -p ${HOME}/bin`), and create a symbolic link to either Python2 or Python3 (e.g., `ln -s /usr/bin/python3 ${HOME}/bin/python`).
 
-To configure, build, and install (`../plumed/gnu`):
+To configure, build, and install (`../plumed/<arch>/gnu`):
 
 ```bash
 make distclean
 ./configure-plumed.sh
 make -j; make install
 ```
+
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name).
 
 ## References
 

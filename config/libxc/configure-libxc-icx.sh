@@ -12,15 +12,19 @@
 
 if [ "" = "$1" ]; then PRFX=icx; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
-DEST=$(cd "${HERE}/.." && pwd -P)/libxc/${PRFX}
-BUILD=build-${PRFX}
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+TARGET="-xHost"
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | icx ${TARGET} -x c -c -o /dev/null - -### 2>&1 | grep -o -E '"-target-cpu" "[^"]*"' | head -n1 | cut -d'"' -f4)}
+ARCH=${ARCH:-$(uname -m)}
+DEST=$(cd "${HERE}/.." && pwd -P)/libxc/${ARCH}/${PRFX}
+BUILD=build-${ARCH}-${PRFX}
 
 if [ ! -e "${HERE}/CMakeLists.txt" ] || [ ! -e "${HERE}/src/xc.h" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
-TARGET="-xHost"
 FLAGS="-O2 ${TARGET}"
 
 cmake -S "${HERE}" -B "${BUILD}" \

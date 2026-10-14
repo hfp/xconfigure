@@ -12,19 +12,26 @@
 
 if [ "" = "$1" ]; then PRFX=gnu; else PRFX=$1; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+if [ "aarch64" = "$(uname -m)" ]; then TARGET="-mcpu=native"; else TARGET="-march=native -mtune=native"; fi
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | gcc ${TARGET} -x c -E -v - 2>&1 | grep -m1 "/cc1 " | grep -o -E " -m(cpu|arch)=[^ +]*" | head -n1 | cut -d= -f2)}
+ARCH=${ARCH:-$(uname -m)}
 ROOT=$(cd "${HERE}/.." && pwd -P)
-DEST=${ROOT}/cp2k/${PRFX}-cpu
-BUILD=build-${PRFX}-cpu
+DEST=${ROOT}/cp2k/${ARCH}/${PRFX}-cpu
+BUILD=build-${ARCH}-${PRFX}-cpu
 
 if [ ! -e "${HERE}/src/cp2k_info.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
   exit 1
 fi
 
-# sibling folder (flavor-specific first), $<NAME>ROOT, or $HOME
+# sibling folder (architecture and flavor first), $<NAME>ROOT, or $HOME
 for DEP in dbcsr libint libxc libwignernj libxs libxsmm; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
-  for DIR in "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
+  for DIR in "${ROOT}/${DEP}/${ARCH}/${PRFX}-cpu" "${ROOT}/${DEP}/${ARCH}/${PRFX}" "${ROOT}/${DEP}/${ARCH}" \
+             "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
+             "${HOME}/${DEP}/${ARCH}/${PRFX}-cpu" "${HOME}/${DEP}/${ARCH}/${PRFX}" "${HOME}/${DEP}/${ARCH}" \
              "${HOME}/${DEP}/${PRFX}-cpu" "${HOME}/${DEP}/${PRFX}" "${HOME}/${DEP}";
   do
     if [ "${DIR}" ] && [ "$(ls -d "${DIR}"/lib*/cmake "${DIR}"/lib*/pkgconfig "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
@@ -42,8 +49,6 @@ for DEP in dbcsr libint libxc libwignernj libxs libxsmm; do
 done
 
 # CP2K sets its own optimization level per build type
-TARGET="-march=native -mtune=native"
-
 # shellcheck disable=SC2086
 cmake -S "${HERE}" -B "${BUILD}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \

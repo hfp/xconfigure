@@ -12,9 +12,14 @@
 
 if [ "" = "$1" ]; then PRFX=gnu-cpu; else PRFX=$1-cpu; shift; fi
 HERE=$(cd "$(dirname "$0")" && pwd -P)
+# target flags and their name (e.g., sapphirerapids), XCFG_ARCH overrides
+if [ "aarch64" = "$(uname -m)" ]; then TARGET="-mcpu=native"; else TARGET="-march=native -mtune=native"; fi
+# shellcheck disable=SC2086
+ARCH=${XCFG_ARCH:-$(echo | gcc ${TARGET} -x c -E -v - 2>&1 | grep -m1 "/cc1 " | grep -o -E " -m(cpu|arch)=[^ +]*" | head -n1 | cut -d= -f2)}
+ARCH=${ARCH:-$(uname -m)}
 ROOT=$(cd "${HERE}/.." && pwd -P)
-DEST=${ROOT}/dbcsr/${PRFX}
-BUILD=build-${PRFX}
+DEST=${ROOT}/dbcsr/${ARCH}/${PRFX}
+BUILD=build-${ARCH}-${PRFX}
 
 if [ ! -e "${HERE}/src/dbcsr_api.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   echo "Error: XCONFIGURE scripts must be located and executed in the application folder!"
@@ -24,7 +29,7 @@ fi
 # sibling folder, $<NAME>ROOT (e.g., LIBXSROOT), or $HOME
 for DEP in libxs libxsmm; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
-  for DIR in "${ROOT}/${DEP}" "${!VAR}" "${HOME}/${DEP}"; do
+  for DIR in "${ROOT}/${DEP}/${ARCH}" "${ROOT}/${DEP}" "${!VAR}" "${HOME}/${DEP}/${ARCH}" "${HOME}/${DEP}"; do
     if [ "${DIR}" ] && [ "$(ls "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
       echo "Found ${DEP}: ${DIR}"
       PREFIXES="${PREFIXES:+${PREFIXES};}${DIR}"
@@ -35,8 +40,6 @@ for DEP in libxs libxsmm; do
 done
 
 # DBCSR sets its own optimization level per build type
-TARGET="-march=native -mtune=native"
-
 # shellcheck disable=SC2086
 cmake -S "${HERE}" -B "${BUILD}" \
   -DCMAKE_INSTALL_PREFIX="${DEST}" -DCMAKE_INSTALL_LIBDIR=lib \

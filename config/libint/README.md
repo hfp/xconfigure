@@ -12,23 +12,23 @@ chmod +x configure-get.sh
 ./configure-get.sh libint
 ```
 
-To configure, build, and install using the GNU Compiler Collection (`../libint/gnu`):
+To configure, build, and install using the GNU Compiler Collection (`../libint/<arch>/gnu`):
 
 ```bash
 ./configure-libint.sh
-cmake --build build-gnu --target install -j $(nproc)
+cmake --build build-<arch>-gnu --target install -j $(nproc)
 ```
 
-To use the Intel Compiler instead (`../libint/icx`):
+To use the Intel Compiler instead (`../libint/<arch>/icx`):
 
 ```bash
 ./configure-libint-icx.sh
-cmake --build build-icx --target install -j $(nproc)
+cmake --build build-<arch>-icx --target install -j $(nproc)
 ```
 
-The build relies on CMake and Python (Fortran interface). Neither Boost nor Eigen is necessary since the C++ API is not built. Code is generated for the system running the script (`-march=native` or `-xHost`), i.e., a build system matching the target system is assumed.
+Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name). The build relies on CMake and Python (Fortran interface). Neither Boost nor Eigen is necessary since the C++ API is not built. Code is generated for the system running the script (`-march=native`, `-mcpu=native` on Arm, or `-xHost`), i.e., a build system matching the target system is assumed.
 
-An optional first argument ("tagname") changes the name of the build and installation folder, e.g., `./configure-libint.sh gnu-test` installs into `../libint/gnu-test`. Further arguments are passed to CMake.
+An optional first argument ("tagname") changes the name of the build and installation folder, e.g., `./configure-libint.sh gnu-test` installs into `../libint/<arch>/gnu-test`. Further arguments are passed to CMake.
 
 ## References
 
