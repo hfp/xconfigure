@@ -31,8 +31,12 @@ for DEP in libxs libxsmm libxstream; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
   for DIR in "${ROOT}/${DEP}/${ARCH}" "${ROOT}/${DEP}" "${!VAR}" "${HOME}/${DEP}/${ARCH}" "${HOME}/${DEP}"; do
     if [ "${DIR}" ] && [ "$(ls "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
-      echo "Found ${DEP}: ${DIR}"
+      for SUB in "${ARCH}" "$(uname -m)" ""; do  # lib/<target> of a GNU Make build
+        if [ ! "${SUB}" ] || [ -e "${DIR}/lib/${SUB}/cmake/${DEP}/${DEP}Config.cmake" ]; then break; fi
+      done
+      echo "Found ${DEP}: ${DIR}${SUB:+/lib/${SUB}}"
       PREFIXES="${PREFIXES:+${PREFIXES};}${DIR}"
+      if [ "${SUB}" ]; then CONFOPTS+=" -D${DEP}_DIR=${DIR}/lib/${SUB}/cmake/${DEP}"; fi
       if [ "libxsmm" = "${DEP}" ]; then CONFOPTS+=" -DUSE_LIBXSMM=ON"; fi
       break
     fi
