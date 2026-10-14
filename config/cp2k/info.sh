@@ -131,9 +131,8 @@ for FILE in ${FILES}; do
       fi
       ACCON=$(grep -m1 " DBCSR| ACC: Number of devices/node" "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
       NDEVS=$(grep -m1 "\[0\] MPI startup(): GPUs\s*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
-      if [ ! "${NDEVS}" ]; then
-        NDEVS=$(grep -m1 "\[0\] MPI startup(): \(Stacks\|Tiles\).*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
-      fi
+      TILES=$(grep -m1 "\[0\] MPI startup(): \(Stacks\|Tiles\).*: " "${FILE}" | sed -n "s/..*\s\s*\(\w\)/\1/p")
+      if [ ! "${NDEVS}" ] || [ "0" != "$((NDEVS < TILES))" ]; then NDEVS=${TILES}; fi
       if [ ! "${NDEVS}" ]; then NDEVS=${ACCON}; fi
       if [ ! "${NDEVS}" ]; then NDEVS=0; fi
       if [ ! "${ACCON}" ]; then NDEVS=0; fi
