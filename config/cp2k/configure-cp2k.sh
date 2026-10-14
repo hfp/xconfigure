@@ -26,8 +26,10 @@ if [ ! -e "${HERE}/src/cp2k_info.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
   exit 1
 fi
 
+# NVPL=1 takes FFTW's interface from NVPL
+if [ "1" != "${NVPL}" ]; then FFTWDEP=fftw; fi
 # sibling folder (architecture and flavor first), $<NAME>ROOT, or $HOME
-for DEP in dbcsr fftw libint libxc libwignernj libxs libxsmm; do
+for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libxs libxsmm; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
   for DIR in "${ROOT}/${DEP}/${ARCH}/${PRFX}-cpu" "${ROOT}/${DEP}/${ARCH}/${PRFX}" "${ROOT}/${DEP}/${ARCH}" \
              "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
@@ -59,7 +61,12 @@ if [ "1" = "${NVPL}" ] && [ ! "${NVPLLIB}" ]; then
   echo "Error: NVPL requested but not found (NVPL_ROOT)!"
   exit 1
 fi
-if [ "${NVPLLIB}" ] && { [ "1" = "${NVPL}" ] || [ ! "${FFTW}" ]; }; then
+# CP2K prefers FFTW found by pkg-config, which cannot be overridden
+if [ "${NVPLLIB}" ] && [ ! "${FFTW}" ] && pkg-config --exists fftw3 2>/dev/null; then
+  echo "Found fftw: $(pkg-config --variable=prefix fftw3) (pkg-config, NVPL's FFT not used)"
+  NVPLFFT=0
+fi
+if [ "${NVPLLIB}" ] && [ ! "${FFTW}" ] && [ "0" != "${NVPLFFT}" ]; then
   echo "Found NVPL: ${NVPLLIB}"
   CONFOPTS+=" -DCP2K_FFTW3_FOUND=ON -DCP2K_FFTW3_INCLUDE_DIRS=${NVPLINC}/nvpl_fftw"
   CONFOPTS+=" -DCP2K_FFTW3_LINK_LIBRARIES=${NVPLLIB}/libnvpl_fftw.so"
