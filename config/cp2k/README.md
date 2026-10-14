@@ -14,6 +14,65 @@ This document describes building CP2K with CMake and with dependencies built by 
 
 The prerequisites are the GNU Compiler Collection, MPI (compiler wrappers `mpicc`, `mpicxx`, and `mpif90`), CMake, Python, and LAPACK/ScaLAPACK, e.g., Intel&#160;MKL (`MKLROOT`) which also provides FFTW's interface, or OpenBLAS along with ScaLAPACK.
 
+## Step-by-step Guide (GPU/OpenCL)<a name="step-by-step-guide"></a>
+
+The prerequisites can be installed using the package manager, e.g., on Debian or Ubuntu:
+
+```bash
+sudo apt install build-essential gfortran cmake python3 git wget pkg-config \
+  libopenmpi-dev openmpi-bin libopenblas-openmp-dev libscalapack-openmpi-dev \
+  opencl-headers ocl-icd-opencl-dev clinfo
+```
+
+OpenCL consists of headers, the dispatch library (ICD loader `libOpenCL.so`), and at least one driver registered in `/etc/OpenCL/vendors`. The above `opencl-headers` and `ocl-icd-opencl-dev` packages provide the headers and the dispatch library. The driver is part of the NVIDIA driver (e.g., `libnvidia-compute-<version>`), or `intel-opencl-icd` for Intel GPUs (Intel Compute Runtime). CUDA (`CUDA_PATH` or `nvcc` in `PATH`) and Intel oneAPI (`CMPLR_ROOT`) also provide headers and a dispatch library, and are preferred in this order when found (oneAPI's dispatch library depends on Intel runtime libraries, and sourcing oneAPI is not needed for building with the GNU Compiler Collection). The available devices are listed by `clinfo -l`.
+
+All packages are placed into `$HOME`, where each step finds the previous ones:
+
+```bash
+cd $HOME
+wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
+chmod +x configure-get.sh
+
+git clone https://github.com/hfp/libxs.git && make -C libxs -j $(nproc)
+git clone https://github.com/hfp/libxstream.git && make -C libxstream -j $(nproc)
+
+git clone --recursive https://github.com/cp2k/dbcsr.git && cd dbcsr
+../configure-get.sh dbcsr && ./configure-dbcsr-gpu.sh
+cmake --build build-*-gnu-gpu --target install -j $(nproc)
+cd $HOME
+
+wget https://www.cp2k.org/static/downloads/libwignernj-0.8.0.tar.gz
+tar xf libwignernj-0.8.0.tar.gz && cd libwignernj-0.8.0
+../configure-get.sh libwignernj && ./configure-libwignernj.sh
+cmake --build build-*-gnu --target install -j $(nproc)
+cd $HOME
+
+wget https://www.cp2k.org/static/downloads/libxc-7.1.2.tar.bz2
+tar xf libxc-7.1.2.tar.bz2 && cd libxc-7.1.2
+../configure-get.sh libxc && ./configure-libxc.sh
+cmake --build build-*-gnu --target install -j $(nproc)
+cd $HOME
+
+wget https://www.cp2k.org/static/downloads/libint-v2.13.1-cp2k-lmax-6.tar.xz
+tar xf libint-v2.13.1-cp2k-lmax-6.tar.xz && cd libint-v2.13.1-cp2k-lmax-6
+../configure-get.sh libint && ./configure-libint.sh
+cmake --build build-*-gnu --target install -j $(nproc)
+cd $HOME
+
+wget https://www.fftw.org/fftw-3.3.11.tar.gz
+tar xf fftw-3.3.11.tar.gz && cd fftw-3.3.11
+../configure-get.sh fftw && ./configure-fftw.sh
+make -C build-*-gnu install -j $(nproc)
+cd $HOME
+
+git clone https://github.com/cp2k/cp2k.git && cd cp2k
+../configure-get.sh cp2k && ./configure-cp2k-gpu.sh
+cmake --build build-*-gnu-gpu -j $(nproc)
+./run.sh benchmarks/QS/H2O-64.inp
+```
+
+The `build-*` folders assume a single architecture per source folder (see below); the configure scripts print the exact build command. Building LIBINT takes the longest (several minutes). FFTW is not needed with Intel&#160;MKL (`MKLROOT`), which also replaces OpenBLAS and ScaLAPACK, or with NVPL (e.g., NVIDIA Grace), which provides FFTW's interface. To rely on NVPL's BLAS, LAPACK, and ScaLAPACK instead of OpenBLAS, `NVPL=1` must be used for DBCSR and CP2K alike (`NVPL=1 ./configure-dbcsr-gpu.sh` and `NVPL=1 ./configure-cp2k-gpu.sh`).
+
 ## Build Instructions<a name="build-instructions"></a><a name="current-release"></a>
 
 ```bash

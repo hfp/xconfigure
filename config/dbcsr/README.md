@@ -3,7 +3,7 @@
 To configure, build, and install [DBCSR](https://github.com/cp2k/dbcsr) for CP2K, one may proceed as shown below.
 
 ```bash
-git clone https://github.com/cp2k/dbcsr.git
+git clone --recursive https://github.com/cp2k/dbcsr.git
 cd dbcsr
 
 wget --content-disposition https://github.com/hfp/xconfigure/raw/main/configure-get.sh
