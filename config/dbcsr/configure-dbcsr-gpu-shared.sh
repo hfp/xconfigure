@@ -39,6 +39,22 @@ for DEP in libxs libxsmm libxstream; do
   done
 done
 
+# NVPL=1 selects NVPL's BLAS/LAPACK (e.g., Grace), which CP2K must use as well
+if [ "1" = "${NVPL}" ]; then
+  for DIR in ${NVPL_ROOT:+"${NVPL_ROOT}"} /usr; do
+    # shellcheck disable=SC2012
+    NVPLLIB=$(ls -d "${DIR}"/lib*/libnvpl_blas_core.so "${DIR}"/lib/*/libnvpl_blas_core.so 2>/dev/null | head -n1)
+    if [ "${NVPLLIB}" ]; then NVPLLIB=$(dirname "${NVPLLIB}"); break; fi
+  done
+  if [ ! "${NVPLLIB}" ]; then
+    echo "Error: NVPL requested but not found (NVPL_ROOT)!"
+    exit 1
+  fi
+  echo "Found NVPL: ${NVPLLIB}"
+  CONFOPTS+=" -DBLAS_LIBRARIES=${NVPLLIB}/libnvpl_blas_lp64_gomp.so;${NVPLLIB}/libnvpl_blas_core.so"
+  CONFOPTS+=" -DLAPACK_LIBRARIES=${NVPLLIB}/libnvpl_lapack_lp64_gomp.so;${NVPLLIB}/libnvpl_lapack_core.so"
+fi
+
 # DBCSR sets its own optimization level per build type
 # shellcheck disable=SC2086
 cmake -S "${HERE}" -B "${BUILD}" \

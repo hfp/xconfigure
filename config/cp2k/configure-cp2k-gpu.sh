@@ -27,7 +27,7 @@ if [ ! -e "${HERE}/src/cp2k_info.F" ] || [ "${HERE}" != "$(pwd -P)" ]; then
 fi
 
 # sibling folder (architecture and flavor first), $<NAME>ROOT, or $HOME
-for DEP in dbcsr libint libxc libwignernj libxs libxsmm libxstream; do
+for DEP in dbcsr fftw libint libxc libwignernj libxs libxsmm libxstream; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
   for DIR in "${ROOT}/${DEP}/${ARCH}/${PRFX}-gpu" "${ROOT}/${DEP}/${ARCH}/${PRFX}" "${ROOT}/${DEP}/${ARCH}" \
              "${ROOT}/${DEP}/${PRFX}-gpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
@@ -42,11 +42,36 @@ for DEP in dbcsr libint libxc libwignernj libxs libxsmm libxstream; do
         libxc) CONFOPTS+=" -DCP2K_USE_LIBXC=ON" ;;
         libxs) CONFOPTS+=" -DCP2K_USE_LIBXS=ON" ;;
         libxsmm) CONFOPTS+=" -DCP2K_USE_LIBXSMM=ON" ;;
+        fftw) FFTW=${DIR} ;;
       esac
       break
     fi
   done
 done
+
+# NVPL (e.g., Grace) provides FFTW's interface, NVPL=1 also selects its BLAS/LAPACK/ScaLAPACK
+for DIR in ${NVPL_ROOT:+"${NVPL_ROOT}"} /usr; do
+  # shellcheck disable=SC2012
+  NVPLLIB=$(ls -d "${DIR}"/lib*/libnvpl_fftw.so "${DIR}"/lib/*/libnvpl_fftw.so 2>/dev/null | head -n1)
+  if [ "${NVPLLIB}" ]; then NVPLLIB=$(dirname "${NVPLLIB}"); NVPLINC=${DIR}/include; break; fi
+done
+if [ "1" = "${NVPL}" ] && [ ! "${NVPLLIB}" ]; then
+  echo "Error: NVPL requested but not found (NVPL_ROOT)!"
+  exit 1
+fi
+if [ "${NVPLLIB}" ] && { [ "1" = "${NVPL}" ] || [ ! "${FFTW}" ]; }; then
+  echo "Found NVPL: ${NVPLLIB}"
+  CONFOPTS+=" -DCP2K_FFTW3_FOUND=ON -DCP2K_FFTW3_INCLUDE_DIRS=${NVPLINC}/nvpl_fftw"
+  CONFOPTS+=" -DCP2K_FFTW3_LINK_LIBRARIES=${NVPLLIB}/libnvpl_fftw.so"
+  CONFOPTS+=" -DCP2K_FFTW3_OMP_FOUND=ON -DCP2K_FFTW3_OMP_LINK_LIBRARIES=${NVPLLIB}/libnvpl_fftw.so"
+fi
+if [ "1" = "${NVPL}" ]; then  # DBCSR must use the same BLAS/LAPACK
+  CONFOPTS+=" -DCP2K_BLAS_VENDOR=CUSTOM -DCP2K_BLAS_INCLUDE_DIRS=${NVPLINC}"
+  CONFOPTS+=" -DCP2K_BLAS_LINK_LIBRARIES=${NVPLLIB}/libnvpl_blas_lp64_gomp.so;${NVPLLIB}/libnvpl_blas_core.so"
+  CONFOPTS+=" -DCP2K_LAPACK_LINK_LIBRARIES=${NVPLLIB}/libnvpl_lapack_lp64_gomp.so;${NVPLLIB}/libnvpl_lapack_core.so"
+  CONFOPTS+=" -DCP2K_SCALAPACK_VENDOR=NVPL"
+  if [ "${NVPL_ROOT}" ]; then PREFIXES="${PREFIXES:+${PREFIXES};}${NVPL_ROOT}"; fi
+fi
 
 # CP2K sets its own optimization level per build type
 # shellcheck disable=SC2086

@@ -9,9 +9,10 @@ This document describes building CP2K with CMake and with dependencies built by 
 * [LIBXS](https://github.com/hfp/libxs): `libxs` (required for GPUs)
 * [LIBXSMM](https://github.com/libxsmm/libxsmm): `libxsmm` (optional, along with LIBXS)
 * [LIBXSTREAM](https://github.com/hfp/libxstream): `libxstream` (GPUs)
+* [FFTW](../fftw/README.md): `fftw/<arch>/gnu` (unless Intel&#160;MKL or NVPL is used)
 * `cp2k`
 
-The prerequisites are the GNU Compiler Collection, MPI (compiler wrappers `mpicc`, `mpicxx`, and `mpif90`), CMake, Python, and LAPACK/ScaLAPACK as well as FFTW, e.g., Intel&#160;MKL (`MKLROOT`).
+The prerequisites are the GNU Compiler Collection, MPI (compiler wrappers `mpicc`, `mpicxx`, and `mpif90`), CMake, Python, and LAPACK/ScaLAPACK, e.g., Intel&#160;MKL (`MKLROOT`) which also provides FFTW's interface, or OpenBLAS along with ScaLAPACK.
 
 ## Build Instructions<a name="build-instructions"></a><a name="current-release"></a>
 
@@ -40,6 +41,12 @@ Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirera
 
 ```bash
 CMAKE_PREFIX_PATH=$HOME/elpa/gnu ./configure-cp2k.sh gnu -DCP2K_USE_ELPA=ON
+```
+
+If NVPL is installed (e.g., on NVIDIA Grace, `NVPL_ROOT` if not in a system location), its FFTW interface is used unless FFTW was built by XCONFIGURE. With `NVPL=1`, CP2K also relies on NVPL's BLAS, LAPACK, and ScaLAPACK; DBCSR must be configured with `NVPL=1` as well to link the same BLAS library:
+
+```bash
+NVPL=1 ./configure-cp2k-gpu.sh
 ```
 
 Code is generated for the system running the script (`-march=native`, or `-mcpu=native` on Arm), i.e., a build system matching the target system is assumed.

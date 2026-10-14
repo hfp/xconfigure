@@ -24,6 +24,8 @@ Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirera
 ./configure-dbcsr-gpu.sh gnu -DUSE_ACCEL=cuda -DWITH_GPU=H100
 ```
 
+BLAS and LAPACK are found by CMake (e.g., OpenBLAS or Intel&#160;MKL). With `NVPL=1`, NVPL's BLAS and LAPACK are used instead (e.g., on NVIDIA Grace, `NVPL_ROOT` if not in a system location), and CP2K must be configured with `NVPL=1` as well to link the same BLAS library.
+
 ## References
 
 [https://github.com/cp2k/dbcsr](https://github.com/cp2k/dbcsr)  
