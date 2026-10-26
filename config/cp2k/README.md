@@ -1,18 +1,35 @@
 # CP2K<a name="cp2k-open-source-molecular-dynamics"></a>
 
-This document describes building CP2K with CMake and with dependencies built by XCONFIGURE. All packages are placed into a common directory (`$HOME` is assumed), and the dependencies are installed next to CP2K:
+This document describes building CP2K with CMake and with dependencies built by XCONFIGURE, with a focus on GPU support by the means of OpenCL ([LIBXSTREAM](https://github.com/hfp/libxstream)). All packages are placed into a common directory (`$HOME` is assumed), and the dependencies are installed next to CP2K, where its configure script finds them.
 
-* [DBCSR](../dbcsr/README.md): `dbcsr/<arch>/gnu-cpu`, `dbcsr/<arch>/gnu-gpu`, etc. (required)
-* [LIBWIGNERNJ](../libwignernj/README.md): `libwignernj/<arch>/gnu` (required)
-* [LIBINT](../libint/README.md#libint): `libint/<arch>/gnu`
-* [LIBXC](../libxc/README.md#libxc): `libxc/<arch>/gnu`
-* [LIBXS](https://github.com/hfp/libxs): `libxs` (required for GPUs)
-* [LIBXSMM](https://github.com/libxsmm/libxsmm): `libxsmm` (optional, along with LIBXS)
-* [LIBXSTREAM](https://github.com/hfp/libxstream): `libxstream` (GPUs)
-* [FFTW](../fftw/README.md): `fftw/<arch>/gnu` (unless Intel&#160;MKL or NVPL is used)
-* `cp2k`
+## Dependencies<a name="dependencies"></a>
 
-The prerequisites are the GNU Compiler Collection, MPI (compiler wrappers `mpicc`, `mpicxx`, and `mpif90`), CMake, Python, and LAPACK/ScaLAPACK, e.g., Intel&#160;MKL (`MKLROOT`) which also provides FFTW's interface, or OpenBLAS along with ScaLAPACK.
+| Package                  | Needed                      | Source                           | Installed into               |
+|:-------------------------|:----------------------------|:---------------------------------|:-----------------------------|
+| BLAS, LAPACK, ScaLAPACK  | required                    | MKL, NVPL, or OpenBLAS+ScaLAPACK | system (or `MKLROOT`)        |
+| FFTW3                    | required                    | MKL, NVPL, or [FFTW][fftw]       | `fftw/<arch>/gnu`            |
+| [DBCSR][dbcsr]           | required                    | [GitHub][gh-dbcsr]               | `dbcsr/<arch>/gnu-gpu`, etc. |
+| [LIBWIGNERNJ][wignernj]  | required                    | [cp2k.org][dl]                   | `libwignernj/<arch>/gnu`     |
+| [LIBINT][libint]         | strongly recommended        | [cp2k.org][dl] (preconfigured)   | `libint/<arch>/gnu`          |
+| [LIBXC][libxc]           | strongly recommended        | [cp2k.org][dl]                   | `libxc/<arch>/gnu`           |
+| [LIBXSTREAM][libxstream] | GPU support (OpenCL)        | [GitHub][libxstream]             | `libxstream`                 |
+| [LIBXS][libxs]           | for LIBXSTREAM, recommended | [GitHub][libxs]                  | `libxs`                      |
+| [LIBXSMM][libxsmm]       | optional (with LIBXS)       | [GitHub][libxsmm]                | `libxsmm`                    |
+
+[fftw]: ../fftw/README.md
+[dbcsr]: ../dbcsr/README.md
+[gh-dbcsr]: https://github.com/cp2k/dbcsr
+[wignernj]: ../libwignernj/README.md
+[libint]: ../libint/README.md#libint
+[libxc]: ../libxc/README.md#libxc
+[libxstream]: https://github.com/hfp/libxstream
+[libxs]: https://github.com/hfp/libxs
+[libxsmm]: https://github.com/libxsmm/libxsmm
+[dl]: https://www.cp2k.org/static/downloads/
+
+The sources of the dependencies are best taken from CP2K's [download area](https://www.cp2k.org/static/downloads/), which carries the versions CP2K is tested with. LIBINT in particular must be one of CP2K's preconfigured packages (`libint-v<version>-cp2k-lmax-<lmax>.tar.xz`), since LIBINT's own source code is a generator rather than the library. LIBINT and LIBXC are optional for CP2K but needed to run common workloads: inputs using Hartree-Fock exchange (e.g., hybrid functionals) require LIBINT, and many exchange-correlation functionals require LIBXC. LIBXS is required for GPU support by LIBXSTREAM, and is useful for CPU-only builds as well (small matrix multiplications, timers, memory pool).
+
+Further prerequisites are the GNU Compiler Collection, MPI (compiler wrappers `mpicc`, `mpicxx`, and `mpif90`), CMake, and Python. Intel&#160;MKL replaces OpenBLAS, ScaLAPACK, and FFTW at once.
 
 ## Step-by-step Guide (GPU/OpenCL)<a name="step-by-step-guide"></a>
 
@@ -112,7 +129,7 @@ Code is generated for the system running the script (`-march=native`, or `-mcpu=
 
 ## CP2K on GPUs
 
-The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component. The OpenCL backend has comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific kernels. DBCSR as well as CP2K's DBM component (`src/dbm`) can be exercised in a standalone fashion.
+The OpenCL support enables DBCSR's OpenCL backend as well as CP2K's GPU-enabled DBM/DBT component. The OpenCL backend has comprehensive runtime-control by the means of [environment variables](https://cp2k.github.io/dbcsr/develop/page/3-developer-guide/3-programming/2-accelerator-backend/3-libsmm_ocl/index.html). This can be used to assign OpenCL devices, to aggregate sub-devices (devices are split into sub-devices by default), to extract kernel shapes used by a specific workload, and to subsequently tune specific kernels. DBCSR as well as CP2K's DBM component (`src/dbm`) can be exercised in a standalone fashion. The [LIBXSTREAM documentation](https://libxstream.readthedocs.io/) describes the runtime settings of the OpenCL backend (e.g., device selection and profiling), and its OpenCL-MPS lets several ranks per node share one context per device.
 
 ## Running CP2K<a name="run-instructions"></a><a name="performance"></a>
 
