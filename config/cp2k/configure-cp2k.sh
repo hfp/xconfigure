@@ -31,10 +31,12 @@ if [ "1" != "${NVPL}" ]; then FFTWDEP=fftw; fi
 # sibling folder (architecture and flavor first), $<NAME>ROOT, or $HOME
 for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libxs libxsmm; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
-  for DIR in "${ROOT}/${DEP}/${ARCH}/${PRFX}-cpu" "${ROOT}/${DEP}/${ARCH}/${PRFX}" "${ROOT}/${DEP}/${ARCH}" \
-             "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
-             "${HOME}/${DEP}/${ARCH}/${PRFX}-cpu" "${HOME}/${DEP}/${ARCH}/${PRFX}" "${HOME}/${DEP}/${ARCH}" \
-             "${HOME}/${DEP}/${PRFX}-cpu" "${HOME}/${DEP}/${PRFX}" "${HOME}/${DEP}";
+  for DIR in "${ROOT}/${DEP}/${ARCH}/${PRFX}-cpu" "${ROOT}/${DEP}/${ARCH}/${PRFX}-cpu-shared" \
+             "${ROOT}/${DEP}/${ARCH}/${PRFX}" "${ROOT}/${DEP}/${ARCH}" \
+             "${ROOT}/${DEP}/${PRFX}-cpu" "${ROOT}/${DEP}/${PRFX}-cpu-shared" "${ROOT}/${DEP}/${PRFX}" "${ROOT}/${DEP}" "${!VAR}" \
+             "${HOME}/${DEP}/${ARCH}/${PRFX}-cpu" "${HOME}/${DEP}/${ARCH}/${PRFX}-cpu-shared" \
+             "${HOME}/${DEP}/${ARCH}/${PRFX}" "${HOME}/${DEP}/${ARCH}" \
+             "${HOME}/${DEP}/${PRFX}-cpu" "${HOME}/${DEP}/${PRFX}-cpu-shared" "${HOME}/${DEP}/${PRFX}" "${HOME}/${DEP}";
   do
     if [ "${DIR}" ] && [ "$(ls -d "${DIR}"/lib*/cmake "${DIR}"/lib*/pkgconfig "${DIR}"/lib*/"${DEP}".* 2>/dev/null)" ]; then
       for SUB in "${ARCH}" "$(uname -m)" ""; do  # lib/<target> of a GNU Make build
@@ -44,6 +46,7 @@ for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libxs libxsmm; do
       PREFIXES="${PREFIXES:+${PREFIXES};}${DIR}"
       if [ "${SUB}" ]; then CONFOPTS+=" -D${DEP}_DIR=${DIR}/lib/${SUB}/cmake/${DEP}"; fi
       case "${DEP}" in
+        dbcsr) DBCSR=${DIR} ;;
         libint) CONFOPTS+=" -DCP2K_USE_LIBINT2=ON" ;;
         libxc) CONFOPTS+=" -DCP2K_USE_LIBXC=ON" ;;
         libxs) CONFOPTS+=" -DCP2K_USE_LIBXS=ON" ;;
@@ -54,6 +57,16 @@ for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libxs libxsmm; do
     fi
   done
 done
+
+if [ ! "${DBCSR}" ]; then  # required by CP2K, but CMAKE_PREFIX_PATH may provide it
+  # shellcheck disable=SC2012
+  BLD=$(ls -d "${ROOT}/dbcsr/build-${ARCH}-${PRFX}-cpu"* 2>/dev/null | head -n1)
+  if [ "${BLD}" ]; then
+    echo "Warning: DBCSR not installed, run: cmake --build ${BLD} --target install"
+  else
+    echo "Warning: DBCSR not found, see configure-dbcsr-cpu.sh (installs into ${ROOT}/dbcsr/${ARCH}/${PRFX}-cpu)"
+  fi
+fi
 
 # NVPL (e.g., Grace) provides FFTW's interface, NVPL=1 also selects its BLAS/LAPACK/ScaLAPACK
 for DIR in ${NVPL_ROOT:+"${NVPL_ROOT}"} /usr; do
