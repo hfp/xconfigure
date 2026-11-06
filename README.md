@@ -20,7 +20,7 @@ On systems without access to the Internet, one can [download](https://github.com
 
 ## Documentation
 
-* [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBWIGNERNJ](https://github.com/hfp/xconfigure/tree/master/config/libwignernj), [DBCSR](https://github.com/hfp/xconfigure/tree/master/config/dbcsr), and [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm).
+* [**ReadtheDocs**](https://xconfigure.readthedocs.io/): online documentation with full text search: [CP2K](https://github.com/hfp/xconfigure/tree/master/config/cp2k), [ELPA](https://github.com/hfp/xconfigure/tree/master/config/elpa), [LIBINT](https://github.com/hfp/xconfigure/tree/master/config/libint), [LIBXC](https://github.com/hfp/xconfigure/tree/master/config/libxc), [LIBWIGNERNJ](https://github.com/hfp/xconfigure/tree/master/config/libwignernj), [LIBVORI](https://github.com/hfp/xconfigure/tree/master/config/libvori), [FFTW](https://github.com/hfp/xconfigure/tree/master/config/fftw), [DBCSR](https://github.com/hfp/xconfigure/tree/master/config/dbcsr), and [LIBXSMM](https://github.com/hfp/xconfigure/tree/master/config/libxsmm).
 * [**PDF**](https://github.com/hfp/xconfigure/raw/main/xconfigure.pdf): a single documentation file.
 
 ## Related Projects
