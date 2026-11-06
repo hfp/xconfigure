@@ -30,6 +30,7 @@ nav:
   - LIBMED: libmed/README.md
   - LIBXC: libxc/README.md
   - LIBWIGNERNJ: libwignernj/README.md
+  - LIBVORI: libvori/README.md
   - METIS: metis/README.md
   - HDF5: hdf5/README.md
   - ELPA: elpa/README.md

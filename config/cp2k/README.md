@@ -12,6 +12,7 @@ This document describes building CP2K with CMake and with dependencies built by 
 | [LIBWIGNERNJ][wignernj]  | required                    | [cp2k.org][dl]                   | `libwignernj/<arch>/gnu`     |
 | [LIBINT][libint]         | strongly recommended        | [cp2k.org][dl] (preconfigured)   | `libint/<arch>/gnu`          |
 | [LIBXC][libxc]           | strongly recommended        | [cp2k.org][dl]                   | `libxc/<arch>/gnu`           |
+| [LIBVORI][libvori]       | optional                    | [cp2k.org][dl]                   | `libvori/<arch>/gnu`         |
 | [LIBXSTREAM][libxstream] | GPU support (OpenCL)        | [GitHub][libxstream]             | `libxstream`                 |
 | [LIBXS][libxs]           | for LIBXSTREAM, recommended | [GitHub][libxs]                  | `libxs`                      |
 | [LIBXSMM][libxsmm]       | optional (with LIBXS)       | [GitHub][libxsmm]                | `libxsmm`                    |
@@ -22,6 +23,7 @@ This document describes building CP2K with CMake and with dependencies built by 
 [wignernj]: ../libwignernj/README.md
 [libint]: ../libint/README.md#libint
 [libxc]: ../libxc/README.md#libxc
+[libvori]: ../libvori/README.md
 [libxstream]: https://github.com/hfp/libxstream
 [libxs]: https://github.com/hfp/libxs
 [libxsmm]: https://github.com/libxsmm/libxsmm
@@ -42,6 +44,8 @@ sudo apt install build-essential gfortran cmake python3 git wget pkg-config \
 ```
 
 OpenCL consists of headers, the dispatch library (ICD loader `libOpenCL.so`), and at least one driver registered in `/etc/OpenCL/vendors`. The above `opencl-headers` and `ocl-icd-opencl-dev` packages provide the headers and the dispatch library. The driver is part of the NVIDIA driver (e.g., `libnvidia-compute-<version>`), or `intel-opencl-icd` for Intel GPUs (Intel Compute Runtime). CUDA (`CUDA_PATH` or `nvcc` in `PATH`) and Intel oneAPI (`CMPLR_ROOT`) also provide headers and a dispatch library, and are preferred in this order when found (oneAPI's dispatch library depends on Intel runtime libraries, and sourcing oneAPI is not needed for building with the GNU Compiler Collection). The available devices are listed by `clinfo -l`.
+
+An older OpenBLAS (e.g., 0.3.20) may not know a newer CPU and compute wrong results with the kernels it selects for it, which `OPENBLAS_CORETYPE=Haswell` avoids at runtime (or a newer OpenBLAS). GPU-aware MPI is not needed; for Intel GPUs, it is not packaged and requires building MPICH with Level Zero support (`--with-ze`).
 
 All packages are placed into `$HOME`, where each step finds the previous ones:
 

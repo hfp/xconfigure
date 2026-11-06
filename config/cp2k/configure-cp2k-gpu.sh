@@ -29,7 +29,7 @@ fi
 # NVPL=1 takes FFTW's interface from NVPL
 if [ "1" != "${NVPL}" ]; then FFTWDEP=fftw; fi
 # sibling folder (architecture and flavor first), $<NAME>ROOT, or $HOME
-for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libxs libxsmm libxstream; do
+for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libvori libxs libxsmm libxstream; do
   VAR=$(tr "[:lower:]" "[:upper:]" <<<"${DEP}")ROOT
   for DIR in "${ROOT}/${DEP}/${ARCH}/${PRFX}-gpu" "${ROOT}/${DEP}/${ARCH}/${PRFX}-gpu-shared" \
              "${ROOT}/${DEP}/${ARCH}/${PRFX}" "${ROOT}/${DEP}/${ARCH}" \
@@ -49,6 +49,7 @@ for DEP in dbcsr ${FFTWDEP} libint libxc libwignernj libxs libxsmm libxstream; d
         dbcsr) DBCSR=${DIR} ;;
         libint) CONFOPTS+=" -DCP2K_USE_LIBINT2=ON" ;;
         libxc) CONFOPTS+=" -DCP2K_USE_LIBXC=ON" ;;
+        libvori) CONFOPTS+=" -DCP2K_USE_VORI=ON" ;;
         libxs) CONFOPTS+=" -DCP2K_USE_LIBXS=ON" ;;
         libxsmm) CONFOPTS+=" -DCP2K_USE_LIBXSMM=ON" ;;
         fftw) FFTW=${DIR} ;;
