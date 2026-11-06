@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2001
 #
-ROOT=${PWD}
 ROOT=$(cd "$(dirname "$0")" && pwd -P)
+
+if [ "--help" = "$1" ] || [ "-help" = "$1" ] || [ "-h" = "$1" ]; then HELP=1; fi
 
 VERSION=${CP2K_VERSION:-psmp}
 BUILD=${CP2K_BUILD}
@@ -68,24 +69,41 @@ if [ ! "${EXE}" ]; then
     EXEVER=build; BUILD=bin
     EXE=${EXEVER}/${BUILD}/cp2k.${VERSION}
   fi
-  # CMake build folders (build-<arch>-*, build), most recent first
+  # CMake build folders: CP2K_BUILD, build, build-<arch>-* (most recent), or a sole build-*
   if [ ! -e "${EXE}" ]; then
     # target name as determined by configure-cp2k*.sh, XCFG_ARCH overrides
     if [ "aarch64" = "$(uname -m)" ]; then TARGET="-mcpu=native"; else TARGET="-march=native -mtune=native"; fi
     # shellcheck disable=SC2086
     ARCH=${XCFG_ARCH:-$(echo | gcc ${TARGET} -x c -E -v - 2>&1 | grep -m1 "/cc1 " | grep -o -E " -m(cpu|arch)=[^ +]*" | head -n1 | cut -d= -f2)}
     ARCH=${ARCH:-$(uname -m)}
+    BIN=bin/cp2k.${VERSION}
     # shellcheck disable=SC2012
-    if [ "${CP2K_BUILD}" ]; then
-      CANDIDATE=$(ls -1t "${ROOT}/build-${ARCH}-${CP2K_BUILD}"*/bin/cp2k."${VERSION}" 2>/dev/null | head -n1)
+    if [ "${CP2K_BUILD}" ] && [ -e "${ROOT}/${CP2K_BUILD}/${BIN}" ]; then
+      CANDIDATE=${ROOT}/${CP2K_BUILD}/${BIN}  # e.g., CP2K_BUILD=build-alderlake-gnu-cpu
+    elif [ "${CP2K_BUILD}" ]; then
+      CANDIDATES=$(ls -1t "${ROOT}/build-${ARCH}-${CP2K_BUILD}"*/"${BIN}" 2>/dev/null)
+    elif [ -e "${ROOT}/build/${BIN}" ]; then
+      CANDIDATE=${ROOT}/build/${BIN}
     else
-      CANDIDATE=$(ls -1t "${ROOT}/build-${ARCH}-"*/bin/cp2k."${VERSION}" "${ROOT}/build/bin/cp2k.${VERSION}" 2>/dev/null | head -n1)
+      CANDIDATES=$(ls -1t "${ROOT}/build-${ARCH}-"*/"${BIN}" 2>/dev/null)
+      if [ ! "${CANDIDATES}" ]; then  # any build-*, but only if unambiguous
+        CANDIDATES=$(ls -1t "${ROOT}/build-"*/"${BIN}" 2>/dev/null)
+        if [ "${CANDIDATES}" ] && [ "1" != "$(wc -l <<<"${CANDIDATES}")" ]; then
+          AMBIGUOUS=${CANDIDATES}; CANDIDATES=""
+        fi
+      fi
+    fi
+    if [ "${CANDIDATES}" ]; then
+      CANDIDATE=$(head -n1 <<<"${CANDIDATES}")
+      if [ "1" != "$(wc -l <<<"${CANDIDATES}")" ] && [ ! "${HELP}" ]; then
+        >&2 echo "INFO: using the most recent of $(wc -l <<<"${CANDIDATES}") builds (CP2K_BUILD selects)"
+      fi
     fi
     # installation folder of configure-cp2k*.sh
     INSTDIR=$(cd "${ROOT}/.." && pwd -P)/cp2k
     for DIR in "${INSTDIR}/${ARCH}/${CP2K_BUILD:-gnu}" "${INSTDIR}/${CP2K_BUILD:-gnu}"; do
-      if [ ! "${CANDIDATE}" ] && [ -e "${DIR}/bin/cp2k.${VERSION}" ]; then
-        CANDIDATE=${DIR}/bin/cp2k.${VERSION}
+      if [ ! "${CANDIDATE}" ] && [ -e "${DIR}/${BIN}" ]; then
+        CANDIDATE=${DIR}/${BIN}
       fi
     done
     if [ -e "${CANDIDATE}" ]; then EXE=${CANDIDATE}; fi
@@ -101,10 +119,61 @@ if [ -d "$(dirname "${EXE}")" ]; then
   EXE=${EXEDIR}/$(basename "${EXE}")
 fi
 
+if [ "${HELP}" ]; then
+  cat <<EOM
+Usage: $0 [workload.inp [ranks-per-node [num-nodes]]] [cp2k-arguments]
+
+Runs CP2K with MPI ranks and OpenMP threads pinned to the cores of each node.
+By default, the ranks-per-node are the number of cores per node, and the nodes
+are taken from Slurm, from mynodes.sh in CP2K's root directory, or HOSTS.
+
+Executable (EXE overrides the selection below):
+  exe/<CP2K_BUILD>/cp2k.<CP2K_VERSION> (legacy, default: Linux-x86-64-intelx)
+  build/bin relative to the current directory (legacy)
+  <CP2K_BUILD>/bin or build-<arch>-<CP2K_BUILD>*/bin if CP2K_BUILD is given, otherwise:
+    build/bin in CP2K's root directory (e.g., a symbolic link to a build folder)
+    build-<arch>-*/bin, the most recent if there are several
+    build-*/bin if there is only one (any target)
+  ../cp2k/<arch>/<CP2K_BUILD>/bin and ../cp2k/<CP2K_BUILD>/bin (default: gnu)
+
+Environment:
+  CP2K_VERSION=psmp      Kind of executable (cp2k.psmp), e.g., ssmp or pdbg
+  CP2K_BUILD=<name>      Build folder, flavor (e.g., gnu-gpu), or tagname
+  XCFG_ARCH=<arch>       Target name instead of the compiler's (gcc)
+  CP2K_DATA_DIR=<path>   Data directory (default: CP2K's root directory/data)
+  MAXNT=1                Threads per core
+  OMP_NUM_THREADS=<n>    Threads per rank instead of the cores per rank
+  VERBOSE=0              Quiet libraries and MPI (I_MPI_DEBUG, --report-bindings)
+  TUNE=0                 No glibc tunables (malloc trim threshold, AVX2 off)
+  TBBMALLOC=1            Preload TBB's malloc proxy (requires TBBROOT)
+  MPI_OPT=1              Tuned Intel MPI, no launcher for a single rank
+  MPI_OPT=0              No process placement (OpenMPI)
+  BOOTSTRAP=<name>       Bootstrap of Intel MPI (ssh if numeric), oversubscribe (OpenMPI)
+  HOSTS=<a,b,...>        Comma-separated list of nodes
+  CHECK=1                Run PROLOG and EPILOG (numactl -H, clinfo -l)
+  CHECK_EXE=<path>       Run executable once per node before CP2K
+  NUMACTL=<command>      Prefix of the executable, e.g., "numactl --preferred=1"
+  HPCWL_COMMAND_PREFIX   Prefix of the executable, e.g., "gdb -ex run --args"
+  MPIRUNPREFX=<command>  Prefix of the MPI launcher
+  MPIRUNFLAGS=<flags>    Additional flags of the MPI launcher
+
+EOM
+  if [ -e "${EXE}" ]; then
+    echo "Executable: ${EXE}"
+  else
+    echo "Executable: not found"
+  fi
+  exit 0
+fi
+
 if [ -e "${EXE}" ]; then
   export LD_LIBRARY_PATH=${EXEDIR}:${LD_LIBRARY_PATH}
+elif [ "${AMBIGUOUS}" ]; then
+  >&2 echo "ERROR: several builds found, please select one with CP2K_BUILD=<folder>:"
+  >&2 sed -e "s|^${ROOT}/||" -e "s|/${BIN}$||" -e "s/^/  /" <<<"${AMBIGUOUS}"
+  exit 1
 else
-  >&2 echo "ERROR: ${EXE} executable not found!"
+  >&2 echo "ERROR: ${EXE} executable not found (see $0 --help)!"
   exit 1
 fi
 
@@ -117,7 +186,7 @@ if [ "$1" ]; then
     exit 1
   fi
 elif [ "${EXEVER}" ]; then
-  >&2 echo "Please use: $0 /file/to/workload.inp [ranks-per-node [num-nodes]]"
+  >&2 echo "Please use: $0 /file/to/workload.inp [ranks-per-node [num-nodes]] (or --help)"
   exit 1
 fi
 

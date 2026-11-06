@@ -139,8 +139,11 @@ The run-script can be symlinked into CP2K's root directory (`ln -s /path/to/xcon
 
 * `exe/Linux-x86-64-intelx` (legacy build, `CP2K_BUILD` selects another ARCH)
 * `build/bin` relative to the current directory (legacy location)
-* the most recent of `build-<arch>-*/bin` and `build/bin` in CP2K's root directory, where `<arch>` is determined like for building (`CP2K_BUILD=gnu-gpu` restricts the search to `build-<arch>-gnu-gpu*`)
+* `<CP2K_BUILD>/bin` or `build-<arch>-<CP2K_BUILD>*/bin` if `CP2K_BUILD` is given (e.g., `CP2K_BUILD=build-alderlake-gnu-cpu` or `CP2K_BUILD=gnu-gpu`), where `<arch>` is determined like for building
+* otherwise `build/bin` in CP2K's root directory (e.g., a symbolic link), the most recent `build-<arch>-*/bin`, or `build-*/bin` if there is only one
 * `../cp2k/<arch>/gnu/bin` and `../cp2k/gnu/bin` (installation, `CP2K_BUILD` selects another tagname)
+
+The run-script's options and environment variables are shown by `./run.sh --help`, which also prints the selected executable.
 
 <a name="info-script"></a>As soon as several experiments are finished, it becomes handy to summarize the log-output. For this case, an info-script (`info.sh`) is available attempting to present a table (summary of all results), which is generated from log files (`.txt` and `.out` extension by default). Log files can be captured with "tee", or the output is captured by the job scheduler.
 
