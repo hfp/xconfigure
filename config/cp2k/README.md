@@ -108,7 +108,7 @@ chmod +x configure-get.sh
 To configure and build CP2K (`build-<arch>-gnu-cpu`), or CP2K with GPU support by the means of OpenCL (`build-<arch>-gnu-gpu`):
 
 ```bash
-./configure-cp2k.sh
+./configure-cp2k-cpu.sh
 cmake --build build-<arch>-gnu-cpu -j $(nproc)
 
 ./configure-cp2k-gpu.sh
@@ -120,7 +120,7 @@ CP2K can be run from where it was built, e.g., `build-<arch>-gnu-cpu/bin/cp2k.ps
 Here, `<arch>` names the target as determined by the compiler (e.g., `sapphirerapids` or `neoverse-v2`), which allows to share the folder structure among different systems (`XCFG_ARCH` overrides the name). For each dependency, the first of `../<name>/<arch>/gnu-cpu` (`gnu-gpu`), `../<name>/<arch>/gnu-cpu-shared` (`gnu-gpu-shared`), `../<name>/<arch>/gnu`, `../<name>/<arch>`, the same folders without `<arch>`, `$<NAME>ROOT` (e.g., `LIBXSROOT`), and the same folders in `$HOME` containing a library or package is used, and the corresponding feature of CP2K is enabled. For example, `dbcsr/<arch>/gnu` can be a symbolic link to the desired flavor of DBCSR. The found locations are printed when configuring CP2K, and a DBCSR that was built but not installed is pointed out. If built with GNU Make, the matching `lib/<target>` of LIBXS, LIBXSMM, or LIBXSTREAM is used (e.g., `libxs/lib/x86_64`). Further dependencies can be supplied using the `CMAKE_PREFIX_PATH` environment variable, and arguments after an optional "tagname" (default: `gnu`) are passed to CMake:
 
 ```bash
-CMAKE_PREFIX_PATH=$HOME/elpa/gnu ./configure-cp2k.sh gnu -DCP2K_USE_ELPA=ON
+CMAKE_PREFIX_PATH=$HOME/elpa/gnu ./configure-cp2k-cpu.sh gnu -DCP2K_USE_ELPA=ON
 ```
 
 If NVPL is installed (e.g., on NVIDIA Grace, `NVPL_ROOT` if not in a system location), its FFTW interface is used unless FFTW was built by XCONFIGURE. With `NVPL=1`, CP2K also relies on NVPL's BLAS, LAPACK, and ScaLAPACK; DBCSR must be configured with `NVPL=1` as well to link the same BLAS library:
