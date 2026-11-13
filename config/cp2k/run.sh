@@ -146,6 +146,9 @@ Environment:
   VERBOSE=0              Quiet libraries and MPI (I_MPI_DEBUG, --report-bindings)
   TUNE=0                 No glibc tunables (malloc trim threshold, AVX2 off)
   TBBMALLOC=1            Preload TBB's malloc proxy (requires TBBROOT)
+  PIN=0                  No process or thread binding (default: ranks pinned)
+  IMPI=0                 Not Intel MPI even if I_MPI_ROOT is set
+  MPICH=1                MPICH, preferring its launcher (e.g., over oneAPI's)
   MPI_OPT=1              Tuned Intel MPI, no launcher for a single rank
   MPI_OPT=0              No process placement (OpenMPI)
   BOOTSTRAP=<name>       Bootstrap of Intel MPI (ssh if numeric), oversubscribe (OpenMPI)
@@ -286,14 +289,45 @@ MPIRUN=$(command -v mpirun)
 if [ ! "${MPIRUN}" ]; then
   MPIRUN=$(command -v mpiexec)
 fi
+# MPICH=1 prefers MPICH's launcher even if another one comes first (oneAPI)
+if [ "${MPICH}" ] && [ "0" != "${MPICH}" ]; then
+  for CMD in $(type -ap mpirun mpiexec); do
+    if [[ "$("${CMD}" --version 2>&1)" = *"HYDRA build"* ]]; then
+      MPIRUN=${CMD}; break
+    fi
+  done
+fi
+if [ "${MPIRUN}" ]; then
+  MPIVER=$("${MPIRUN}" --version 2>&1)
+fi
+
+# cores per rank (MC) and threads per core (MT)
+NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
+MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
+MT=$((HT<=MAXNT?HT:MAXNT))
 
 if [[ "${I_MPI_ROOT}" && "0" != "${IMPI}" ]] || \
-   [[ "${MPICH}" && "0" != "${MPICH}" ]];
+   [[ "${MPICH}" && "0" != "${MPICH}" ]] || \
+   [[ ! "${MPICH}" && "${MPIVER}" = *"HYDRA build"* ]];
 then
   if [ "${MPIRUN}" ]; then
     #MPIRUNFLAGS="${MPIRUNFLAGS} -rdma"
     #MPIRUNFLAGS="${MPIRUNFLAGS} -genvall"
-    MPIRUNFLAGS="${MPIRUNFLAGS} -perhost ${NRANKS}"
+    MPIRUNFLAGS="${MPIRUNFLAGS} -ppn ${NRANKS}"
+    # Intel MPI pins in its launcher but may not by default (hybrid CPU)
+    if [[ "${MPIVER}" = *"Intel(R) MPI"* ]]; then
+      if [ "0" != "${PIN}" ]; then
+        export I_MPI_PIN=${I_MPI_PIN:-1}
+      else
+        export I_MPI_PIN=${I_MPI_PIN:-0}
+      fi
+    elif [[ "${MPIVER}" = *"HYDRA build"* ]]; then
+      if [ "0" != "${PIN}" ]; then
+        MPIRUNFLAGS="${MPIRUNFLAGS} -bind-to core:${MC}"
+      else
+        MPIRUNFLAGS="${MPIRUNFLAGS} -bind-to none"
+      fi
+    fi
     if [ "${BOOTSTRAP}" ] && [ "0" != "${BOOTSTRAP}" ]; then
       if ! [[ ${BOOTSTRAP} =~ ^[+-]?[0-9]+$ ]]; then
         MPIRUNFLAGS="${MPIRUNFLAGS} -bootstrap ${BOOTSTRAP}"
@@ -302,7 +336,9 @@ then
       fi
     fi
     if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ]; then
-      export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
+      if [ "${I_MPI_ROOT}" ]; then
+        export I_MPI_DEBUG=${I_MPI_DEBUG:-4}
+      fi
     fi
     if [[ "${MPIRUNFLAGS}" = *" -rdma "* ]]; then
       export MPICH_ASYNC_PROGRESS=${MPICH_ASYNC_PROGRESS:-1}
@@ -337,9 +373,13 @@ elif [ "${MPIRUN}" ]; then
     MPIRUNFLAGS="${MPIRUNFLAGS} --oversubscribe"
   fi
   if [ "${EXEVER}" ] && [ "0" != "${VERBOSE}" ] && [ ! "${IMPI}" ]; then
-    MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
+    if ${MPIRUN} --report-bindings >/dev/null 2>&1; then
+      MPIRUNFLAGS="${MPIRUNFLAGS} --report-bindings"
+    fi
   fi
-  if [ "0" != "${MPI_OPT}" ]; then
+  if [ "0" = "${PIN}" ]; then
+    MPIRUNFLAGS="${MPIRUNFLAGS} --bind-to none"
+  elif [ "0" != "${MPI_OPT}" ]; then
     # Depending on OpenMPI version: package <-> socket
     if ${MPIRUN} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS)) true 2>/dev/null; then
       MPIRUNFLAGS="${MPIRUNFLAGS} --map-by ppr:$(((NRANKS+NS-1)/NS)):package:PE=$((NC/NRANKS))"
@@ -370,8 +410,9 @@ then
         -np $((NRANKS*NUMNODES)) ${NUMACTL} ${PREFX} \
       ${EXE} ${WORKLOAD} ${ARGS}"
   elif [ "$(command -v srun)" ]; then
+    if [ "0" != "${PIN}" ]; then CPUBIND=sockets; else CPUBIND=none; fi
     RUN="${MPIRUNPREFX} srun \
-        --cpu-bind=sockets \
+        --cpu-bind=${CPUBIND} \
         ${NUMACTL} ${PREFX} \
       ${EXE} ${WORKLOAD} ${ARGS}"
   fi
@@ -380,18 +421,17 @@ else
 fi
 
 # setup OpenMP environment
-NR=$(((NRANKS/NS)*NS)); if [ "0" = "${NR}" ] || [ "0" = "${NT}" ]; then NR=1; fi
-MC=$((NC/NR)); if [ "0" = "${MC}" ]; then MC=1; fi
-MT=$((HT<=MAXNT?HT:MAXNT))
 NTHREADS=${OMP_NUM_THREADS:-$((MC*MT))}
 if [ "${VERBOSE}" ] && [ "0" != "${VERBOSE}" ]; then
   echo "OMP: NS=${NS} NC=${NC} NT=${NT} MAXHT=${MAXNT} HT=${HT} MT=${MT}"
 fi
-if [ "1" != "${HT}" ] && [ "1" = "${MT}" ]; then
-  export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
-  export OMP_PLACES=${OMP_PLACES:-cores}
-else
-  export OMP_PROC_BIND=${OMP_PROC_BIND:-true}
+if [ "0" != "${PIN}" ]; then  # PIN=0: threads float like the ranks
+  if [ "1" != "${HT}" ] && [ "1" = "${MT}" ]; then
+    export OMP_PROC_BIND=${OMP_PROC_BIND:-close}
+    export OMP_PLACES=${OMP_PLACES:-cores}
+  else
+    export OMP_PROC_BIND=${OMP_PROC_BIND:-true}
+  fi
 fi
 if [ ! "${OMP_NUM_THREADS}" ]; then
   export OMP_NUM_THREADS=${NTHREADS}
