@@ -90,7 +90,7 @@ fi
 for FILE in ${FILES}; do
   BASENAME=$(basename "${FILE}" | rev | cut -d. -f2- | rev)
   NODERANKS=$(grep "\(mpirun\|mpiexec\)" "${FILE}" | grep "\-np" | sed -n "s/..*-np\s\s*\([^\s][^\s]*\).*/\1/p" | tail -n1 | cut -d" " -f1)
-  RANKS=$(grep "\(mpirun\|mpiexec\)" "${FILE}" | grep -o "\-\(perhost\|npernode\)..*$" | tr -s " " | cut -d" " -f2 | tail -n1 | tr -d -c "[:digit:]")
+  RANKS=$(grep "\(mpirun\|mpiexec\)" "${FILE}" | grep -o "\-\(perhost\|ppn\|npernode\)..*$" | tr -s " " | cut -d" " -f2 | tail -n1 | tr -d -c "[:digit:]")
   if [ ! "${RANKS}" ]; then
     RANKS=$(grep " GLOBAL| Total number of message passing processes" "${FILE}" | grep -m1 -o "[0-9][0-9]*$")
   fi
